@@ -1,17 +1,12 @@
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 import {IInputs, IOutputs} from "./generated/ManifestTypes";
-import DataSetInterfaces = ComponentFramework.PropertyHelper.DataSetApi;
-type DataSet = ComponentFramework.PropertyTypes.DataSet;
+import FullFileExplorer from "./controls/FullFileExplorer";
+import { initMockFullFileExplorerProps } from "./controls/MockFullFileExplorerProps";
+import { ALL_ITEMS_PAGE_SIZE, initFullFileExplorerProps } from "./controls/FullFileExplorerProps";
 
 export class SPFileExplorer implements ComponentFramework.StandardControl<IInputs, IOutputs> {
-
-    /**
-     * Empty constructor.
-     
-    constructor()
-    {
-
-    }*/
-
+    private _container: HTMLDivElement;
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
@@ -22,9 +17,11 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
      */
     public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement): void
     {
-        // Add control initialization code
+        this._container = container;
+        if(this._isSandbox()){
+            context.mode.trackContainerResize(true);
+        }
     }
-
 
     /**
      * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
@@ -32,7 +29,30 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void
     {
-        // Add code to update control view
+        if(this._isSandbox()){
+            this._container.style.overflow = "hidden";
+
+            //Control height is set to ensure correct representation of the control
+            this._container.style.height = context.mode.allocatedHeight? `${context.mode.allocatedHeight - 2}px`: `500px`;
+        }
+
+        console.log(context.parameters.documentsDataSet);
+
+        if (context.parameters.documentsDataSet.paging != null
+            && context.parameters.documentsDataSet.paging.pageSize != ALL_ITEMS_PAGE_SIZE
+            && context.parameters.documentsDataSet.paging.hasNextPage) {
+            context.parameters.documentsDataSet.paging.setPageSize(ALL_ITEMS_PAGE_SIZE);
+            context.parameters.documentsDataSet.paging.loadNextPage();
+        } else {
+            const explorerProperties = this._isSandbox()? initMockFullFileExplorerProps(()=>this.updateView(context))
+            //: this._initMockExplorerProperties((new Date()).getSeconds())
+            //: this._initExplorerProperties(context);
+            : initFullFileExplorerProps(context);
+
+            ReactDOM.render(React.createElement(FullFileExplorer,
+                explorerProperties 
+            ), this._container);
+        }
     }
 
     /**
@@ -53,4 +73,8 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
         // Add code to cleanup control if necessary
     }
 
+    private _isSandbox(): boolean
+    {
+        return window?.location?.href?.toLowerCase().indexOf("dynamics.com") < 0;
+    }
 }
