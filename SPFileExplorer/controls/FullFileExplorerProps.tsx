@@ -1,3 +1,4 @@
+import path = require("path");
 import { IInputs } from "../generated/ManifestTypes";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
@@ -55,6 +56,7 @@ const retrieveSubFoldersRecursive = (
                 path: e.relativelocation,
                 key: e.relativelocation,
                 name: e.fullname,
+                children: [],
               } as IFolder;
             });
 
@@ -73,6 +75,87 @@ const retrieveSubFoldersRecursive = (
   });
 };
 
+const findSubfolderRecursive = (
+  folder: IFolder,
+  pathToFind: string
+): IFolder | null => {
+  let result: IFolder | null = null;
+  if (folder.path == pathToFind) {
+    result = folder;
+  } else {
+    folder.children?.forEach((s) => {
+      if (!result) result = findSubfolderRecursive(s, pathToFind);
+    });
+  }
+
+  return result;
+};
+
+const ensureSubfolders = (
+  folder: IFolder,
+  folderContent: IFileSystemItem[]
+): boolean => {
+  let subfoldersChanged = false;
+  const subfolders = folderContent.filter((f) => f.filetype === "folder");
+
+  subfolders.forEach((s) => {
+    if (!folder.children?.find((e) => e.path == s.relativelocation)) {
+      subfoldersChanged = true;
+      folder.children?.push({
+        path: s.relativelocation,
+        key: s.relativelocation,
+        name: s.fullname,
+        children: [],
+      });
+    }
+  });
+  if (subfoldersChanged) {
+    folder.children?.sort((a, b) => {
+      return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
+    });
+  }
+  return subfoldersChanged;
+};
+
+const refreshSubfoldersRecursive = (
+  currentFolder: IFolder,
+  refreshedSubfolders: IFolder[]
+): boolean => {
+  let updated = false;
+  const newFolders: IFolder[] = [];
+  const removedFolders: IFolder[] = [];
+
+  refreshedSubfolders.forEach((f) => {
+    const existingFolder = currentFolder.children?.find((c) => f.key == c.key);
+    if (!existingFolder) {
+      newFolders.push(f);
+    }
+  });
+
+  currentFolder.children?.forEach((c) => {
+    const refreshedFolder = refreshedSubfolders.find((f) => f.key == c.key);
+    if (refreshedFolder && refreshedFolder.children) {
+      updated =
+        updated || refreshSubfoldersRecursive(c, refreshedFolder.children);
+    } else {
+      removedFolders.push(c);
+    }
+  });
+
+  if (newFolders.length > 0 || removedFolders.length > 0) {
+    removedFolders.forEach((c) =>
+      currentFolder.children?.splice(currentFolder.children?.indexOf(c), 1)
+    );
+    currentFolder.children?.push(...newFolders);
+
+    currentFolder.children?.sort((a, b) => {
+      return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
+    });
+    updated = true;
+  }
+  return updated;
+};
+
 /**
  * Function that initilizes properties of the full file explorer control.
  */
@@ -84,11 +167,58 @@ export const initFullFileExplorerProps = (
     dataSet.sorting && dataSet.sorting.length > 0
       ? dataSet.sorting.pop()
       : { name: "", sortDirection: 0 };
+
+  const currentFolderContent = dataSet.sortedRecordIds.map((recordId) => {
+    const record = dataSet.records[recordId];
+    const itemData = {} as IFileSystemItem;
+
+    itemData["isSharedLocation"] =
+      record.getValue("locationid") === SHARED_LOCATION_GUID;
+    itemData.reference = (record as any)._entityReference;
+    itemData.key = record.getRecordId();
+    itemData.path = record.getFormattedValue("relativelocation");
+    dataSet.columns.forEach((c) => {
+      itemData[c.name] = record.getFormattedValue(c.name);
+      if (c.name === "ischeckedout") {
+        itemData[c.name] = record.getValue(c.name);
+      }
+    });
+
+    return itemData;
+  });
+
   const relativelocationCondition = dataSet.filtering
     .getFilter()
     ?.conditions?.filter(
       (condition) => condition.attributeName == "relativelocation"
     );
+
+  const currentFolderPath =
+    !relativelocationCondition || relativelocationCondition.length == 0
+      ? ""
+      : (relativelocationCondition[0].value as string);
+
+  if (_folderStructure) {
+    const currentFolder =
+      currentFolderPath === ""
+        ? _folderStructure
+        : findSubfolderRecursive(_folderStructure, currentFolderPath);
+
+    if (
+      currentFolder &&
+      ensureSubfolders(currentFolder, currentFolderContent)
+    ) {
+      dataSet.refresh();
+    }
+
+    retrieveSubFoldersRecursive(context, _folderStructure.path).then(
+      (refreshedSubfolders) => {
+        if (refreshSubfoldersRecursive(_folderStructure, refreshedSubfolders)) {
+          dataSet.refresh();
+        }
+      }
+    );
+  }
 
   return {
     columns: dataSet.columns
@@ -122,16 +252,18 @@ export const initFullFileExplorerProps = (
                         <attribute name="sitecollectionid" />
                         <attribute name="sharepointdocumentlocationid" />
                         <filter type="and">
-                            <condition attribute="regardingobjectid" operator="eq" value="${contextPage.entityId}" />
+                            ${
+                              contextPage && contextPage.entityId
+                                ? `<condition attribute="regardingobjectid" operator="eq" value="${contextPage.entityId}" />`
+                                : `<condition attribute="regardingobjectid" operator="null" />`
+                            }
                             <condition attribute="statecode" operator="eq" value="0" />
                             <condition attribute="statuscode" operator = "eq" value="1" />
                             <condition attribute="sitecollectionid" operator="not-null" value="true" />
                             <condition attribute="absoluteurl" operator="null" />
                         </filter>
                         <filter type="or">
-                            <filter type="and">
-                                <condition attribute="servicetype" operator="eq" value="0" />
-                            </filter>
+                            <condition attribute="servicetype" operator="eq" value="0" />
                         </filter>
                         </entity>
                     </fetch>`;
@@ -159,31 +291,13 @@ export const initFullFileExplorerProps = (
                     sharepointLocation.relativeurl
                   ),
                 };
-
                 resolve(_folderStructure);
               }
             });
         }
       });
     },
-    currentFolderContent: dataSet.sortedRecordIds.map((recordId) => {
-      const record = dataSet.records[recordId];
-      const itemData = {} as IFileSystemItem;
-
-      itemData["isSharedLocation"] =
-        record.getValue("locationid") === SHARED_LOCATION_GUID;
-      itemData.reference = (record as any)._entityReference;
-      itemData.key = record.getRecordId();
-      itemData.path = record.getFormattedValue("relativelocation");
-      dataSet.columns.forEach((c) => {
-        itemData[c.name] = record.getFormattedValue(c.name);
-        if (c.name === "ischeckedout") {
-          itemData[c.name] = record.getValue(c.name);
-        }
-      });
-
-      return itemData;
-    }),
+    currentFolderContent,
     setSorting: (column: string, ascending: boolean) => {
       if (!dataSet.sorting) {
         dataSet.sorting = [];
@@ -217,9 +331,6 @@ export const initFullFileExplorerProps = (
       dataSet.filtering.setFilter(dataFilter);
       dataSet.refresh();
     },
-    currentFolderPath:
-      !relativelocationCondition || relativelocationCondition.length == 0
-        ? ""
-        : (relativelocationCondition[0].value as string),
+    currentFolderPath,
   };
 };
