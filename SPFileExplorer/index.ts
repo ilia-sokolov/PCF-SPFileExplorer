@@ -7,6 +7,7 @@ import { ALL_ITEMS_PAGE_SIZE, initFullFileExplorerProps } from "./controls/FullF
 
 export class SPFileExplorer implements ComponentFramework.StandardControl<IInputs, IOutputs> {
     private _container: HTMLDivElement;
+    private _controlCache: {[index: string]: any} = {};
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
@@ -36,7 +37,11 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
             this._container.style.height = context.mode.allocatedHeight? `${context.mode.allocatedHeight - 2}px`: `500px`;
         }
 
-        console.log(context.parameters.documentsDataSet);
+
+        if(context.parameters.minHeight && context.parameters.minHeight.raw){
+            this._container.style.minHeight = `${context.parameters.minHeight.raw}px`;
+        }
+
 
         if (context.parameters.documentsDataSet.paging != null
             && context.parameters.documentsDataSet.paging.pageSize != ALL_ITEMS_PAGE_SIZE
@@ -45,9 +50,7 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
             context.parameters.documentsDataSet.paging.loadNextPage();
         } else {
             const explorerProperties = this._isSandbox()? initMockFullFileExplorerProps(()=>this.updateView(context))
-            //: this._initMockExplorerProperties((new Date()).getSeconds())
-            //: this._initExplorerProperties(context);
-            : initFullFileExplorerProps(context);
+            : initFullFileExplorerProps(context, this._controlCache);
 
             ReactDOM.render(React.createElement(FullFileExplorer,
                 explorerProperties 

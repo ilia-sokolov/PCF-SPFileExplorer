@@ -407,7 +407,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           setExpandedFoldersPaths: setExpandedFoldersPaths,
         }}
       >
-        {controlState.rootFolder && (
+        {controlState.rootFolder && !props.hideFoldersPane && (
           <FolderExplorer
             rootItem={controlState.rootFolder}
             hideSearchBox={props.hideFoldersSearchBox}

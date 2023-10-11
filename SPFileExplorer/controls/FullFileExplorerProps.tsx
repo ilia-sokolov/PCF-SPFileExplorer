@@ -7,8 +7,7 @@ import { IFullFileExplorerProps } from "./IFullFileExplorerProps";
 export const ALL_ITEMS_PAGE_SIZE = 5000;
 
 const SHARED_LOCATION_GUID = "17DE0DBB-153C-4C1A-B98A-223B3EA10125";
-
-let _folderStructure: IFolder;
+const FOLDER_STRUCTURE_KEY = "FolderStructure";
 
 const retrieveSubFoldersRecursive = (
   context: ComponentFramework.Context<IInputs>,
@@ -18,6 +17,17 @@ const retrieveSubFoldersRecursive = (
     const entityType =
       context.parameters.documentsDataSet.getTargetEntityType();
     const contextPage = (context as any).page;
+    const escapedRelativeUrl = relativeUrl
+      .split("&")
+      .join("&amp;")
+      .split("<")
+      .join("&lt;")
+      .split(">")
+      .join("&gt;")
+      .split("'")
+      .join("&apos;")
+      .split('"')
+      .join("&quot;");
 
     const subfoldersFetchXml =
       `<fetch mapping="logical" count="${ALL_ITEMS_PAGE_SIZE}">
@@ -30,7 +40,7 @@ const retrieveSubFoldersRecursive = (
                     <filter type="and">
                         <condition attribute="isrecursivefetch" operator="eq" value="0"/>
                         <condition attribute="filetype" operator="null"/>
-                        <condition attribute="relativelocation" operator="eq" value="${relativeUrl}"/>
+                        <condition attribute="relativelocation" operator="eq" value="${escapedRelativeUrl}"/>
                     </filter>` +
       (contextPage && contextPage.entityId && contextPage.entityTypeName
         ? `<link-entity name="${contextPage.entityTypeName}" from="${contextPage.entityTypeName}id" to="regardingobjectid" alias="bb">
@@ -71,6 +81,9 @@ const retrieveSubFoldersRecursive = (
           );
         }
         resolve(childFolders);
+      })
+      .catch(() => {
+        resolve([]);
       });
   });
 };
@@ -160,9 +173,12 @@ const refreshSubfoldersRecursive = (
  * Function that initilizes properties of the full file explorer control.
  */
 export const initFullFileExplorerProps = (
-  context: ComponentFramework.Context<IInputs>
+  context: ComponentFramework.Context<IInputs>,
+  controlCache: { [index: string]: any }
 ): IFullFileExplorerProps => {
   const dataSet = context.parameters.documentsDataSet;
+  let folderStructure = controlCache[FOLDER_STRUCTURE_KEY] as IFolder;
+
   const sortExpression =
     dataSet.sorting && dataSet.sorting.length > 0
       ? dataSet.sorting.pop()
@@ -198,11 +214,11 @@ export const initFullFileExplorerProps = (
       ? ""
       : (relativelocationCondition[0].value as string);
 
-  if (_folderStructure) {
+  if (folderStructure) {
     const currentFolder =
       currentFolderPath === ""
-        ? _folderStructure
-        : findSubfolderRecursive(_folderStructure, currentFolderPath);
+        ? folderStructure
+        : findSubfolderRecursive(folderStructure, currentFolderPath);
 
     if (
       currentFolder &&
@@ -211,9 +227,9 @@ export const initFullFileExplorerProps = (
       dataSet.refresh();
     }
 
-    retrieveSubFoldersRecursive(context, _folderStructure.path).then(
+    retrieveSubFoldersRecursive(context, folderStructure.path).then(
       (refreshedSubfolders) => {
-        if (refreshSubfoldersRecursive(_folderStructure, refreshedSubfolders)) {
+        if (refreshSubfoldersRecursive(folderStructure, refreshedSubfolders)) {
           dataSet.refresh();
         }
       }
@@ -221,6 +237,9 @@ export const initFullFileExplorerProps = (
   }
 
   return {
+    hideFoldersPane: context.parameters.hideFoldersPane
+      ? context.parameters.hideFoldersPane.raw
+      : false,
     columns: dataSet.columns
       .filter((c) => !c.isHidden)
       .map((c) => {
@@ -271,8 +290,8 @@ export const initFullFileExplorerProps = (
         "?fetchXml=" + encodeURIComponent(locationFetchXml);
 
       return new Promise<IFolder>((resolve) => {
-        if (_folderStructure) {
-          resolve(_folderStructure);
+        if (folderStructure) {
+          resolve(folderStructure);
         } else {
           context.webAPI
             .retrieveMultipleRecords(locationEntityName, locationFetchQuery)
@@ -282,7 +301,7 @@ export const initFullFileExplorerProps = (
                   ? result.entities[0]
                   : null;
               if (sharepointLocation) {
-                _folderStructure = {
+                controlCache[FOLDER_STRUCTURE_KEY] = folderStructure = {
                   name: sharepointLocation.name,
                   path: sharepointLocation.relativeurl,
                   key: sharepointLocation.relativeurl,
@@ -291,7 +310,7 @@ export const initFullFileExplorerProps = (
                     sharepointLocation.relativeurl
                   ),
                 };
-                resolve(_folderStructure);
+                resolve(folderStructure);
               }
             });
         }
@@ -313,7 +332,7 @@ export const initFullFileExplorerProps = (
       const locationConditionId = dataFilter.conditions.findIndex(
         (item) => item.attributeName == "relativelocation"
       );
-      if (path == "" || (_folderStructure && _folderStructure.path == path)) {
+      if (path == "" || (folderStructure && folderStructure.path == path)) {
         if (locationConditionId > -1) {
           dataFilter.conditions.splice(locationConditionId, 1);
         }

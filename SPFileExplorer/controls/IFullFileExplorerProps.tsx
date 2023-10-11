@@ -37,6 +37,10 @@ export interface IFullFileExplorerProps {
    */
   hideFoldersSearchBox?: boolean;
   /**
+   * Defines if folders navigation pane should be hidden (by default it is visible).
+   */
+  hideFoldersPane?: boolean;
+  /**
    * Relative location path of the currently selected folder.
    */
   currentFolderPath: string;
