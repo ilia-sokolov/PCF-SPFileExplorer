@@ -30,18 +30,18 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void
     {
+        this._container.style.minHeight = `${
+          context.parameters.minHeight && context.parameters.minHeight.raw
+            ? context.parameters.minHeight.raw
+            : 350
+        }px`;
+        
         if(this._isSandbox()){
             this._container.style.overflow = "hidden";
 
             //Control height is set to ensure correct representation of the control
             this._container.style.height = context.mode.allocatedHeight? `${context.mode.allocatedHeight - 2}px`: `500px`;
         }
-
-
-        if(context.parameters.minHeight && context.parameters.minHeight.raw){
-            this._container.style.minHeight = `${context.parameters.minHeight.raw}px`;
-        }
-
 
         if (context.parameters.documentsDataSet.paging != null
             && context.parameters.documentsDataSet.paging.pageSize != ALL_ITEMS_PAGE_SIZE
