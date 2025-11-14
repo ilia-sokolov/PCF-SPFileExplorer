@@ -54,6 +54,8 @@ interface IFullFileExplorerState {
   rootFolder: IFolder;
   contextualMenuProps?: IContextualMenuProps;
   fileFilterText?: string;
+  sortColumn?: string;
+  sortAscending?: boolean;
 }
 
 const FullFileExplorer = (props: IFullFileExplorerProps) => {
@@ -81,9 +83,18 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   );
 
   useEffect(() => {
+    // Initialize sort state from props
+    const sortedColumn = props.columns.find(c => c.isSorted);
+    const initialSortColumn = sortedColumn?.name;
+    const initialSortAscending = sortedColumn ? !sortedColumn.isSortedDescending : true;
+
+    console.log('[REACT-INIT] Initial sort state:', { column: initialSortColumn, ascending: initialSortAscending });
+
     setControlState({
       ...controlState,
       loading: true,
+      sortColumn: initialSortColumn,
+      sortAscending: initialSortAscending,
     });
 
     props.getFolderStructure().then((folder) => {
@@ -94,13 +105,15 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         expandedFolders: [folder.path],
         loading: false,
         rootFolder: folder,
+        sortColumn: initialSortColumn,
+        sortAscending: initialSortAscending,
       });
     });
   }, []);
 
   useEffect(() => {
     const filteredContent = getFilteredContent();
-    
+
     selection.setChangeEvents(false);
     selection.setItems(filteredContent);
 
@@ -108,7 +121,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       selection.setKeySelected(id, true, false);
     });
     selection.setChangeEvents(true);
-  }, [props.currentFolderContent, props.selectedRecordsKeys, controlState.fileFilterText, controlState.selectedFolderPath]);
+  }, [props.currentFolderContent, props.selectedRecordsKeys, controlState.fileFilterText, controlState.selectedFolderPath, controlState.sortColumn, controlState.sortAscending]);
 
   // Sync internal state when folder path changes externally
   useEffect(() => {
@@ -147,13 +160,41 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     });
   };
 
+  // Client-side sorting function
+  const sortItems = (items: IFileSystemItem[], sortColumn?: string, sortAscending?: boolean): IFileSystemItem[] => {
+    if (!sortColumn) return items;
+
+    console.log('[REACT-SORT] Sorting', items.length, 'items by', sortColumn, 'ascending:', sortAscending);
+
+    return [...items].sort((a, b) => {
+      const aValue = a[sortColumn as keyof IFileSystemItem] as string || "";
+      const bValue = b[sortColumn as keyof IFileSystemItem] as string || "";
+
+      // Handle numeric sorting for certain fields
+      if (sortColumn === "size" || sortColumn === "filesize") {
+        const aNum = parseFloat(aValue) || 0;
+        const bNum = parseFloat(bValue) || 0;
+        return sortAscending ? aNum - bNum : bNum - aNum;
+      }
+
+      // String comparison for all other fields
+      const comparison = aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' });
+      return sortAscending ? comparison : -comparison;
+    });
+  };
+
   const getFilteredContent = (): IFileSystemItem[] => {
     // First filter by folder path
     let filtered = filterByFolderPath(props.currentFolderContent, controlState.selectedFolderPath);
-    
+
     // Then apply search text filter
     filtered = filterBySearchText(filtered, controlState.fileFilterText);
-    
+
+    // Apply client-side sorting if sort state exists
+    if (controlState.sortColumn) {
+      filtered = sortItems(filtered, controlState.sortColumn, controlState.sortAscending);
+    }
+
     return filtered;
   };
 
@@ -374,11 +415,17 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const onSortAction = (column: IColumn, ascending: boolean) => {
+    console.log('[REACT-SORT] onSortAction called - column:', column.key, 'ascending:', ascending);
+
+    // Update React state for immediate UI update
     setControlState({
       ...controlState,
-      loading: true,
+      sortColumn: column.key,
+      sortAscending: ascending,
+      loading: false, // Don't show loading for client-side sort
     });
 
+    // Also call props.setSorting to persist in cache (but won't wait for re-render)
     props.setSorting(column.key, ascending);
   };
 
@@ -426,6 +473,10 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       // FIX for Problem C: Use relativelocationDisplay for display, but keep key as relativelocation for sorting
       const displayFieldName = isRelativePath ? 'relativelocationDisplay' : c.name;
 
+      // Use React state for sort indicators instead of props
+      const isSorted = controlState.sortColumn === c.name;
+      const isSortedDescending = isSorted && !controlState.sortAscending;
+
       const columnDefinition: IColumn = {
         key: c.name,
         name: c.displayName,
@@ -436,8 +487,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         maxWidth: isFlex ? undefined : (c.visualSizeFactor ?? 100),
         isResizable: true,
         isRowHeader: true,
-        isSorted: c.isSorted,
-        isSortedDescending: c.isSortedDescending,
+        isSorted: isSorted,
+        isSortedDescending: isSortedDescending,
         sortAscendingAriaLabel: c.sortAscendingLabel ?? props.resources.SortedAtoZ,
         sortDescendingAriaLabel: c.sortDescendingLabel ?? props.resources.SortedZtoA,
 
