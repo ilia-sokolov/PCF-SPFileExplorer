@@ -471,6 +471,12 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }
   };
 
+  // Memoize columns so reference changes when sort state changes
+  const viewColumns = React.useMemo(() => {
+    console.log('[REACT-COLUMNS] Creating new columns array with sort:', controlState.sortColumn, controlState.sortAscending);
+    return getViewColumns(props.columns);
+  }, [props.columns, controlState.sortColumn, controlState.sortAscending]);
+
   const getViewColumns = (columns: IFileViewColumn[]): IColumn[] => {
     return columns.map((c) => {
       const isFullName = c.name === 'fullname';
@@ -576,8 +582,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
                           <DetailsList
                             items={getFilteredContent()}
                             compact={controlState.viewType === ViewType.Compact}
-                            columns={getViewColumns(props.columns)}
-                            key={`sort-${controlState.sortColumn}-${controlState.sortAscending}`}
+                            columns={viewColumns}
                             setKey="items"
                             selection={selection}
                             layoutMode={DetailsListLayoutMode.justified}
