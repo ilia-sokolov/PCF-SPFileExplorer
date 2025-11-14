@@ -577,7 +577,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
                             items={getFilteredContent()}
                             compact={controlState.viewType === ViewType.Compact}
                             columns={getViewColumns(props.columns)}
-                            setKey="key"
+                            key={`sort-${controlState.sortColumn}-${controlState.sortAscending}`}
+                            setKey="items"
                             selection={selection}
                             layoutMode={DetailsListLayoutMode.justified}
                           />

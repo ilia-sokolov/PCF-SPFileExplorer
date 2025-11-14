@@ -118,45 +118,23 @@ export const initFullFileExplorerProps = (
         }
       });
 
-      // IMPORTANT: Also get locationname directly (might not be in visible columns)
-      try {
-        const locationNameValue = record.getFormattedValue("locationname") || record.getValue("locationname");
-        if (locationNameValue) {
-          itemData.locationname = locationNameValue as string;
-        }
-      } catch (e) {
-        // Silent fail
-      }
-
-      // Debug first record to see all available fields
-      if (index === 0) {
-        console.log('[PCF-DEBUG] First record fields:', Object.keys(itemData));
-        console.log('[PCF-DEBUG] locationname value:', itemData.locationname);
-        console.log('[PCF-DEBUG] relativelocation value:', itemData.relativelocation);
-        console.log('[PCF-DEBUG] path value:', itemData.path);
-      }
-
-      // FIX for Problem C: Add relativelocationDisplay field that shows path without base directory
-      // Use locationname as the base path to strip from relativelocation
+      // FIX for Problem C: Extract base folder name from relativelocation path
       const fullPath = itemData.relativelocation || itemData.path || "";
-      const locationName = itemData.locationname || "";
 
-      if (index === 0) {
-        console.log('[PCF-PATH] First record - fullPath:', fullPath, 'locationName:', locationName);
-      }
-
-      if (locationName && fullPath.startsWith(locationName + '/')) {
-        // Strip locationname and leading slash to show relative path
-        itemData.relativelocationDisplay = fullPath.substring(locationName.length + 1);
-        if (index === 0) console.log('[PCF-PATH] ✓ Stripped path:', fullPath, '->', itemData.relativelocationDisplay);
-      } else if (locationName && fullPath === locationName) {
-        // Document is at root level of location
-        itemData.relativelocationDisplay = "";
-        if (index === 0) console.log('[PCF-PATH] ✓ Root level document');
+      // Simple approach: Split path and remove first segment (base folder)
+      const pathParts = fullPath.split('/');
+      if (pathParts.length > 1) {
+        // Remove first part (base folder) and rejoin
+        itemData.relativelocationDisplay = pathParts.slice(1).join('/');
+        if (index === 0) {
+          console.log('[PCF-PATH] ✓ Stripped path:', fullPath, '->', itemData.relativelocationDisplay, '(removed:', pathParts[0] + ')');
+        }
       } else {
-        // Fallback to full path if locationname doesn't match
+        // Single segment or empty - use as is
         itemData.relativelocationDisplay = fullPath;
-        if (index === 0) console.log('[PCF-PATH] ✗ Using full path (no match)');
+        if (index === 0) {
+          console.log('[PCF-PATH] ✗ Single segment, using as-is:', fullPath);
+        }
       }
 
       return itemData;
