@@ -28,6 +28,10 @@ export interface IFileSystemItem {
    */
   relativelocationDisplay?: string;
   /**
+   * SharePoint document location name (base folder name).
+   */
+  locationname?: string;
+  /**
    * Last file item's modification date.
    */
   modified: string;

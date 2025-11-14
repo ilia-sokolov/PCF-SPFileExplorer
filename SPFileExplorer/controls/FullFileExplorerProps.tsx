@@ -97,9 +97,7 @@ export const initFullFileExplorerProps = (
 
   // Build complete document list from dataset
   const buildDocumentList = (): IFileSystemItem[] => {
-    // Get base path from folder structure to calculate relative display paths
-    const basePath = folderStructure?.path || "";
-    console.log('[PCF-INIT] Building document list with basePath:', basePath, 'folderStructure:', folderStructure?.name);
+    console.log('[PCF-INIT] Building document list, records:', dataSet.sortedRecordIds.length);
 
     return dataSet.sortedRecordIds.map((recordId) => {
       const record = dataSet.records[recordId];
@@ -118,19 +116,22 @@ export const initFullFileExplorerProps = (
       });
 
       // FIX for Problem C: Add relativelocationDisplay field that shows path without base directory
-      const fullPath = itemData.path || "";
-      if (basePath && fullPath.startsWith(basePath + '/')) {
-        // Strip base path and leading slash to show relative path
-        itemData.relativelocationDisplay = fullPath.substring(basePath.length + 1);
-        console.log('[PCF-PATH] Stripped path:', fullPath, '->', itemData.relativelocationDisplay, '(basePath:', basePath + ')');
-      } else if (basePath && fullPath === basePath) {
-        // Document is at root level
+      // Use locationname as the base path to strip from relativelocation
+      const fullPath = itemData.relativelocation || itemData.path || "";
+      const locationName = itemData.locationname || "";
+
+      if (locationName && fullPath.startsWith(locationName + '/')) {
+        // Strip locationname and leading slash to show relative path
+        itemData.relativelocationDisplay = fullPath.substring(locationName.length + 1);
+        console.log('[PCF-PATH] Stripped path:', fullPath, '->', itemData.relativelocationDisplay, '(locationName:', locationName + ')');
+      } else if (locationName && fullPath === locationName) {
+        // Document is at root level of location
         itemData.relativelocationDisplay = "";
         console.log('[PCF-PATH] Root level document:', fullPath);
       } else {
-        // Fallback to full path if not under base
+        // Fallback to full path if locationname doesn't match
         itemData.relativelocationDisplay = fullPath;
-        console.log('[PCF-PATH] Using full path (no base match):', fullPath);
+        console.log('[PCF-PATH] Using full path (locationName not found or no match):', fullPath, 'locationName:', locationName);
       }
 
       return itemData;
