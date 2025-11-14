@@ -422,11 +422,14 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       const isFullName = c.name === 'fullname';
       const isRelativePath = c.name === 'relativelocation';
       const isFlex = isFullName || isRelativePath;
-      
+
+      // FIX for Problem C: Use relativelocationDisplay for display, but keep key as relativelocation for sorting
+      const displayFieldName = isRelativePath ? 'relativelocationDisplay' : c.name;
+
       const columnDefinition: IColumn = {
         key: c.name,
         name: c.displayName,
-        fieldName: c.name,
+        fieldName: displayFieldName,
         // Flex columns: small minWidth (100px) allows equal 50/50 split
         // Fixed columns: use visualSizeFactor for both min and max
         minWidth: isFlex ? 100 : (c.visualSizeFactor ?? 100),

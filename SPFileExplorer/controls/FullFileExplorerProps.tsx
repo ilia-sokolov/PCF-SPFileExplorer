@@ -86,17 +86,20 @@ export const initFullFileExplorerProps = (
   let sortExpression: { name: string; sortDirection: number };
   if (useClientSideFiltering && controlCache[SORT_STATE_KEY]) {
     sortExpression = controlCache[SORT_STATE_KEY] as { name: string; sortDirection: number };
+    console.log('[PCF-SORT] Using cached sort state:', sortExpression);
   } else {
     sortExpression =
       dataSet.sorting && dataSet.sorting.length > 0
         ? (dataSet.sorting.pop() as { name: string; sortDirection: number })
         : { name: "", sortDirection: 0 };
+    console.log('[PCF-SORT] Using dataset sort state:', sortExpression);
   }
 
   // Build complete document list from dataset
   const buildDocumentList = (): IFileSystemItem[] => {
     // Get base path from folder structure to calculate relative display paths
     const basePath = folderStructure?.path || "";
+    console.log('[PCF-INIT] Building document list with basePath:', basePath, 'folderStructure:', folderStructure?.name);
 
     return dataSet.sortedRecordIds.map((recordId) => {
       const record = dataSet.records[recordId];
@@ -119,12 +122,15 @@ export const initFullFileExplorerProps = (
       if (basePath && fullPath.startsWith(basePath + '/')) {
         // Strip base path and leading slash to show relative path
         itemData.relativelocationDisplay = fullPath.substring(basePath.length + 1);
+        console.log('[PCF-PATH] Stripped path:', fullPath, '->', itemData.relativelocationDisplay, '(basePath:', basePath + ')');
       } else if (basePath && fullPath === basePath) {
         // Document is at root level
         itemData.relativelocationDisplay = "";
+        console.log('[PCF-PATH] Root level document:', fullPath);
       } else {
         // Fallback to full path if not under base
         itemData.relativelocationDisplay = fullPath;
+        console.log('[PCF-PATH] Using full path (no base match):', fullPath);
       }
 
       return itemData;
@@ -179,9 +185,14 @@ export const initFullFileExplorerProps = (
 
   // Helper function to sort documents client-side
   const sortDocuments = (documents: IFileSystemItem[], sortColumn: string, sortAscending: boolean): IFileSystemItem[] => {
-    if (!sortColumn) return documents;
+    if (!sortColumn) {
+      console.log('[PCF-SORT] No sort column specified, returning unsorted');
+      return documents;
+    }
 
-    return [...documents].sort((a, b) => {
+    console.log('[PCF-SORT] Sorting', documents.length, 'documents by column:', sortColumn, 'ascending:', sortAscending);
+
+    const sorted = [...documents].sort((a, b) => {
       const aValue = a[sortColumn as keyof IFileSystemItem] as string || "";
       const bValue = b[sortColumn as keyof IFileSystemItem] as string || "";
 
@@ -196,6 +207,9 @@ export const initFullFileExplorerProps = (
       const comparison = aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' });
       return sortAscending ? comparison : -comparison;
     });
+
+    console.log('[PCF-SORT] First 3 items after sort:', sorted.slice(0, 3).map(d => d[sortColumn as keyof IFileSystemItem]));
+    return sorted;
   };
 
   // Determine current folder content based on filtering mode
@@ -205,22 +219,25 @@ export const initFullFileExplorerProps = (
     // CLIENT-SIDE: Pass ALL documents to React component
     // React will filter them internally based on currentFolderPath
     currentFolderContent = controlCache[ALL_DOCUMENTS_CACHE_KEY] as IFileSystemItem[];
+    console.log('[PCF-CSF] Client-side mode - got', currentFolderContent.length, 'documents from cache');
 
     // FIX for Problem B: Apply client-side sorting if sort state exists
     if (sortExpression && sortExpression.name) {
+      console.log('[PCF-CSF] Applying client-side sort with expression:', sortExpression);
       currentFolderContent = sortDocuments(
         currentFolderContent,
         sortExpression.name,
         sortExpression.sortDirection === 0
       );
+    } else {
+      console.log('[PCF-CSF] No sort expression, documents unsorted');
     }
 
-    // console.log('[PCF-CSF-DEBUG] Client-side mode - passing all', currentFolderContent.length, 'documents to React');
-    // console.log('[PCF-CSF-DEBUG] Current folder path:', currentFolderPath || '(root)');
+    console.log('[PCF-CSF] Current folder path:', currentFolderPath || '(root)');
   } else {
     // SERVER-SIDE: Use documents from dataset (already filtered by server)
     currentFolderContent = buildDocumentList();
-    // console.log('[PCF-CSF-DEBUG] Server-side mode - passing', currentFolderContent.length, 'filtered documents');
+    console.log('[PCF-CSF] Server-side mode - passing', currentFolderContent.length, 'filtered documents');
   }
 
   // Rebuild folder structure from all loaded documents if we have a root folder
@@ -259,7 +276,7 @@ export const initFullFileExplorerProps = (
     columns: dataSet.columns
       .filter((c) => !c.isHidden)
       .map((c) => {
-        return {
+        const col = {
           name: c.name,
           displayName: c.displayName,
           isPrimary: c.isPrimary,
@@ -269,6 +286,10 @@ export const initFullFileExplorerProps = (
           isSorted: sortExpression?.name == c.name,
           isSortedDescending: sortExpression?.sortDirection == 1,
         };
+        if (col.isSorted) {
+          console.log('[PCF-COLUMNS] Column', c.name, 'is sorted:', col.isSortedDescending ? 'DESC' : 'ASC');
+        }
+        return col;
       }),
     openRecord: (reference: any) => {
       dataSet.openDatasetItem(reference as ComponentFramework.EntityReference);
@@ -344,6 +365,8 @@ export const initFullFileExplorerProps = (
     },
     currentFolderContent,
     setSorting: (column: string, ascending: boolean) => {
+      console.log('[PCF-SORT] setSorting called - column:', column, 'ascending:', ascending, 'clientSideMode:', useClientSideFiltering);
+
       // FIX for Problem B: Handle sorting differently based on mode
       if (useClientSideFiltering) {
         // CLIENT-SIDE: Store sort state in cache and trigger re-render
@@ -351,8 +374,10 @@ export const initFullFileExplorerProps = (
           name: column,
           sortDirection: ascending ? 0 : 1
         };
+        console.log('[PCF-SORT] Stored sort state in cache:', controlCache[SORT_STATE_KEY]);
         // Use notifyOutputChanged to trigger re-render without fetching from server
         notifyOutputChanged();
+        console.log('[PCF-SORT] Called notifyOutputChanged to trigger re-render');
       } else {
         // SERVER-SIDE: Use dataset sorting and refresh from server
         if (!dataSet.sorting) {
@@ -362,6 +387,7 @@ export const initFullFileExplorerProps = (
           dataSet.sorting.pop();
         }
         dataSet.sorting.push({ name: column, sortDirection: ascending ? 0 : 1 });
+        console.log('[PCF-SORT] Server-side: calling dataSet.refresh()');
         dataSet.refresh();
       }
     },
