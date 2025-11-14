@@ -112,6 +112,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   }, []);
 
   useEffect(() => {
+    console.log('[REACT-EFFECT] useEffect triggered - sortColumn:', controlState.sortColumn, 'sortAscending:', controlState.sortAscending);
     const filteredContent = getFilteredContent();
 
     selection.setChangeEvents(false);
@@ -191,8 +192,11 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     filtered = filterBySearchText(filtered, controlState.fileFilterText);
 
     // Apply client-side sorting if sort state exists
+    console.log('[REACT-FILTER] getFilteredContent - sortColumn:', controlState.sortColumn, 'ascending:', controlState.sortAscending);
     if (controlState.sortColumn) {
       filtered = sortItems(filtered, controlState.sortColumn, controlState.sortAscending);
+    } else {
+      console.log('[REACT-FILTER] No sort column - returning unsorted');
     }
 
     return filtered;
@@ -417,12 +421,15 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   const onSortAction = (column: IColumn, ascending: boolean) => {
     console.log('[REACT-SORT] onSortAction called - column:', column.key, 'ascending:', ascending);
 
-    // Update React state for immediate UI update
-    setControlState({
-      ...controlState,
-      sortColumn: column.key,
-      sortAscending: ascending,
-      loading: false, // Don't show loading for client-side sort
+    // Update React state for immediate UI update - use functional form to avoid stale closure
+    setControlState((prevState) => {
+      console.log('[REACT-SORT] Updating state from:', prevState.sortColumn, 'to:', column.key);
+      return {
+        ...prevState,
+        sortColumn: column.key,
+        sortAscending: ascending,
+        loading: false, // Don't show loading for client-side sort
+      };
     });
 
     // Also call props.setSorting to persist in cache (but won't wait for re-render)
