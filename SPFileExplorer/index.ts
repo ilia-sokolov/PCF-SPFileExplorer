@@ -9,6 +9,7 @@ import { IResourceStrings } from "./IResourceStrings";
 export class SPFileExplorer implements ComponentFramework.StandardControl<IInputs, IOutputs> {
     private _container: HTMLDivElement;
     private _controlCache: {[index: string]: any} = {};
+    private _notifyOutputChanged: () => void;
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
@@ -20,6 +21,7 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
     public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement): void
     {
         this._container = container;
+        this._notifyOutputChanged = notifyOutputChanged;
         if(this._isSandbox()){
             context.mode.trackContainerResize(true);
         }
@@ -52,10 +54,10 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
         } else {
             const resources = this._getResourceStrings(context);
             const explorerProperties = this._isSandbox()? initMockFullFileExplorerProps(()=>this.updateView(context), resources)
-            : initFullFileExplorerProps(context, this._controlCache, resources);
+            : initFullFileExplorerProps(context, this._controlCache, resources, this._notifyOutputChanged);
 
             ReactDOM.render(React.createElement(FullFileExplorer,
-                explorerProperties 
+                explorerProperties
             ), this._container);
         }
     }
