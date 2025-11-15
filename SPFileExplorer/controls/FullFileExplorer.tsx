@@ -66,20 +66,19 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     fileFilterText: undefined,
   } as IFullFileExplorerState);
 
-  const handleSelectionChange = () => {
-    props.selectRecords(
-      selection.getSelection().map((s) => (s.key ? s.key.toString() : ""))
-    );
-  };
-
+  // Create selection object once - items will be updated in useEffect
   const selection = React.useMemo(
     () =>
       new Selection({
         selectionMode: SelectionMode.multiple,
-        onSelectionChanged: handleSelectionChange,
-        items: props.currentFolderContent as IObjectWithKey[],
+        onSelectionChanged: () => {
+          // Use callback to avoid stale closure
+          props.selectRecords(
+            selection.getSelection().map((s) => (s.key ? s.key.toString() : ""))
+          );
+        },
       }),
-    []
+    [] // Only create once, items updated via setItems in useEffect
   );
 
   useEffect(() => {
@@ -88,18 +87,16 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     const initialSortColumn = sortedColumn?.name;
     const initialSortAscending = sortedColumn ? !sortedColumn.isSortedDescending : true;
 
-    console.log('[REACT-INIT] Initial sort state:', { column: initialSortColumn, ascending: initialSortAscending });
-
-    setControlState({
-      ...controlState,
+    setControlState(prev => ({
+      ...prev,
       loading: true,
       sortColumn: initialSortColumn,
       sortAscending: initialSortAscending,
-    });
+    }));
 
     props.getFolderStructure().then((folder) => {
-      setControlState({
-        ...controlState,
+      setControlState(prev => ({
+        ...prev,
         currentFolderContent: props.currentFolderContent,
         selectedFolderPath: folder.path,
         expandedFolders: [folder.path],
@@ -107,12 +104,11 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         rootFolder: folder,
         sortColumn: initialSortColumn,
         sortAscending: initialSortAscending,
-      });
+      }));
     });
   }, []);
 
   useEffect(() => {
-    console.log('[REACT-EFFECT] useEffect triggered - sortColumn:', controlState.sortColumn, 'sortAscending:', controlState.sortAscending);
     const filteredContent = getFilteredContent();
 
     selection.setChangeEvents(false);
@@ -127,10 +123,10 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   // Sync internal state when folder path changes externally
   useEffect(() => {
     if (props.currentFolderPath !== controlState.selectedFolderPath) {
-      setControlState({
-        ...controlState,
+      setControlState(prev => ({
+        ...prev,
         selectedFolderPath: props.currentFolderPath,
-      });
+      }));
     }
   }, [props.currentFolderPath]);
 
@@ -155,17 +151,15 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const onFileFilterChanged = (newFilterText: string | undefined) => {
-    setControlState({
-      ...controlState,
+    setControlState(prev => ({
+      ...prev,
       fileFilterText: newFilterText,
-    });
+    }));
   };
 
   // Client-side sorting function
   const sortItems = (items: IFileSystemItem[], sortColumn?: string, sortAscending?: boolean): IFileSystemItem[] => {
     if (!sortColumn) return items;
-
-    console.log('[REACT-SORT] Sorting', items.length, 'items by', sortColumn, 'ascending:', sortAscending);
 
     return [...items].sort((a, b) => {
       const aValue = a[sortColumn as keyof IFileSystemItem] as string || "";
@@ -192,11 +186,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     filtered = filterBySearchText(filtered, controlState.fileFilterText);
 
     // Apply client-side sorting if sort state exists
-    console.log('[REACT-FILTER] getFilteredContent - sortColumn:', controlState.sortColumn, 'ascending:', controlState.sortAscending);
     if (controlState.sortColumn) {
       filtered = sortItems(filtered, controlState.sortColumn, controlState.sortAscending);
-    } else {
-      console.log('[REACT-FILTER] No sort column - returning unsorted');
     }
 
     return filtered;
@@ -204,11 +195,11 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
 
   const handleSwitchLayout = (item?: IContextualMenuItem) => {
     if (item) {
-      setControlState({
-        ...controlState,
+      setControlState(prev => ({
+        ...prev,
         loading: false,
         viewType: +item.key as ViewType,
-      });
+      }));
     }
   };
 
@@ -356,18 +347,18 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const setCurrentFolder = (path: string) => {
-    setControlState({
-      ...controlState,
+    setControlState(prev => ({
+      ...prev,
       selectedFolderPath: path,
       //loading: true,
       error: false,
       errorMessage: undefined,
-    });
+    }));
     props.setCurrentFolder(path);
   };
 
   const setExpandedFoldersPaths = (paths: string[]) => {
-    setControlState({ ...controlState, expandedFolders: paths });
+    setControlState(prev => ({ ...prev, expandedFolders: paths }));
   };
 
   const openFileItem = (item: IFileSystemItem) => {
@@ -415,15 +406,12 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const onActionMenuClosed = () => {
-    setControlState({ ...controlState, contextualMenuProps: undefined });
+    setControlState(prev => ({ ...prev, contextualMenuProps: undefined }));
   };
 
   const onSortAction = (column: IColumn, ascending: boolean) => {
-    console.log('[REACT-SORT] onSortAction called - column:', column.key, 'ascending:', ascending);
-
     // Update React state for immediate UI update - use functional form to avoid stale closure
     setControlState((prevState) => {
-      console.log('[REACT-SORT] Updating state from:', prevState.sortColumn, 'to:', column.key);
       return {
         ...prevState,
         sortColumn: column.key,
@@ -464,10 +452,10 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         directionalHint: DirectionalHint.bottomLeftEdge,
         onDismiss: onActionMenuClosed,
       };
-      setControlState({
-        ...controlState,
+      setControlState(prev => ({
+        ...prev,
         contextualMenuProps: actionsMenuProps,
-      });
+      }));
     }
   };
 
@@ -477,28 +465,27 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       const isRelativePath = c.name === 'relativelocation';
       const isFlex = isFullName || isRelativePath;
 
-      // FIX for Problem C: Use relativelocationDisplay for display, but keep key as relativelocation for sorting
-      const displayFieldName = isRelativePath ? 'relativelocationDisplay' : c.name;
 
       // Use React state for sort indicators instead of props
       const isSorted = controlState.sortColumn === c.name;
-      const isSortedDescending = isSorted && !controlState.sortAscending;
 
       const columnDefinition: IColumn = {
         key: c.name,
         name: c.displayName,
-        fieldName: displayFieldName,
-        // Flex columns: small minWidth (100px) allows equal 50/50 split
-        // Fixed columns: use visualSizeFactor for both min and max
-        minWidth: isFlex ? 100 : (c.visualSizeFactor ?? 100),
+
+        // Display name logic
+        fieldName: isRelativePath ? 'relativelocationDisplay' : c.name,
+
+        // Flex columns split leftover space 50/50
+        minWidth: isFlex ? 250 : (c.visualSizeFactor ?? 100),
         maxWidth: isFlex ? undefined : (c.visualSizeFactor ?? 100),
+        flexGrow: isFlex ? 1 : undefined,
         isResizable: true,
         isRowHeader: true,
-        isSorted: isSorted,
-        isSortedDescending: isSortedDescending,
+        isSorted: controlState.sortColumn === c.name,
+        isSortedDescending: isSorted && !controlState.sortAscending,
         sortAscendingAriaLabel: c.sortAscendingLabel ?? props.resources.SortedAtoZ,
         sortDescendingAriaLabel: c.sortDescendingLabel ?? props.resources.SortedZtoA,
-
         onColumnClick: onColumnClick,
         onRender: (item, index, column) =>
           renderCell(item, column, c.isPrimary, c.renderIcon),
@@ -510,7 +497,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
 
   // Memoize columns so reference changes when sort state changes
   const viewColumns = React.useMemo(() => {
-    console.log('[REACT-COLUMNS] Creating new columns array with sort:', controlState.sortColumn, controlState.sortAscending);
     return getViewColumns(props.columns);
   }, [props.columns, controlState.sortColumn, controlState.sortAscending]);
 

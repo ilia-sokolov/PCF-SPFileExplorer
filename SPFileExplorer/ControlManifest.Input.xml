@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="JSSPFileExplorer" constructor="SPFileExplorer" version="0.1.15" display-name-key="JS SharePoint Full File Explorer" description-key="Control enables seamless browsing of SharePoint documents in a manner similar to Windows Explorer. The user-friendly interface displays the entire folder hierarchy, offering the ability to quickly locate specific folders by name. This feature ensures swift access to the required files, enhancing overall efficiency." control-type="standard">
+  <control namespace="JSSPFileExplorer" constructor="SPFileExplorer" version="0.1.30" display-name-key="JS SharePoint Full File Explorer" description-key="Control enables seamless browsing of SharePoint documents in a manner similar to Windows Explorer. The user-friendly interface displays the entire folder hierarchy, offering the ability to quickly locate specific folders by name. This feature ensures swift access to the required files, enhancing overall efficiency." control-type="standard">
     <!--external-service-usage
     node declares whether this 3rd party PCF control is using external
     service or not, if yes, this control will be considered as premium and please also add the
