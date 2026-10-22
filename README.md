@@ -10,6 +10,8 @@ The control ensures that users have access to all the features available in the 
 - Folder tree view with folder search by name.
 - Comprehensive access to all features available in standard views, including sorting, keyword filtering, seamless integration with the standard command bar, and more.
 - Three view types: tile view, list view, and compact list view. The default view can be configured, and the view selected by a user is remembered in the browser.
+- Upload of files to the current folder by drag and drop (experimental, has to be enabled).
+- English and German user interface.
 
 ## Prerequisites
 
@@ -18,6 +20,8 @@ The control works on top of the standard SharePoint integration of Dataverse (Dy
 1. [Set up SharePoint integration](https://learn.microsoft.com/en-us/power-platform/admin/set-up-dynamics-365-online-to-use-sharepoint-online) for your environment.
 2. [Enable document management](https://learn.microsoft.com/en-us/power-platform/admin/enable-sharepoint-document-management-specific-entities) for every table on which you want to use the control.
 3. Make sure that the standard **Documents** tab of a record shows the files. If it does not, the control will not show them either.
+
+From version 0.0.4 the control is a React control that uses the React and Fluent UI libraries provided by Power Apps. It is supported in model-driven apps; Power Pages does not support React controls.
 
 ## How to install the control
 
@@ -33,10 +37,21 @@ The following properties can be set when the control is added to a view or to a 
 | **Hide folder tree** | `No` | Hides the folder navigation pane on the left side. |
 | **Default view** | `Tile view` | View type (tile, list or compact list) that is shown when the control is opened. |
 | **Remember selected view** | `Yes` | Remembers the view type selected by a user in the browser and reuses it for other records. Set it to `No` to always open the **Default view**. |
+| **Enable drag and drop upload (experimental)** | `No` | Allows users to upload files to the current folder by dragging them onto the control. Works on the documents of a record (documents subgrid or related **Documents** tab). See [Drag and drop upload](#drag-and-drop-upload). |
 
-**Default view** and **Remember selected view** are available from control version 0.0.3 (see the [changelog](/CHANGELOG.md)).
+**Default view** and **Remember selected view** are available from control version 0.0.3, **Enable drag and drop upload** from 0.0.4 (see the [changelog](/CHANGELOG.md)).
 
 The control reuses the columns, sorting and filters of the view it is applied to.
+
+### Drag and drop upload
+
+When **Enable drag and drop upload (experimental)** is set, files dropped onto the file list are uploaded to the folder that is currently open, and the folder content is refreshed afterwards. Files that cannot be uploaded (for example, because a file with the same name already exists) are listed with the message returned by Dataverse. Folders cannot be uploaded.
+
+The upload uses the `UploadDocument` action of Dataverse, which the standard **Documents** grid uses for its **Upload** command. The action is not publicly documented, so it may change without notice. Test the upload in your environment before enabling it for users, and disable the property if it stops working.
+
+### Languages
+
+The user interface and the property names are available in English and German; other languages fall back to English. To add a language, copy `SPFileExplorer/strings/SPFileExplorer.1033.resx` to `SPFileExplorer.<LCID>.resx`, translate the values and add the file to the `resources` element of `SPFileExplorer/ControlManifest.Input.xml`.
 
 ## Troubleshooting
 
@@ -52,12 +67,14 @@ Increase the **Minimum Height** property of the control.
 **"There are no documents to show" is displayed.**
 No active SharePoint document location was found for the record. Check that document management is enabled for the table and open the standard **Documents** tab once, so that the document location and the SharePoint folder are created.
 
+**Files cannot be dropped onto the control.**
+Check that **Enable drag and drop upload (experimental)** is set and that the control shows the documents of a record; in a table view of all documents there is no record to upload the files to.
+
 ## Known limitations
 
-- If a record has several active document locations, the folder tree is built for only one of them, and it is not rebuilt when another location is selected in the grid.
-- Document locations whose parent is another document location (subfolder locations) may show an empty folder ([#5](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/5)).
-- The control loads up to 5,000 documents of the current folder and requests the folder tree with one query per folder, so very large folder hierarchies take longer to load.
-- Uploading files by drag and drop is not supported yet ([#7](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/7)).
+- The folder tree is built for the document location of the shown documents. When a record has several document locations and the selected location contains no documents, the tree of the oldest location is shown.
+- The control loads up to 5,000 documents of the current folder. The folder tree is requested with one query per folder when it is loaded and refreshed at most once per minute, so very large folder hierarchies take longer to load.
+- Drag and drop upload is experimental (see [Drag and drop upload](#drag-and-drop-upload)) and does not upload folders.
 
 ## Build from source
 

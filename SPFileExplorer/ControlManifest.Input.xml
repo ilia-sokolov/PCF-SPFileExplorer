@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.3" display-name-key="SPFileExplorer_Name" description-key="SPFileExplorer_Description" control-type="virtual">
+  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.4" display-name-key="SPFileExplorer_Name" description-key="SPFileExplorer_Description" control-type="virtual">
     <!--external-service-usage
     node declares whether this 3rd party PCF control is using external
     service or not, if yes, this control will be considered as premium and please also add the

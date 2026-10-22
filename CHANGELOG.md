@@ -1,8 +1,27 @@
 # Changelog
 
-## Unreleased (control version 0.0.3)
+## 0.0.4 (unreleased)
 
 The packaged solution (`Solution/SPFullFileExplorer.zip`) is updated by the build workflow after these changes are merged into `master`.
+
+### Added
+
+- **Enable drag and drop upload (experimental)** property: files dropped onto the control are uploaded to the current folder of a record's document location ([#7](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/7)). Uses the undocumented `UploadDocument` action of the standard documents grid; off by default.
+- English and German user interface and property names (`strings/*.resx`); other languages fall back to English.
+
+### Changed
+
+- The control is a React control that uses the React 16.14.0 and Fluent UI 8.121.1 libraries provided by Power Apps. The bundle shrinks from 1.52 MiB to 112 KiB. The namespace and constructor are unchanged, so the package upgrades the previous version.
+- The folder tree is requested again at most once per minute instead of on every update, and a changed tree no longer reloads the grid.
+- Build tooling: `pcf-scripts` and `pcf-start` 1.51.1; React, React DOM and Fluent UI are declared as dependencies; `@types/react-dom` matches React 16.
+
+### Fixed
+
+- The folder tree follows the document location of the shown documents, so another location selected in the grid gets its own tree ([#3](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/3)).
+- Document locations created for a subfolder of another location show their folders: the path is built from the parent locations ([#5](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/5)).
+- After the folder tree is reloaded, the folder the grid is filtered by stays selected.
+
+## 0.0.3
 
 ### Added
 
