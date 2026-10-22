@@ -83,7 +83,8 @@ You need [Node.js](https://nodejs.org/) 22 and, to create the solution package, 
 ```bash
 npm ci             # install dependencies
 npm run build      # build the control into out/controls
-npm start          # run the control with mock data in the local test harness
+npm start          # build and run the control with mock data in the local test harness
+                   # (the harness, pcf-start, is downloaded on first use)
 
 # build the managed solution into Solution/SPFileExplorerSolution/bin/Release
 dotnet build Solution/SPFileExplorerSolution --configuration Release
