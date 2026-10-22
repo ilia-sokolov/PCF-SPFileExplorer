@@ -1,0 +1,88 @@
+name: Build solution
+
+# Builds and lints the control and builds the managed solution package on every push.
+# On master, Solution/SPFullFileExplorer.zip is updated and committed when the
+# control version in ControlManifest.Input.xml is higher than the packaged one.
+
+on:
+  # Build and lint every push; the solution package is committed only from master.
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: build-solution-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  SOLUTION_PROJECT: Solution/SPFileExplorerSolution
+  SOLUTION_ZIP: Solution/SPFullFileExplorer.zip
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Prepare solution version
+        id: version
+        run: node .github/scripts/prepare-solution-version.mjs
+
+      - name: Build solution
+        run: dotnet build "$SOLUTION_PROJECT" --configuration Release
+
+      - name: Copy solution package
+        run: cp "$SOLUTION_PROJECT/bin/Release/SPFileExplorerSolution.zip" "$SOLUTION_ZIP"
+
+      - name: Upload solution package
+        uses: actions/upload-artifact@v4
+        with:
+          name: SPFullFileExplorer-${{ steps.version.outputs.control_version }}
+          path: ${{ env.SOLUTION_ZIP }}
+
+      - name: Report unchanged control version
+        if: steps.version.outputs.changed != 'true'
+        run: >
+          echo "::notice::Control version ${{ steps.version.outputs.control_version }}
+          is already packaged. Increase the version in SPFileExplorer/ControlManifest.Input.xml
+          to update ${{ env.SOLUTION_ZIP }}."
+
+      - name: Commit solution package
+        if: >
+          github.event_name != 'pull_request' &&
+          github.ref == 'refs/heads/master' &&
+          steps.version.outputs.changed == 'true'
+        run: |
+          # The stamped solution version is used only for the build.
+          git checkout -- "$SOLUTION_PROJECT/src/Other/Solution.xml"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$SOLUTION_ZIP"
+          git commit -m "Update solution package to control version ${{ steps.version.outputs.control_version }} (solution ${{ steps.version.outputs.solution_version }})"
+          git pull --rebase origin master
+          git push origin HEAD:master

@@ -2,13 +2,15 @@
 
 ## Unreleased (control version 0.0.3)
 
-These changes are in the sources but not yet in the packaged solution (`Solution/SPFullFileExplorer.zip`).
+The packaged solution (`Solution/SPFullFileExplorer.zip`) is updated by the build workflow after these changes are merged into `master`.
 
 ### Added
 
 - **Default view** property to choose the view type (tile, list or compact list) that is shown when the control is opened ([#11](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/11)).
 - **Remember selected view** property: the view type selected by a user is remembered in the browser and reused for other records ([#11](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/11)).
 - A message is shown when no SharePoint document location is found, instead of an endless loading spinner.
+
+- Solution project (`Solution/SPFileExplorerSolution`) and a GitHub Actions workflow that lints and builds every push, builds the managed solution and updates `Solution/SPFullFileExplorer.zip` when the control version is increased.
 
 ### Fixed
 
@@ -21,6 +23,10 @@ These changes are in the sources but not yet in the packaged solution (`Solution
 - Mock data is used only in the local test harness; previously, environments whose URL does not contain `dynamics.com` (sovereign clouds, custom domains, on-premises) got mock data.
 - The React tree is unmounted when the control is destroyed.
 - Accessibility: tiles report their position in the list (`aria-posinset`/`aria-setsize`) instead of the record id.
+
+### Changed
+
+- Removed the unused `office-ui-fabric-react` dependency, which made `npm ci` fail with a peer dependency conflict, and brought `package-lock.json` in sync with `package.json`.
 
 ## 0.0.2
 
