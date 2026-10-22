@@ -12,6 +12,7 @@ import { initializeFileTypeIcons } from "@fluentui/react-file-type-icons";
 
 import { FileItemIcon } from "./FileItemIcon";
 import { IFileSystemItem } from "./IFileSystemItem";
+import { IStrings } from "./Strings";
 
 export interface ITileViewProp {
   items: any[];
@@ -19,6 +20,7 @@ export interface ITileViewProp {
   selection?: ISelection;
   isSelectable?: boolean;
   openFileItem: (item: IFileSystemItem) => void;
+  strings?: IStrings;
 }
 initializeFileTypeIcons();
 
@@ -67,6 +69,7 @@ export const TilesView = (props: ITileViewProp) => {
             extension={item.filetype}
             size={props.tileSize}
             className={`tileIcon ${props.tileSize}`}
+            strings={props.strings}
           />
         }
         showForegroundFrame={true}

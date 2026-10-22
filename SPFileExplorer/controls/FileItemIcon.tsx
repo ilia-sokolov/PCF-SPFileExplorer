@@ -7,6 +7,7 @@ import {
 } from "@fluentui/react-file-type-icons";
 
 import { Icon } from "@fluentui/react";
+import { DEFAULT_STRINGS, IStrings } from "./Strings";
 
 initializeFileTypeIcons();
 
@@ -38,9 +39,14 @@ export interface IFileItemIconProps {
    * Is the file locatino is shared?
    */
   isSharedLocation?: boolean;
+  /**
+   * Localized texts.
+   */
+  strings?: IStrings;
 }
 
 export const FileItemIcon = (props: IFileItemIconProps) => {
+  const strings = props.strings ?? DEFAULT_STRINGS;
   return (
     <span className={props.className}>
       <Icon
@@ -54,7 +60,7 @@ export const FileItemIcon = (props: IFileItemIconProps) => {
       {(props.isCheckedOut || props.isSharedLocation) && (
         <span
           className="tileIcon-modifier"
-          title={props.isCheckedOut ? "Checked out" : "Shared"}
+          title={props.isCheckedOut ? strings.CheckedOut : strings.Shared}
         >
           <FontIcon
             iconName={props.isCheckedOut ? "ArrowTallDownRight" : "Contact"}

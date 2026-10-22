@@ -22,6 +22,7 @@ import {
 } from "@fluentui/react/lib/DetailsList";
 
 import { Link } from "@fluentui/react/lib/Link";
+import { MessageBar, MessageBarType } from "@fluentui/react/lib/MessageBar";
 
 import { TilesView } from "./TilesView";
 import FolderExplorer from "./FolderExplorer";
@@ -40,6 +41,7 @@ import { IFullFileExplorerProps, ViewType } from "./IFullFileExplorerProps";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
 import { IFileViewColumn } from "./IFileViewColumn";
+import { DEFAULT_STRINGS, formatString } from "./Strings";
 
 interface IFullFileExplorerState {
   viewType: ViewType;
@@ -52,6 +54,10 @@ interface IFullFileExplorerState {
   rootFolder: IFolder;
   folderStructureLoaded?: boolean;
   contextualMenuProps?: IContextualMenuProps;
+  dragActive?: boolean;
+  uploadProgress?: { uploaded: number; total: number };
+  uploadMessages?: string[];
+  uploadCompleted?: boolean;
 }
 
 const VIEW_TYPE_STORAGE_KEY = "SPFileExplorer.viewType";
@@ -76,7 +82,65 @@ const storeViewType = (viewType: ViewType) => {
   }
 };
 
+const findFolder = (folder: IFolder, path: string): IFolder | undefined => {
+  if (folder.path === path) {
+    return folder;
+  }
+  for (const child of folder.children ?? []) {
+    const found = findFolder(child, path);
+    if (found) {
+      return found;
+    }
+  }
+  return undefined;
+};
+
+/**
+ * Returns the files and the names of the folders dropped onto the control.
+ */
+const getDroppedItems = (
+  dataTransfer: DataTransfer
+): { files: File[]; folders: string[] } => {
+  const files: File[] = [];
+  const folders: string[] = [];
+  const items = Array.from(dataTransfer.items ?? []);
+  if (items.length > 0) {
+    items.forEach((item) => {
+      if (item.kind !== "file") {
+        return;
+      }
+      const entry = item.webkitGetAsEntry?.();
+      const file = item.getAsFile();
+      if (entry?.isDirectory) {
+        folders.push(entry.name);
+      } else if (file) {
+        files.push(file);
+      }
+    });
+  } else {
+    files.push(...Array.from(dataTransfer.files ?? []));
+  }
+  return { files, folders };
+};
+
+/**
+ * Returns the paths of the folders from the root folder to the folder with the specified path.
+ */
+const getParentPaths = (folder: IFolder, path: string): string[] => {
+  if (!path || folder.path === path) {
+    return [folder.path];
+  }
+  for (const child of folder.children ?? []) {
+    const childPaths = getParentPaths(child, path);
+    if (childPaths[childPaths.length - 1] === path) {
+      return [folder.path, ...childPaths];
+    }
+  }
+  return [folder.path];
+};
+
 const FullFileExplorer = (props: IFullFileExplorerProps) => {
+  const strings = props.strings ?? DEFAULT_STRINGS;
   const [controlState, setControlState] = useState({
     viewType:
       (props.rememberViewType !== false ? getStoredViewType() : undefined) ??
@@ -85,6 +149,9 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     selectedFolderPath: props.currentFolderPath,
     expandedFolders: [props.currentFolderPath],
   } as IFullFileExplorerState);
+
+  // Counts nested dragenter/dragleave events of the files panel.
+  const dragDepth = useRef(0);
 
   // The selection is created once, so its handler reads the latest properties through the ref.
   const propsRef = useRef(props);
@@ -113,12 +180,14 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }));
 
     props.getFolderStructure().then((folder) => {
+      // Keeps the folder the dataset is filtered by (e.g. after the tree is reloaded).
+      const currentFolderPath = propsRef.current.currentFolderPath;
       setControlState((prevState) =>
         folder
           ? {
               ...prevState,
-              selectedFolderPath: folder.path,
-              expandedFolders: [folder.path],
+              selectedFolderPath: currentFolderPath || folder.path,
+              expandedFolders: getParentPaths(folder, currentFolderPath),
               loading: false,
               folderStructureLoaded: true,
               rootFolder: folder,
@@ -144,6 +213,13 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       // unless the folder structure is still being loaded.
       loading: prevState.folderStructureLoaded ? false : prevState.loading,
     }));
+
+    // The tree is changed in place, so a new state object renders it again.
+    props.refreshFolderStructure?.().then((changed) => {
+      if (changed) {
+        setControlState((prevState) => ({ ...prevState }));
+      }
+    });
   }, [props.currentFolderContent, props.selectedRecordsKeys]);
 
   const handleSwitchLayout = (item?: IContextualMenuItem) => {
@@ -165,23 +241,23 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     switch (controlState.viewType) {
       case ViewType.List:
         viewIconName = "List";
-        viewName = "List view";
+        viewName = strings.ListView;
         break;
       case ViewType.Compact:
         viewIconName = "AlignLeft";
-        viewName = "Compact view";
+        viewName = strings.CompactView;
         break;
       default:
         viewIconName = "GridViewMedium";
-        viewName = "Tile view";
+        viewName = strings.TileView;
     }
 
     const farItems: ICommandBarItemProps[] = [
       {
         key: "listOptions",
         className: "commandBarNoChevron",
-        title: "Open the view options menu",
-        ariaLabel: `View options. ${viewName} selected.`,
+        title: strings.ViewOptionsTitle,
+        ariaLabel: formatString(strings.ViewOptionSelectedAriaLabel, viewName),
         name: viewName,
         iconProps: {
           iconName: viewIconName,
@@ -191,16 +267,19 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           items: [
             {
               key: ViewType.List.toString(),
-              name: "List view",
+              name: strings.ListView,
               iconProps: {
                 iconName: "List",
               },
               canCheck: true,
               checked: controlState.viewType === ViewType.List,
-              ariaLabel: `View options. List view${
-                controlState.viewType === ViewType.List ? " selected" : ""
-              }.`,
-              title: "View items and details in a list",
+              ariaLabel: formatString(
+                controlState.viewType === ViewType.List
+                  ? strings.ViewOptionSelectedAriaLabel
+                  : strings.ViewOptionAriaLabel,
+                strings.ListView
+              ),
+              title: strings.ListViewTitle,
               onClick: (
                 _ev?:
                   | React.MouseEvent<HTMLElement>
@@ -210,16 +289,19 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             },
             {
               key: ViewType.Compact.toString(),
-              name: "Compact view",
+              name: strings.CompactView,
               iconProps: {
                 iconName: "AlignLeft",
               },
               canCheck: true,
               checked: controlState.viewType === ViewType.Compact,
-              ariaLabel: `View options. Compact view${
-                controlState.viewType === ViewType.Compact ? " selected" : ""
-              }.`,
-              title: "View items and details in a compact list",
+              ariaLabel: formatString(
+                controlState.viewType === ViewType.Compact
+                  ? strings.ViewOptionSelectedAriaLabel
+                  : strings.ViewOptionAriaLabel,
+                strings.CompactView
+              ),
+              title: strings.CompactViewTitle,
               onClick: (
                 _ev?:
                   | React.MouseEvent<HTMLElement>
@@ -229,16 +311,19 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             },
             {
               key: ViewType.Tiles.toString(),
-              name: "Tile view",
+              name: strings.TileView,
               iconProps: {
                 iconName: "GridViewMedium",
               },
               canCheck: true,
               checked: controlState.viewType === ViewType.Tiles,
-              ariaLabel: `View options. Tile view${
-                controlState.viewType === ViewType.Tiles ? " selected" : ""
-              }.`,
-              title: "View items with tile previews",
+              ariaLabel: formatString(
+                controlState.viewType === ViewType.Tiles
+                  ? strings.ViewOptionSelectedAriaLabel
+                  : strings.ViewOptionAriaLabel,
+                strings.TileView
+              ),
+              title: strings.TileViewTitle,
               onClick: (
                 _ev?:
                   | React.MouseEvent<HTMLElement>
@@ -333,6 +418,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
               extension={item.filetype}
               size={"small"}
               className={`tileIcon small`}
+              strings={strings}
             />
           )}{" "}
           {fieldValue}
@@ -373,7 +459,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         items: [
           {
             key: "aToZ",
-            name: "Sort A to Z",
+            name: strings.SortAscending,
             //iconProps: { iconName: "SortUp" },
             canCheck: true,
             checked: column.isSorted && !column.isSortedDescending,
@@ -381,7 +467,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           },
           {
             key: "zToA",
-            name: "Sort Z to A",
+            name: strings.SortDescending,
             //iconProps: { iconName: "SortDown" },
             canCheck: true,
             checked: column.isSorted && column.isSortedDescending,
@@ -399,6 +485,140 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }
   };
 
+  const canUpload =
+    !!props.uploadFiles &&
+    !!controlState.rootFolder &&
+    !!controlState.selectedFolderPath &&
+    !controlState.uploadProgress;
+
+  const isFileDrag = (ev: React.DragEvent<HTMLElement>): boolean =>
+    Array.from(ev.dataTransfer?.types ?? []).indexOf("Files") >= 0;
+
+  const onDragEnter = (ev: React.DragEvent<HTMLElement>) => {
+    if (canUpload && isFileDrag(ev)) {
+      ev.preventDefault();
+      dragDepth.current++;
+      if (!controlState.dragActive) {
+        setControlState((prevState) => ({ ...prevState, dragActive: true }));
+      }
+    }
+  };
+
+  const onDragOver = (ev: React.DragEvent<HTMLElement>) => {
+    if (canUpload && isFileDrag(ev)) {
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = "copy";
+    }
+  };
+
+  const onDragLeave = (ev: React.DragEvent<HTMLElement>) => {
+    if (canUpload && isFileDrag(ev)) {
+      dragDepth.current = Math.max(0, dragDepth.current - 1);
+      if (dragDepth.current === 0) {
+        setControlState((prevState) => ({ ...prevState, dragActive: false }));
+      }
+    }
+  };
+
+  const onDrop = async (ev: React.DragEvent<HTMLElement>) => {
+    if (!canUpload || !props.uploadFiles || !isFileDrag(ev)) {
+      return;
+    }
+    ev.preventDefault();
+    dragDepth.current = 0;
+
+    const { files, folders } = getDroppedItems(ev.dataTransfer);
+    const messages =
+      folders.length > 0
+        ? [formatString(strings.FoldersNotUploaded, folders.join(", "))]
+        : [];
+    setControlState((prevState) => ({
+      ...prevState,
+      dragActive: false,
+      uploadMessages: messages,
+      uploadCompleted: false,
+      uploadProgress:
+        files.length > 0 ? { uploaded: 0, total: files.length } : undefined,
+    }));
+    if (files.length === 0) {
+      return;
+    }
+
+    const errors = await props.uploadFiles(
+      files,
+      controlState.selectedFolderPath,
+      (uploaded) =>
+        setControlState((prevState) => ({
+          ...prevState,
+          uploadProgress: { uploaded, total: files.length },
+        }))
+    );
+    setControlState((prevState) => ({
+      ...prevState,
+      uploadProgress: undefined,
+      uploadCompleted: errors.length < files.length,
+      uploadMessages: [
+        ...messages,
+        ...errors.map((e) =>
+          formatString(strings.UploadFailed, e.fileName, e.message)
+        ),
+      ],
+    }));
+  };
+
+  const dismissUploadMessages = () => {
+    setControlState((prevState) => ({
+      ...prevState,
+      uploadMessages: undefined,
+      uploadCompleted: false,
+    }));
+  };
+
+  const renderUploadMessages = (): JSX.Element | null => {
+    if (controlState.uploadProgress) {
+      return (
+        <MessageBar messageBarType={MessageBarType.info}>
+          {formatString(
+            strings.Uploading,
+            String(
+              Math.min(
+                controlState.uploadProgress.uploaded + 1,
+                controlState.uploadProgress.total
+              )
+            ),
+            String(controlState.uploadProgress.total)
+          )}
+        </MessageBar>
+      );
+    }
+    if (controlState.uploadMessages && controlState.uploadMessages.length > 0) {
+      return (
+        <MessageBar
+          messageBarType={MessageBarType.error}
+          isMultiline={true}
+          onDismiss={dismissUploadMessages}
+          dismissButtonAriaLabel={strings.Close}
+        >
+          {controlState.uploadMessages.map((message, i) => (
+            <div key={i}>{message}</div>
+          ))}
+        </MessageBar>
+      );
+    }
+    if (controlState.uploadCompleted) {
+      return (
+        <MessageBar
+          messageBarType={MessageBarType.success}
+          onDismiss={dismissUploadMessages}
+          dismissButtonAriaLabel={strings.Close}
+        >
+          {strings.UploadCompleted}
+        </MessageBar>
+      );
+    }
+    return null;
+  };
+
   const getViewColumns = (columns: IFileViewColumn[]): IColumn[] => {
     return columns.map((c) => {
       const columnDefinition: IColumn = {
@@ -411,8 +631,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         isRowHeader: true,
         isSorted: c.isSorted,
         isSortedDescending: c.isSortedDescending,
-        sortAscendingAriaLabel: c.sortAscendingLabel ?? "Sorted A to Z",
-        sortDescendingAriaLabel: c.sortDescendingLabel ?? "Sorted Z to A",
+        sortAscendingAriaLabel: c.sortAscendingLabel ?? strings.SortedAscending,
+        sortDescendingAriaLabel: c.sortDescendingLabel ?? strings.SortedDescending,
 
         onColumnClick: onColumnClick,
         onRender: (item, index, column) =>
@@ -435,7 +655,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
               height: "100%",
             }}
             size={SpinnerSize.large}
-            label="Loading..."
+            label={strings.Loading}
             ariaLive="assertive"
             labelPosition="bottom"
           />
@@ -453,16 +673,35 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           <FolderExplorer
             rootItem={controlState.rootFolder}
             hideSearchBox={props.hideFoldersSearchBox}
+            strings={strings}
           ></FolderExplorer>
         )}
 
-        <div className="filesViewPanel">
+        <div
+          className="filesViewPanel"
+          onDragEnter={onDragEnter}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+        >
           <CommandBar
             className="explorerCommandBar"
             items={[]}
             farItems={getViewTypeCommandBarItems()}
-            ariaLabel="File actions"
+            ariaLabel={strings.FileActions}
           />
+          <div className="uploadMessages">{renderUploadMessages()}</div>
+          {controlState.dragActive && controlState.rootFolder && (
+            <div className="dropOverlay">
+              {formatString(
+                strings.DropFilesHere,
+                findFolder(
+                  controlState.rootFolder,
+                  controlState.selectedFolderPath
+                )?.name ?? controlState.rootFolder.name
+              )}
+            </div>
+          )}
           <div className="fileView">
             {controlState.selectedFolderPath ||
             (controlState.folderStructureLoaded && !controlState.rootFolder) ? (
@@ -497,6 +736,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
                           tileSize={"large"}
                           openFileItem={openFileItem}
                           selection={selection}
+                          strings={strings}
                         ></TilesView>
                       )}
                     </MarqueeSelection>
@@ -504,15 +744,13 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
                 ) : (
                   <div className="emptyFolderMessage">
                     {controlState.rootFolder
-                      ? "This folder is empty"
-                      : "There are no documents to show. Please, check that document management is enabled for this table and that a document location exists for this record."}
+                      ? strings.FolderEmpty
+                      : strings.NoDocumentLocation}
                   </div>
                 )}
               </>
             ) : (
-              <div className="selectFolderMessage">
-                Please, select a folder to explore its content.
-              </div>
+              <div className="selectFolderMessage">{strings.SelectFolder}</div>
             )}
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFileViewColumn } from "./IFileViewColumn";
 import { IFolder } from "./IFolder";
+import { IStrings } from "./Strings";
 
 /**
  * Type of view to be presented to user.
@@ -18,6 +19,14 @@ export enum ViewType {
    * Tiles view.
    */
   Tiles,
+}
+
+/**
+ * File that could not be uploaded.
+ */
+export interface IUploadError {
+  fileName: string;
+  message: string;
 }
 
 /**
@@ -45,6 +54,15 @@ export interface IFullFileExplorerProps {
    */
   hideFoldersPane?: boolean;
   /**
+   * Identifier of the document location whose documents are shown (empty if unknown).
+   * The folder tree is loaded again when it changes.
+   */
+  locationKey?: string;
+  /**
+   * Localized texts (English texts are used if not specified).
+   */
+  strings?: IStrings;
+  /**
    * Relative location path of the currently selected folder.
    */
   currentFolderPath: string;
@@ -61,6 +79,24 @@ export interface IFullFileExplorerProps {
    * Resolves with null if no document location is found for the current context.
    */
   getFolderStructure: () => Promise<IFolder | null>;
+  /**
+   * Requests the folder tree again if it was not requested recently.
+   * Resolves with true if the tree (returned by getFolderStructure) has changed.
+   */
+  refreshFolderStructure?: () => Promise<boolean>;
+  /**
+   * Uploads files to the folder with the specified path and reloads the folder content.
+   * Not specified if uploading is not enabled or not possible (e.g. no record).
+   * @param files Files to be uploaded.
+   * @param folderPath Path of the target folder.
+   * @param onProgress Called with the number of processed files after each file.
+   * @returns Files that could not be uploaded.
+   */
+  uploadFiles?: (
+    files: File[],
+    folderPath: string,
+    onProgress: (uploaded: number) => void
+  ) => Promise<IUploadError[]>;
   /**
    * Sets a folder whose content shoud be presented to user.
    * @param path Path of the folder to be shown.
