@@ -76,6 +76,22 @@ const storeViewType = (viewType: ViewType) => {
   }
 };
 
+/**
+ * Returns the paths of the folders from the root folder to the folder with the specified path.
+ */
+const getParentPaths = (folder: IFolder, path: string): string[] => {
+  if (!path || folder.path === path) {
+    return [folder.path];
+  }
+  for (const child of folder.children ?? []) {
+    const childPaths = getParentPaths(child, path);
+    if (childPaths[childPaths.length - 1] === path) {
+      return [folder.path, ...childPaths];
+    }
+  }
+  return [folder.path];
+};
+
 const FullFileExplorer = (props: IFullFileExplorerProps) => {
   const [controlState, setControlState] = useState({
     viewType:
@@ -113,12 +129,14 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }));
 
     props.getFolderStructure().then((folder) => {
+      // Keeps the folder the dataset is filtered by (e.g. after the tree is reloaded).
+      const currentFolderPath = propsRef.current.currentFolderPath;
       setControlState((prevState) =>
         folder
           ? {
               ...prevState,
-              selectedFolderPath: folder.path,
-              expandedFolders: [folder.path],
+              selectedFolderPath: currentFolderPath || folder.path,
+              expandedFolders: getParentPaths(folder, currentFolderPath),
               loading: false,
               folderStructureLoaded: true,
               rootFolder: folder,

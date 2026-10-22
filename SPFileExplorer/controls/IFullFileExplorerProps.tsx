@@ -45,6 +45,11 @@ export interface IFullFileExplorerProps {
    */
   hideFoldersPane?: boolean;
   /**
+   * Identifier of the document location whose documents are shown (empty if unknown).
+   * The folder tree is loaded again when it changes.
+   */
+  locationKey?: string;
+  /**
    * Relative location path of the currently selected folder.
    */
   currentFolderPath: string;

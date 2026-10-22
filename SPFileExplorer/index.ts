@@ -8,6 +8,7 @@ import { ALL_ITEMS_PAGE_SIZE, initFullFileExplorerProps } from "./controls/FullF
 export class SPFileExplorer implements ComponentFramework.StandardControl<IInputs, IOutputs> {
     private _container: HTMLDivElement;
     private _controlCache: {[index: string]: any} = {};
+    private _context: ComponentFramework.Context<IInputs>;
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
@@ -30,6 +31,7 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void
     {
+        this._context = context;
         this._container.style.minHeight = `${
           context.parameters.minHeight && context.parameters.minHeight.raw
             ? context.parameters.minHeight.raw
@@ -50,10 +52,11 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
             context.parameters.documentsDataSet.paging.loadNextPage();
         } else {
             const explorerProperties = this._isSandbox()? initMockFullFileExplorerProps(()=>this.updateView(context))
-            : initFullFileExplorerProps(context, this._controlCache);
+            : initFullFileExplorerProps(context, this._controlCache, () => this.updateView(this._context));
 
-            // The key forces a fresh component (and folder tree) when the control is reused for another record.
-            const recordKey = (context as any).page?.entityId ?? "";
+            // The key forces a fresh component (and folder tree) when the control is reused for another
+            // record or when another document location is selected.
+            const recordKey = `${(context as any).page?.entityId ?? ""}_${explorerProperties.locationKey ?? ""}`;
 
             ReactDOM.render(React.createElement(FullFileExplorer,
                 { ...explorerProperties, key: recordKey }

@@ -5,8 +5,23 @@ import { IFullFileExplorerProps, ViewType } from "./IFullFileExplorerProps";
 
 export const ALL_ITEMS_PAGE_SIZE = 5000;
 
-const SHARED_LOCATION_GUID = "17DE0DBB-153C-4C1A-B98A-223B3EA10125";
+const SHARED_LOCATION_GUID = "17de0dbb-153c-4c1a-b98a-223b3ea10125";
 const FOLDER_STRUCTURE_KEY = "FolderStructure";
+const LOCATION_KEY = "Location";
+const LOCATION_ENTITY_NAME = "sharepointdocumentlocation";
+// The whole folder tree is requested again at most once per interval.
+const FOLDER_TREE_REFRESH_INTERVAL_MS = 60000;
+// Guards the walk up the parent locations against cycles.
+const MAX_LOCATION_DEPTH = 10;
+
+interface IFolderTreeCache {
+  folder: IFolder;
+  refreshedAt: number;
+  refreshing: boolean;
+}
+
+const normalizeId = (id: unknown): string =>
+  id ? String(id).replace(/[{}]/g, "").toLowerCase() : "";
 
 const retrieveSubFoldersRecursive = (
   context: ComponentFramework.Context<IInputs>,
@@ -170,21 +185,72 @@ const refreshSubfoldersRecursive = (
   return updated;
 };
 
+const retrieveLocation = (
+  context: ComponentFramework.Context<IInputs>,
+  id: string
+): Promise<ComponentFramework.WebApi.Entity | null> =>
+  id
+    ? context.webAPI
+        .retrieveRecord(
+          LOCATION_ENTITY_NAME,
+          id,
+          "?$select=relativeurl,_parentsiteorlocation_value"
+        )
+        // The parent is a SharePoint site, not a document location.
+        .catch(() => null)
+    : Promise.resolve(null);
+
+const isParentSite = (location: ComponentFramework.WebApi.Entity): boolean =>
+  location[
+    "_parentsiteorlocation_value@Microsoft.Dynamics.CRM.lookuplogicalname"
+  ] === "sharepointsite";
+
+/**
+ * Builds the path of a document location relative to its document library.
+ * A location created for a subfolder of another location only stores the name of
+ * the subfolder, so the relative URLs of its parent locations are prepended
+ * (the document library location itself, whose parent is a site, is not included).
+ */
+const buildLocationPath = async (
+  context: ComponentFramework.Context<IInputs>,
+  location: ComponentFramework.WebApi.Entity
+): Promise<string> => {
+  let path: string = location.relativeurl;
+  let current = location;
+  for (let depth = 0; depth < MAX_LOCATION_DEPTH && !isParentSite(current); depth++) {
+    const parent = await retrieveLocation(
+      context,
+      current._parentsiteorlocation_value
+    );
+    if (!parent || isParentSite(parent)) {
+      break;
+    }
+    const grandParent = await retrieveLocation(
+      context,
+      parent._parentsiteorlocation_value
+    );
+    if (!grandParent) {
+      // The parent is the document library location.
+      break;
+    }
+    path = `${parent.relativeurl}/${path}`;
+    current = parent;
+  }
+  return path;
+};
+
 /**
  * Function that initilizes properties of the full file explorer control.
+ * @param rerender Renders the control again without reloading the dataset.
  */
 export const initFullFileExplorerProps = (
   context: ComponentFramework.Context<IInputs>,
-  controlCache: { [index: string]: any }
+  controlCache: { [index: string]: any },
+  rerender: () => void
 ): IFullFileExplorerProps => {
   const dataSet = context.parameters.documentsDataSet;
   const contextPage = (context as any).page;
-  // The folder structure is cached per record, so that the tree of one record
-  // is never shown for another one when the control instance is reused.
-  const folderStructureKey = `${FOLDER_STRUCTURE_KEY}_${
-    contextPage?.entityId ?? ""
-  }`;
-  let folderStructure = controlCache[folderStructureKey] as IFolder;
+  const recordId = normalizeId(contextPage?.entityId);
 
   // The primary sort expression is read without removing it from the dataset.
   const sortExpression =
@@ -192,12 +258,16 @@ export const initFullFileExplorerProps = (
       ? dataSet.sorting[0]
       : { name: "", sortDirection: 0 };
 
-  const currentFolderContent = dataSet.sortedRecordIds.map((recordId) => {
-    const record = dataSet.records[recordId];
+  const recordLocationIds = new Set<string>();
+  const currentFolderContent = dataSet.sortedRecordIds.map((id) => {
+    const record = dataSet.records[id];
     const itemData = {} as IFileSystemItem;
 
-    itemData["isSharedLocation"] =
-      record.getValue("locationid") === SHARED_LOCATION_GUID;
+    const locationId = normalizeId(record.getValue("locationid"));
+    itemData["isSharedLocation"] = locationId === SHARED_LOCATION_GUID;
+    if (locationId && locationId !== SHARED_LOCATION_GUID) {
+      recordLocationIds.add(locationId);
+    }
     itemData.reference = (record as any)._entityReference;
     itemData.key = record.getRecordId();
     itemData.path = record.getFormattedValue("relativelocation");
@@ -222,26 +292,53 @@ export const initFullFileExplorerProps = (
       ? ""
       : (relativelocationCondition[0].value as string);
 
-  if (folderStructure) {
+  // The grid shows the documents of one document location (selected in the
+  // standard location selector). Its id is remembered per record, so that an
+  // empty folder (no documents to read the id from) keeps the current tree.
+  const locationKey = `${LOCATION_KEY}_${recordId}`;
+  if (recordLocationIds.size === 1) {
+    controlCache[locationKey] = recordLocationIds.values().next().value;
+  }
+  const locationId: string = controlCache[locationKey] ?? "";
+
+  // The folder structure is cached per record and location, so that the tree of
+  // one record or location is never shown for another one.
+  const folderStructureKey = `${FOLDER_STRUCTURE_KEY}_${recordId}_${locationId}`;
+  const folderTree = controlCache[folderStructureKey] as
+    | IFolderTreeCache
+    | undefined;
+  const folderStructure = folderTree?.folder;
+
+  if (folderTree && folderStructure) {
     const currentFolder =
       currentFolderPath === ""
         ? folderStructure
         : findSubfolderRecursive(folderStructure, currentFolderPath);
 
-    if (
-      currentFolder &&
-      ensureSubfolders(currentFolder, currentFolderContent)
-    ) {
-      dataSet.refresh();
+    // Folders of the current folder are taken from the dataset without a query;
+    // they are rendered with this update, so no refresh is needed.
+    if (currentFolder) {
+      ensureSubfolders(currentFolder, currentFolderContent);
     }
 
-    retrieveSubFoldersRecursive(context, folderStructure.path).then(
-      (refreshedSubfolders) => {
-        if (refreshSubfoldersRecursive(folderStructure, refreshedSubfolders)) {
-          dataSet.refresh();
-        }
-      }
-    );
+    if (
+      !folderTree.refreshing &&
+      Date.now() - folderTree.refreshedAt > FOLDER_TREE_REFRESH_INTERVAL_MS
+    ) {
+      folderTree.refreshing = true;
+      retrieveSubFoldersRecursive(context, folderStructure.path)
+        .then((refreshedSubfolders) => {
+          if (
+            refreshSubfoldersRecursive(folderStructure, refreshedSubfolders)
+          ) {
+            rerender();
+          }
+        })
+        .finally(() => {
+          folderTree.refreshedAt = Date.now();
+          folderTree.refreshing = false;
+        });
+    }
   }
 
   const defaultViewType = context.parameters.defaultViewType?.raw;
@@ -276,14 +373,16 @@ export const initFullFileExplorerProps = (
       dataSet.setSelectedRecordIds(ids);
     },
     selectedRecordsKeys: dataSet.getSelectedRecordIds(),
+    locationKey: locationId,
     getFolderStructure: (): Promise<IFolder | null> => {
-      const locationEntityName = "sharepointdocumentlocation";
       const locationFetchXml = `<fetch mapping="logical">
-                    <entity name="${locationEntityName}">
-                        <attribute name="name" /> 
+                    <entity name="${LOCATION_ENTITY_NAME}">
+                        <attribute name="name" />
                         <attribute name="relativeurl" />
                         <attribute name="sitecollectionid" />
                         <attribute name="sharepointdocumentlocationid" />
+                        <attribute name="parentsiteorlocation" />
+                        <order attribute="createdon" descending="false" />
                         <filter type="and">
                             ${
                               contextPage && contextPage.entityId
@@ -308,23 +407,32 @@ export const initFullFileExplorerProps = (
           resolve(folderStructure);
         } else {
           context.webAPI
-            .retrieveMultipleRecords(locationEntityName, locationFetchQuery)
+            .retrieveMultipleRecords(LOCATION_ENTITY_NAME, locationFetchQuery)
             .then(async (result) => {
+              const locations = result?.entities ?? [];
+              // The location of the shown documents, otherwise the oldest one.
               const sharepointLocation =
-                result && result.entities && result.entities.length > 0
-                  ? result.entities[0]
-                  : null;
+                locations.find(
+                  (l) =>
+                    normalizeId(l.sharepointdocumentlocationid) === locationId
+                ) ?? locations[0];
               if (sharepointLocation) {
-                controlCache[folderStructureKey] = folderStructure = {
+                const path = await buildLocationPath(
+                  context,
+                  sharepointLocation
+                );
+                const folder: IFolder = {
                   name: sharepointLocation.name,
-                  path: sharepointLocation.relativeurl,
-                  key: sharepointLocation.relativeurl,
-                  children: await retrieveSubFoldersRecursive(
-                    context,
-                    sharepointLocation.relativeurl
-                  ),
+                  path,
+                  key: path,
+                  children: await retrieveSubFoldersRecursive(context, path),
                 };
-                resolve(folderStructure);
+                controlCache[folderStructureKey] = {
+                  folder,
+                  refreshedAt: Date.now(),
+                  refreshing: false,
+                } as IFolderTreeCache;
+                resolve(folder);
               } else {
                 // No active document location (e.g. document management is
                 // not enabled for the table or the folder is not created yet).
@@ -352,7 +460,11 @@ export const initFullFileExplorerProps = (
       const locationConditionId = dataFilter.conditions.findIndex(
         (item) => item.attributeName == "relativelocation"
       );
-      if (path == "" || (folderStructure && folderStructure.path == path)) {
+      // The tree may have been loaded after these properties were created.
+      const rootFolder = (
+        controlCache[folderStructureKey] as IFolderTreeCache | undefined
+      )?.folder;
+      if (path == "" || (rootFolder && rootFolder.path == path)) {
         if (locationConditionId > -1) {
           dataFilter.conditions.splice(locationConditionId, 1);
         }
