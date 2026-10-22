@@ -61,26 +61,30 @@ No active SharePoint document location was found for the record. Check that docu
 
 ## Build from source
 
-You need [Node.js](https://nodejs.org/) (LTS) and, for packaging, the [Power Platform CLI](https://learn.microsoft.com/en-us/power-platform/developer/cli/introduction).
+You need [Node.js](https://nodejs.org/) 22 and, to create the solution package, the [.NET SDK](https://dotnet.microsoft.com/download) 8.
 
 ```bash
-npm install        # install dependencies
+npm ci             # install dependencies
 npm run build      # build the control into out/controls
 npm start          # run the control with mock data in the local test harness
+
+# build the managed solution into Solution/SPFileExplorerSolution/bin/Release
+dotnet build Solution/SPFileExplorerSolution --configuration Release
 ```
 
-To create a solution package from the sources:
+## Release process
 
-```bash
-mkdir SPFileExplorerSolution && cd SPFileExplorerSolution
-pac solution init --publisher-name <publisher> --publisher-prefix <prefix>
-pac solution add-reference --path ..
-dotnet build -c Release   # bin/Release/SPFileExplorerSolution.zip
-```
+The packaged solution (`Solution/SPFullFileExplorer.zip`) is built and updated automatically by the [Build solution](/.github/workflows/build-solution.yml) GitHub Actions workflow:
 
-Increase the `version` of the control in `SPFileExplorer/ControlManifest.Input.xml` before you build a package for an environment where the control is already installed, otherwise the changes are not applied on import.
+1. Increase the `version` of the control in `SPFileExplorer/ControlManifest.Input.xml` (e.g. `0.0.3` → `0.0.4`) and add the changes to the [changelog](/CHANGELOG.md). Dataverse applies an updated control only if its version is higher than the installed one.
+2. Merge the changes into `master`.
+3. The workflow builds the managed solution and commits the updated `Solution/SPFullFileExplorer.zip` to `master`.
 
-See the [changelog](/CHANGELOG.md) for the changes that are not yet included in the packaged solution.
+The solution version is derived from the control version: `<major>.<minor>` from `Solution/SPFileExplorerSolution/src/Other/Solution.xml`, followed by `<control major × 100 + control minor>.<control patch>` (e.g. control `0.0.4` → solution `1.1.0.4`).
+
+If the control version was not increased, the package is built but not committed. A lower control version than the packaged one fails the build. Pull requests are built as well, and the resulting package can be downloaded from the workflow run artifacts for testing.
+
+The workflow commits with the `GITHUB_TOKEN`. If the commit is rejected, allow GitHub Actions to write to the repository (**Settings** → **Actions** → **General** → **Workflow permissions**) and make sure `master` is not protected against pushes from GitHub Actions.
 
 ## License
 
