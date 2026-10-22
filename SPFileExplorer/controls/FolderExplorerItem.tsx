@@ -49,7 +49,6 @@ export const FolderExplorerItem = (props: IFolder) => {
 
   return (
     <li
-      {...props}
       className={
         !expandedFoldersPaths || expandedFoldersPaths.indexOf(props.path) < 0
           ? "folderItem"

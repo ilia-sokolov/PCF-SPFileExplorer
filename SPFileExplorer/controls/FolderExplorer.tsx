@@ -79,7 +79,7 @@ const FolderExplorer = (props: IFolderExplorerProps) => {
       {state.folderItems && state.folderItems.length > 0 ? (
         <ul className="folderNav">
           {state.folderItems?.map((folderItem) => (
-            <FolderExplorerItem {...folderItem} />
+            <FolderExplorerItem {...folderItem} key={folderItem.path} />
           ))}
         </ul>
       ) : (

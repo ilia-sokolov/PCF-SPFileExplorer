@@ -53,7 +53,8 @@ export const TilesView = (props: ITileViewProp) => {
         role="listitem"
         key={item.key}
         title={item.fullname}
-        aria-posinset={item.key}
+        aria-posinset={itemIndex + 1}
+        aria-setsize={props.items ? props.items.length : 0}
         selection={props.selection}
         selectionIndex={itemIndex}
         isSelectable={true}

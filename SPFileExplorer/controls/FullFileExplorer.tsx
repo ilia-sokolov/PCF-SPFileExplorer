@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   CommandBar,
   ICommandBarItemProps,
@@ -50,18 +50,48 @@ interface IFullFileExplorerState {
   expandedFolders: string[];
   currentFolderContent: IFileSystemItem[];
   rootFolder: IFolder;
+  folderStructureLoaded?: boolean;
   contextualMenuProps?: IContextualMenuProps;
 }
 
+const VIEW_TYPE_STORAGE_KEY = "SPFileExplorer.viewType";
+
+const getStoredViewType = (): ViewType | undefined => {
+  try {
+    const storedValue = window.localStorage.getItem(VIEW_TYPE_STORAGE_KEY);
+    return storedValue !== null && ViewType[+storedValue] !== undefined
+      ? (+storedValue as ViewType)
+      : undefined;
+  } catch {
+    // Storage can be unavailable (e.g. blocked by browser settings).
+    return undefined;
+  }
+};
+
+const storeViewType = (viewType: ViewType) => {
+  try {
+    window.localStorage.setItem(VIEW_TYPE_STORAGE_KEY, viewType.toString());
+  } catch {
+    // Storage can be unavailable (e.g. blocked by browser settings).
+  }
+};
+
 const FullFileExplorer = (props: IFullFileExplorerProps) => {
   const [controlState, setControlState] = useState({
-    viewType: props.defaultViewType ?? ViewType.Tiles,
+    viewType:
+      (props.rememberViewType !== false ? getStoredViewType() : undefined) ??
+      props.defaultViewType ??
+      ViewType.Tiles,
     selectedFolderPath: props.currentFolderPath,
     expandedFolders: [props.currentFolderPath],
   } as IFullFileExplorerState);
 
+  // The selection is created once, so its handler reads the latest properties through the ref.
+  const propsRef = useRef(props);
+  propsRef.current = props;
+
   const handleSelectionChange = () => {
-    props.selectRecords(
+    propsRef.current.selectRecords(
       selection.getSelection().map((s) => (s.key ? s.key.toString() : ""))
     );
   };
@@ -77,20 +107,24 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   );
 
   useEffect(() => {
-    setControlState({
-      ...controlState,
+    setControlState((prevState) => ({
+      ...prevState,
       loading: true,
-    });
+    }));
 
     props.getFolderStructure().then((folder) => {
-      setControlState({
-        ...controlState,
-        currentFolderContent: props.currentFolderContent,
-        selectedFolderPath: folder.path,
-        expandedFolders: [folder.path],
-        loading: false,
-        rootFolder: folder,
-      });
+      setControlState((prevState) =>
+        folder
+          ? {
+              ...prevState,
+              selectedFolderPath: folder.path,
+              expandedFolders: [folder.path],
+              loading: false,
+              folderStructureLoaded: true,
+              rootFolder: folder,
+            }
+          : { ...prevState, loading: false, folderStructureLoaded: true }
+      );
     });
   }, []);
 
@@ -103,19 +137,25 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     });
     selection.setChangeEvents(true);
 
-    setControlState({
-      ...controlState,
+    setControlState((prevState) => ({
+      ...prevState,
       currentFolderContent: props.currentFolderContent,
-    });
+      // New data has arrived (e.g. after sorting), so the spinner can be hidden
+      // unless the folder structure is still being loaded.
+      loading: prevState.folderStructureLoaded ? false : prevState.loading,
+    }));
   }, [props.currentFolderContent, props.selectedRecordsKeys]);
 
   const handleSwitchLayout = (item?: IContextualMenuItem) => {
     if (item) {
-      setControlState({
-        ...controlState,
-        loading: false,
-        viewType: +item.key as ViewType,
-      });
+      const viewType = +item.key as ViewType;
+      if (props.rememberViewType !== false) {
+        storeViewType(viewType);
+      }
+      setControlState((prevState) => ({
+        ...prevState,
+        viewType,
+      }));
     }
   };
 
@@ -251,18 +291,17 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const setCurrentFolder = (path: string) => {
-    setControlState({
-      ...controlState,
+    setControlState((prevState) => ({
+      ...prevState,
       selectedFolderPath: path,
-      //loading: true,
       error: false,
       errorMessage: undefined,
-    });
+    }));
     props.setCurrentFolder(path);
   };
 
   const setExpandedFoldersPaths = (paths: string[]) => {
-    setControlState({ ...controlState, expandedFolders: paths });
+    setControlState((prevState) => ({ ...prevState, expandedFolders: paths }));
   };
 
   const openFileItem = (item: IFileSystemItem) => {
@@ -310,14 +349,17 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const onActionMenuClosed = () => {
-    setControlState({ ...controlState, contextualMenuProps: undefined });
+    setControlState((prevState) => ({
+      ...prevState,
+      contextualMenuProps: undefined,
+    }));
   };
 
   const onSortAction = (column: IColumn, ascending: boolean) => {
-    setControlState({
-      ...controlState,
+    setControlState((prevState) => ({
+      ...prevState,
       loading: true,
-    });
+    }));
 
     props.setSorting(column.key, ascending);
   };
@@ -350,10 +392,10 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         directionalHint: DirectionalHint.bottomLeftEdge,
         onDismiss: onActionMenuClosed,
       };
-      setControlState({
-        ...controlState,
+      setControlState((prevState) => ({
+        ...prevState,
         contextualMenuProps: actionsMenuProps,
-      });
+      }));
     }
   };
 
@@ -422,7 +464,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             ariaLabel="File actions"
           />
           <div className="fileView">
-            {controlState.selectedFolderPath ? (
+            {controlState.selectedFolderPath ||
+            (controlState.folderStructureLoaded && !controlState.rootFolder) ? (
               <>
                 {controlState.rootFolder && (
                   <Breadcrumb
@@ -459,7 +502,11 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
                     </MarqueeSelection>
                   </div>
                 ) : (
-                  <div className="emptyFolderMessage">This folder is empty</div>
+                  <div className="emptyFolderMessage">
+                    {controlState.rootFolder
+                      ? "This folder is empty"
+                      : "There are no documents to show. Please, check that document management is enabled for this table and that a document location exists for this record."}
+                  </div>
                 )}
               </>
             ) : (
