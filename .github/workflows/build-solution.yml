@@ -1,36 +1,15 @@
 name: Build solution
 
-# Builds the control and the managed solution package.
+# Builds and lints the control and builds the managed solution package on every push.
 # On master, Solution/SPFullFileExplorer.zip is updated and committed when the
 # control version in ControlManifest.Input.xml is higher than the packaged one.
 
 on:
+  # Build and lint every push; the solution package is committed only from master.
   push:
-    branches: [master]
-    paths:
-      - "SPFileExplorer/**"
-      - "Solution/SPFileExplorerSolution/**"
-      - "PCF-SPFileExplorer.pcfproj"
-      - "package.json"
-      - "package-lock.json"
-      - "pcfconfig.json"
-      - "tsconfig.json"
-      - ".eslintrc.json"
-      - ".github/workflows/build-solution.yml"
-      - ".github/scripts/prepare-solution-version.mjs"
+    branches: ["**"]
   pull_request:
     branches: [master]
-    paths:
-      - "SPFileExplorer/**"
-      - "Solution/SPFileExplorerSolution/**"
-      - "PCF-SPFileExplorer.pcfproj"
-      - "package.json"
-      - "package-lock.json"
-      - "pcfconfig.json"
-      - "tsconfig.json"
-      - ".eslintrc.json"
-      - ".github/workflows/build-solution.yml"
-      - ".github/scripts/prepare-solution-version.mjs"
   workflow_dispatch:
 
 concurrency:

@@ -82,7 +82,7 @@ The packaged solution (`Solution/SPFullFileExplorer.zip`) is built and updated a
 
 The solution version is derived from the control version: `<major>.<minor>` from `Solution/SPFileExplorerSolution/src/Other/Solution.xml`, followed by `<control major × 100 + control minor>.<control patch>` (e.g. control `0.0.4` → solution `1.1.0.4`).
 
-If the control version was not increased, the package is built but not committed. A lower control version than the packaged one fails the build. Pull requests are built as well, and the resulting package can be downloaded from the workflow run artifacts for testing.
+If the control version was not increased, the package is built but not committed. A lower control version than the packaged one fails the build. Every push to any branch and every pull request is linted and built as well, and the resulting package can be downloaded from the workflow run artifacts for testing.
 
 The workflow commits with the `GITHUB_TOKEN`. If the commit is rejected, allow GitHub Actions to write to the repository (**Settings** → **Actions** → **General** → **Workflow permissions**) and make sure `master` is not protected against pushes from GitHub Actions.
 

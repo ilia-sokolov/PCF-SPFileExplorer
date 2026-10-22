@@ -10,7 +10,7 @@ The packaged solution (`Solution/SPFullFileExplorer.zip`) is updated by the buil
 - **Remember selected view** property: the view type selected by a user is remembered in the browser and reused for other records ([#11](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/11)).
 - A message is shown when no SharePoint document location is found, instead of an endless loading spinner.
 
-- Solution project (`Solution/SPFileExplorerSolution`) and a GitHub Actions workflow that builds the managed solution and updates `Solution/SPFullFileExplorer.zip` when the control version is increased.
+- Solution project (`Solution/SPFileExplorerSolution`) and a GitHub Actions workflow that lints and builds every push, builds the managed solution and updates `Solution/SPFullFileExplorer.zip` when the control version is increased.
 
 ### Fixed
 
