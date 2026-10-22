@@ -33,6 +33,10 @@ export interface IFullFileExplorerProps {
    */
   defaultViewType?: ViewType;
   /**
+   * Indicates if the view type selected by a user should be remembered in the browser (by default it is remembered).
+   */
+  rememberViewType?: boolean;
+  /**
    * Indicates if search box in the folder explorer should be hidden (by default it is visible).
    */
   hideFoldersSearchBox?: boolean;
@@ -54,8 +58,9 @@ export interface IFullFileExplorerProps {
   currentFolderContent: IFileSystemItem[];
   /**
    * Gets full tree of folders for the current context.
+   * Resolves with null if no document location is found for the current context.
    */
-  getFolderStructure: () => Promise<IFolder>;
+  getFolderStructure: () => Promise<IFolder | null>;
   /**
    * Sets a folder whose content shoud be presented to user.
    * @param path Path of the folder to be shown.

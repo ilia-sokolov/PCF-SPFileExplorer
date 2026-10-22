@@ -52,8 +52,11 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
             const explorerProperties = this._isSandbox()? initMockFullFileExplorerProps(()=>this.updateView(context))
             : initFullFileExplorerProps(context, this._controlCache);
 
+            // The key forces a fresh component (and folder tree) when the control is reused for another record.
+            const recordKey = (context as any).page?.entityId ?? "";
+
             ReactDOM.render(React.createElement(FullFileExplorer,
-                explorerProperties 
+                { ...explorerProperties, key: recordKey }
             ), this._container);
         }
     }
@@ -73,11 +76,16 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
      */
     public destroy(): void
     {
-        // Add code to cleanup control if necessary
+        ReactDOM.unmountComponentAtNode(this._container);
     }
 
+    /**
+     * Mock data is used only in the local test harness (pcf-start), so that the control works
+     * on every Dataverse host (sovereign clouds, custom domains, on-premises).
+     */
     private _isSandbox(): boolean
     {
-        return window?.location?.href?.toLowerCase().indexOf("dynamics.com") < 0;
+        const hostname = window?.location?.hostname?.toLowerCase();
+        return hostname === "localhost" || hostname === "127.0.0.1";
     }
 }

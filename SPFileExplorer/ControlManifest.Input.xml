@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.1" display-name-key="SharePoint Full File Explorer" description-key="Control enables seamless browsing of SharePoint documents in a manner similar to Windows Explorer. The user-friendly interface displays the entire folder hierarchy, offering the ability to quickly locate specific folders by name. This feature ensures swift access to the required files, enhancing overall efficiency." control-type="standard">
+  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.3" display-name-key="SharePoint Full File Explorer" description-key="Control enables seamless browsing of SharePoint documents in a manner similar to Windows Explorer. The user-friendly interface displays the entire folder hierarchy, offering the ability to quickly locate specific folders by name. This feature ensures swift access to the required files, enhancing overall efficiency." control-type="standard">
     <!--external-service-usage
     node declares whether this 3rd party PCF control is using external
     service or not, if yes, this control will be considered as premium and please also add the
@@ -31,6 +31,12 @@
     </data-set>
     <property name="minHeight" display-name-key="Minimum Height" description-key="Minimum height of the control in pixels" of-type="Whole.None" usage="input" required="false" default-value="350"/>
     <property name="hideFoldersPane" display-name-key="Hide folder tree" description-key="Define if folders navigation pane should be hidden (by default it is visible)" of-type="TwoOptions" usage="input" required="false" default-value="false"/>
+    <property name="defaultViewType" display-name-key="Default view" description-key="View type that is shown when the control is opened (tile view by default)" of-type="Enum" usage="input" required="false" default-value="2">
+      <value name="List" display-name-key="List view">0</value>
+      <value name="Compact" display-name-key="Compact view">1</value>
+      <value name="Tiles" display-name-key="Tile view">2</value>
+    </property>
+    <property name="rememberViewType" display-name-key="Remember selected view" description-key="Define if the view type selected by a user should be remembered in the browser and reused for other records (by default it is remembered)" of-type="TwoOptions" usage="input" required="false" default-value="true"/>
 
     <resources>
       <code path="index.ts" order="1" />

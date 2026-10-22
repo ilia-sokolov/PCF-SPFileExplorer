@@ -1,8 +1,7 @@
-import path = require("path");
 import { IInputs } from "../generated/ManifestTypes";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
-import { IFullFileExplorerProps } from "./IFullFileExplorerProps";
+import { IFullFileExplorerProps, ViewType } from "./IFullFileExplorerProps";
 
 export const ALL_ITEMS_PAGE_SIZE = 5000;
 
@@ -148,8 +147,10 @@ const refreshSubfoldersRecursive = (
   currentFolder.children?.forEach((c) => {
     const refreshedFolder = refreshedSubfolders.find((f) => f.key == c.key);
     if (refreshedFolder && refreshedFolder.children) {
+      // The recursive call goes first so that it is not skipped once a
+      // previous sibling has already reported a change.
       updated =
-        updated || refreshSubfoldersRecursive(c, refreshedFolder.children);
+        refreshSubfoldersRecursive(c, refreshedFolder.children) || updated;
     } else {
       removedFolders.push(c);
     }
@@ -177,11 +178,18 @@ export const initFullFileExplorerProps = (
   controlCache: { [index: string]: any }
 ): IFullFileExplorerProps => {
   const dataSet = context.parameters.documentsDataSet;
-  let folderStructure = controlCache[FOLDER_STRUCTURE_KEY] as IFolder;
+  const contextPage = (context as any).page;
+  // The folder structure is cached per record, so that the tree of one record
+  // is never shown for another one when the control instance is reused.
+  const folderStructureKey = `${FOLDER_STRUCTURE_KEY}_${
+    contextPage?.entityId ?? ""
+  }`;
+  let folderStructure = controlCache[folderStructureKey] as IFolder;
 
+  // The primary sort expression is read without removing it from the dataset.
   const sortExpression =
     dataSet.sorting && dataSet.sorting.length > 0
-      ? dataSet.sorting.pop()
+      ? dataSet.sorting[0]
       : { name: "", sortDirection: 0 };
 
   const currentFolderContent = dataSet.sortedRecordIds.map((recordId) => {
@@ -236,10 +244,17 @@ export const initFullFileExplorerProps = (
     );
   }
 
+  const defaultViewType = context.parameters.defaultViewType?.raw;
+
   return {
     hideFoldersPane: context.parameters.hideFoldersPane
       ? context.parameters.hideFoldersPane.raw
       : false,
+    defaultViewType:
+      defaultViewType !== undefined && defaultViewType !== null
+        ? (+defaultViewType as ViewType)
+        : ViewType.Tiles,
+    rememberViewType: context.parameters.rememberViewType?.raw ?? true,
     columns: dataSet.columns
       .filter((c) => !c.isHidden)
       .map((c) => {
@@ -261,8 +276,7 @@ export const initFullFileExplorerProps = (
       dataSet.setSelectedRecordIds(ids);
     },
     selectedRecordsKeys: dataSet.getSelectedRecordIds(),
-    getFolderStructure: (): Promise<IFolder> => {
-      const contextPage = (context as any).page;
+    getFolderStructure: (): Promise<IFolder | null> => {
       const locationEntityName = "sharepointdocumentlocation";
       const locationFetchXml = `<fetch mapping="logical">
                     <entity name="${locationEntityName}">
@@ -289,7 +303,7 @@ export const initFullFileExplorerProps = (
       const locationFetchQuery =
         "?fetchXml=" + encodeURIComponent(locationFetchXml);
 
-      return new Promise<IFolder>((resolve) => {
+      return new Promise<IFolder | null>((resolve) => {
         if (folderStructure) {
           resolve(folderStructure);
         } else {
@@ -301,7 +315,7 @@ export const initFullFileExplorerProps = (
                   ? result.entities[0]
                   : null;
               if (sharepointLocation) {
-                controlCache[FOLDER_STRUCTURE_KEY] = folderStructure = {
+                controlCache[folderStructureKey] = folderStructure = {
                   name: sharepointLocation.name,
                   path: sharepointLocation.relativeurl,
                   key: sharepointLocation.relativeurl,
@@ -311,8 +325,13 @@ export const initFullFileExplorerProps = (
                   ),
                 };
                 resolve(folderStructure);
+              } else {
+                // No active document location (e.g. document management is
+                // not enabled for the table or the folder is not created yet).
+                resolve(null);
               }
-            });
+            })
+            .catch(() => resolve(null));
         }
       });
     },
@@ -321,7 +340,8 @@ export const initFullFileExplorerProps = (
       if (!dataSet.sorting) {
         dataSet.sorting = [];
       }
-      if (dataSet.sorting.length > 0) {
+      // Sorting by a column replaces all sort expressions of the view, as in the standard grid.
+      while (dataSet.sorting.length > 0) {
         dataSet.sorting.pop();
       }
       dataSet.sorting.push({ name: column, sortDirection: ascending ? 0 : 1 });
