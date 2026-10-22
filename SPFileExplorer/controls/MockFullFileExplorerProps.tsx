@@ -1,7 +1,10 @@
+import * as React from "react";
+import FullFileExplorer from "./FullFileExplorer";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFileViewColumn } from "./IFileViewColumn";
 import { IFolder } from "./IFolder";
 import { IFullFileExplorerProps } from "./IFullFileExplorerProps";
+import { IStrings } from "./Strings";
 
 const MOCK_SHAREPOINT_URL = "https://mock.sharepoint.com/documents";
 
@@ -525,4 +528,16 @@ export const initMockFullFileExplorerProps = (
 ): IFullFileExplorerProps => {
   refreshMockComponent = refreshComponent;
   return mockFullFileExplorerProps;
+};
+
+/**
+ * Full file explorer with mock data for the local test harness.
+ * The mock data changes in place, so the component renders itself again when it changes.
+ */
+export const MockFullFileExplorer = (props: { strings?: IStrings }) => {
+  const [, setVersion] = React.useState(0);
+  const explorerProperties = initMockFullFileExplorerProps(() =>
+    setVersion((version) => version + 1)
+  );
+  return <FullFileExplorer {...explorerProperties} strings={props.strings} />;
 };

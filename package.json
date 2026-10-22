@@ -12,11 +12,11 @@
     "refreshTypes": "pcf-scripts refreshTypes"
   },
   "dependencies": {
-    "@fluentui/react": "^8.110.7",
+    "@fluentui/react": "8.121.1",
     "@fluentui/react-experiments": "^8.14.95",
     "@fluentui/react-file-type-icons": "^8.9.3",
-    "react": "^16.8.4",
-    "react-dom": "^16.8.2"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
     "@microsoft/eslint-plugin-power-apps": "^0.2.11",
@@ -32,8 +32,8 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.1",
-    "pcf-scripts": "^1.24.3",
-    "pcf-start": "^1.24.3",
+    "pcf-scripts": "^1.51.1",
+    "pcf-start": "^1.51.1",
     "typescript": "^4.9.5"
   }
 }

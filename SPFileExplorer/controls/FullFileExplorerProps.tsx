@@ -241,12 +241,10 @@ const buildLocationPath = async (
 
 /**
  * Function that initilizes properties of the full file explorer control.
- * @param rerender Renders the control again without reloading the dataset.
  */
 export const initFullFileExplorerProps = (
   context: ComponentFramework.Context<IInputs>,
-  controlCache: { [index: string]: any },
-  rerender: () => void
+  controlCache: { [index: string]: any }
 ): IFullFileExplorerProps => {
   const dataSet = context.parameters.documentsDataSet;
   const contextPage = (context as any).page;
@@ -320,26 +318,27 @@ export const initFullFileExplorerProps = (
     if (currentFolder) {
       ensureSubfolders(currentFolder, currentFolderContent);
     }
-
-    if (
-      !folderTree.refreshing &&
-      Date.now() - folderTree.refreshedAt > FOLDER_TREE_REFRESH_INTERVAL_MS
-    ) {
-      folderTree.refreshing = true;
-      retrieveSubFoldersRecursive(context, folderStructure.path)
-        .then((refreshedSubfolders) => {
-          if (
-            refreshSubfoldersRecursive(folderStructure, refreshedSubfolders)
-          ) {
-            rerender();
-          }
-        })
-        .finally(() => {
-          folderTree.refreshedAt = Date.now();
-          folderTree.refreshing = false;
-        });
-    }
   }
+
+  const refreshFolderStructure = (): Promise<boolean> => {
+    if (
+      !folderTree ||
+      !folderStructure ||
+      folderTree.refreshing ||
+      Date.now() - folderTree.refreshedAt <= FOLDER_TREE_REFRESH_INTERVAL_MS
+    ) {
+      return Promise.resolve(false);
+    }
+    folderTree.refreshing = true;
+    return retrieveSubFoldersRecursive(context, folderStructure.path)
+      .then((refreshedSubfolders) =>
+        refreshSubfoldersRecursive(folderStructure, refreshedSubfolders)
+      )
+      .finally(() => {
+        folderTree.refreshedAt = Date.now();
+        folderTree.refreshing = false;
+      });
+  };
 
   const defaultViewType = context.parameters.defaultViewType?.raw;
 
@@ -374,6 +373,7 @@ export const initFullFileExplorerProps = (
     },
     selectedRecordsKeys: dataSet.getSelectedRecordIds(),
     locationKey: locationId,
+    refreshFolderStructure,
     getFolderStructure: (): Promise<IFolder | null> => {
       const locationFetchXml = `<fetch mapping="logical">
                     <entity name="${LOCATION_ENTITY_NAME}">

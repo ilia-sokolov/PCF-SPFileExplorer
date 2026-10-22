@@ -1,6 +1,13 @@
+.spFileExplorerContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .spFileExplorer {
   display: flex;
   align-items: stretch;
+  flex: 1;
   height: 100%;
   position: relative;
 }

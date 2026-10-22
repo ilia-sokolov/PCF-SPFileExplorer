@@ -72,6 +72,11 @@ export interface IFullFileExplorerProps {
    */
   getFolderStructure: () => Promise<IFolder | null>;
   /**
+   * Requests the folder tree again if it was not requested recently.
+   * Resolves with true if the tree (returned by getFolderStructure) has changed.
+   */
+  refreshFolderStructure?: () => Promise<boolean>;
+  /**
    * Sets a folder whose content shoud be presented to user.
    * @param path Path of the folder to be shown.
    */

@@ -164,6 +164,13 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       // unless the folder structure is still being loaded.
       loading: prevState.folderStructureLoaded ? false : prevState.loading,
     }));
+
+    // The tree is changed in place, so a new state object renders it again.
+    props.refreshFolderStructure?.().then((changed) => {
+      if (changed) {
+        setControlState((prevState) => ({ ...prevState }));
+      }
+    });
   }, [props.currentFolderContent, props.selectedRecordsKeys]);
 
   const handleSwitchLayout = (item?: IContextualMenuItem) => {

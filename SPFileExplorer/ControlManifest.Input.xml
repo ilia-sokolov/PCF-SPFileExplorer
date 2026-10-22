@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.3" display-name-key="SPFileExplorer_Name" description-key="SPFileExplorer_Description" control-type="standard">
+  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.3" display-name-key="SPFileExplorer_Name" description-key="SPFileExplorer_Description" control-type="virtual">
     <!--external-service-usage
     node declares whether this 3rd party PCF control is using external
     service or not, if yes, this control will be considered as premium and please also add the
@@ -40,6 +40,8 @@
 
     <resources>
       <code path="index.ts" order="1" />
+      <platform-library name="React" version="16.14.0" />
+      <platform-library name="Fluent" version="8.121.1" />
       <css path="css/SPFileExplorer.css" order="1" />
       <resx path="strings/SPFileExplorer.1033.resx" version="1.0.0" />
       <resx path="strings/SPFileExplorer.1031.resx" version="1.0.0" />
