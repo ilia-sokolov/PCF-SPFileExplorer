@@ -5,7 +5,7 @@
 ### Security
 
 - Build tooling dependencies updated to versions without known vulnerabilities: `npm audit fix` (cross-spawn, flatted, js-yaml, lodash, minimatch, picomatch, semver, brace-expansion), `@typescript-eslint/*` 5 → 8 with ESLint 8.57, `ajv` 7 → 8, and `@opentelemetry/core` / `@opentelemetry/sdk-trace-base` 2.x for the telemetry of `pcf-scripts` (npm `overrides`). The control itself and its bundle are unchanged.
-- Remaining: `braces` (used by `browser-sync` of the `pcf-start` test harness) has no fixed version yet. It is used only when running the local test harness.
+- The `pcf-start` test harness is no longer a dev dependency: `npm start` builds the control and downloads the harness with `npx`. Its file server (`browser-sync`) depends on `braces`, for which no fixed version is published yet, so it is no longer installed with the project; it is only downloaded when the local test harness is started.
 
 ## 0.0.4 (unreleased)
 
