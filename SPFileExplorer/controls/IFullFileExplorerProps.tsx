@@ -22,6 +22,14 @@ export enum ViewType {
 }
 
 /**
+ * File that could not be uploaded.
+ */
+export interface IUploadError {
+  fileName: string;
+  message: string;
+}
+
+/**
  * Interface for Full File Explorer component properties.
  */
 export interface IFullFileExplorerProps {
@@ -76,6 +84,19 @@ export interface IFullFileExplorerProps {
    * Resolves with true if the tree (returned by getFolderStructure) has changed.
    */
   refreshFolderStructure?: () => Promise<boolean>;
+  /**
+   * Uploads files to the folder with the specified path and reloads the folder content.
+   * Not specified if uploading is not enabled or not possible (e.g. no record).
+   * @param files Files to be uploaded.
+   * @param folderPath Path of the target folder.
+   * @param onProgress Called with the number of processed files after each file.
+   * @returns Files that could not be uploaded.
+   */
+  uploadFiles?: (
+    files: File[],
+    folderPath: string,
+    onProgress: (uploaded: number) => void
+  ) => Promise<IUploadError[]>;
   /**
    * Sets a folder whose content shoud be presented to user.
    * @param path Path of the folder to be shown.

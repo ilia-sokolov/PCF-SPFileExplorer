@@ -133,4 +133,28 @@
   <data name="Shared" xml:space="preserve">
     <value>Freigegeben</value>
   </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Hochladen per Drag &amp; Drop aktivieren (experimentell)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Legt fest, ob Dateien durch Ziehen auf das Steuerelement in den aktuellen Ordner hochgeladen werden können (standardmäßig deaktiviert). Verwendet die Aktion UploadDocument des Standard-Dokumentrasters, die nicht öffentlich dokumentiert ist.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Dateien hier ablegen, um sie in {0} hochzuladen</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>{0} von {1} wird hochgeladen...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Hochladen abgeschlossen.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>{0} konnte nicht hochgeladen werden: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Ordner können nicht hochgeladen werden: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
 </root>

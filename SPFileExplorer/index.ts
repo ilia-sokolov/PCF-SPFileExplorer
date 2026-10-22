@@ -51,7 +51,8 @@ export class SPFileExplorer implements ComponentFramework.ReactControl<IInputs, 
             //Control height is set to ensure correct representation of the control
             style.overflow = "hidden";
             style.height = context.mode.allocatedHeight > 0 ? `${context.mode.allocatedHeight - 2}px` : "500px";
-            explorer = React.createElement(MockFullFileExplorer, { strings: this._strings });
+            explorer = React.createElement(MockFullFileExplorer,
+                { strings: this._strings, enableUpload: !!context.parameters.enableUpload?.raw });
         } else {
             const explorerProperties = initFullFileExplorerProps(context, this._controlCache);
 

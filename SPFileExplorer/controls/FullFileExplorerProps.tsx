@@ -1,7 +1,11 @@
 import { IInputs } from "../generated/ManifestTypes";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
-import { IFullFileExplorerProps, ViewType } from "./IFullFileExplorerProps";
+import {
+  IFullFileExplorerProps,
+  IUploadError,
+  ViewType,
+} from "./IFullFileExplorerProps";
 
 export const ALL_ITEMS_PAGE_SIZE = 5000;
 
@@ -16,6 +20,7 @@ const MAX_LOCATION_DEPTH = 10;
 
 interface IFolderTreeCache {
   folder: IFolder;
+  locationId: string;
   refreshedAt: number;
   refreshing: boolean;
 }
@@ -239,6 +244,65 @@ const buildLocationPath = async (
   return path;
 };
 
+const readFileAsBase64 = (file: File): Promise<string> =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    // The result is a data URL: "data:<type>;base64,<content>".
+    reader.onload = () => resolve((reader.result as string).split(",")[1] ?? "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+
+/**
+ * Uploads a file to a folder of a document location with the UploadDocument action.
+ * This is the action used by the standard documents grid; it is not publicly documented.
+ */
+const uploadDocument = async (
+  context: ComponentFramework.Context<IInputs>,
+  file: File,
+  locationId: string,
+  folderPath: string
+): Promise<void> => {
+  const contextPage = (context as any).page;
+  const entityTypeName: string = contextPage.entityTypeName;
+  const metadata = await context.utils.getEntityMetadata(entityTypeName);
+  const primaryIdAttribute: string =
+    metadata.PrimaryIdAttribute ?? `${entityTypeName}id`;
+  const clientUrl: string =
+    contextPage.getClientUrl?.() ?? window.location.origin;
+
+  const response = await fetch(`${clientUrl}/api/data/v9.2/UploadDocument`, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json; charset=utf-8",
+      "OData-MaxVersion": "4.0",
+      "OData-Version": "4.0",
+    },
+    body: JSON.stringify({
+      Content: await readFileAsBase64(file),
+      Entity: {
+        "@odata.type": "Microsoft.Dynamics.CRM.sharepointdocument",
+        locationid: locationId,
+        title: file.name,
+      },
+      OverwriteExisting: false,
+      ParentEntityReference: {
+        "@odata.type": `Microsoft.Dynamics.CRM.${entityTypeName}`,
+        [primaryIdAttribute]: normalizeId(contextPage.entityId),
+      },
+      FolderPath: folderPath,
+    }),
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(
+      error?.error?.message ?? `${response.status} ${response.statusText}`
+    );
+  }
+};
+
 /**
  * Function that initilizes properties of the full file explorer control.
  */
@@ -342,6 +406,57 @@ export const initFullFileExplorerProps = (
 
   const defaultViewType = context.parameters.defaultViewType?.raw;
 
+  // Files can be uploaded only to the document location of a record.
+  const uploadFiles =
+    context.parameters.enableUpload?.raw &&
+    contextPage?.entityId &&
+    contextPage?.entityTypeName
+      ? async (
+          files: File[],
+          folderPath: string,
+          onProgress: (uploaded: number) => void
+        ): Promise<IUploadError[]> => {
+          // The tree may have been loaded after these properties were created.
+          const tree = controlCache[folderStructureKey] as
+            | IFolderTreeCache
+            | undefined;
+          if (!tree) {
+            return files.map((f) => ({
+              fileName: f.name,
+              message: "The document location is not loaded.",
+            }));
+          }
+          const rootPath = tree.folder.path;
+          // The folder path is relative to the document location.
+          const relativeFolderPath =
+            folderPath === rootPath
+              ? ""
+              : folderPath.startsWith(`${rootPath}/`)
+              ? folderPath.substring(rootPath.length + 1)
+              : folderPath;
+
+          const errors: IUploadError[] = [];
+          for (let i = 0; i < files.length; i++) {
+            try {
+              await uploadDocument(
+                context,
+                files[i],
+                tree.locationId,
+                relativeFolderPath
+              );
+            } catch (e) {
+              errors.push({
+                fileName: files[i].name,
+                message: (e as Error)?.message ?? String(e),
+              });
+            }
+            onProgress(i + 1);
+          }
+          dataSet.refresh();
+          return errors;
+        }
+      : undefined;
+
   return {
     hideFoldersPane: context.parameters.hideFoldersPane
       ? context.parameters.hideFoldersPane.raw
@@ -373,6 +488,7 @@ export const initFullFileExplorerProps = (
     },
     selectedRecordsKeys: dataSet.getSelectedRecordIds(),
     locationKey: locationId,
+    uploadFiles,
     refreshFolderStructure,
     getFolderStructure: (): Promise<IFolder | null> => {
       const locationFetchXml = `<fetch mapping="logical">
@@ -429,6 +545,9 @@ export const initFullFileExplorerProps = (
                 };
                 controlCache[folderStructureKey] = {
                   folder,
+                  locationId: normalizeId(
+                    sharepointLocation.sharepointdocumentlocationid
+                  ),
                   refreshedAt: Date.now(),
                   refreshing: false,
                 } as IFolderTreeCache;

@@ -3,7 +3,7 @@ import FullFileExplorer from "./FullFileExplorer";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFileViewColumn } from "./IFileViewColumn";
 import { IFolder } from "./IFolder";
-import { IFullFileExplorerProps } from "./IFullFileExplorerProps";
+import { IFullFileExplorerProps, IUploadError } from "./IFullFileExplorerProps";
 import { IStrings } from "./Strings";
 
 const MOCK_SHAREPOINT_URL = "https://mock.sharepoint.com/documents";
@@ -531,13 +531,54 @@ export const initMockFullFileExplorerProps = (
 };
 
 /**
+ * Adds the files to the mock folder. Files with "fail" in their name are rejected.
+ */
+const mockUploadFiles = async (
+  files: File[],
+  folderPath: string,
+  onProgress: (uploaded: number) => void
+): Promise<IUploadError[]> => {
+  const errors: IUploadError[] = [];
+  const folder = findFolderRecursively(mockFileStructure, folderPath);
+  for (let i = 0; i < files.length; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    if (!folder || files[i].name.toLowerCase().indexOf("fail") >= 0) {
+      errors.push({ fileName: files[i].name, message: "Mock upload error." });
+    } else {
+      folder.children = folder.children ?? [];
+      folder.children.push({
+        name: files[i].name,
+        key: `mock-upload-${Date.now()}-${i}`,
+        path: `${folder.path}/${files[i].name}`,
+        modified: new Date().toLocaleString(),
+        sharepointmodifiedby: "Mock user",
+      });
+    }
+    onProgress(i + 1);
+  }
+  mockFullFileExplorerProps.setCurrentFolder(
+    mockFullFileExplorerProps.currentFolderPath
+  );
+  return errors;
+};
+
+/**
  * Full file explorer with mock data for the local test harness.
  * The mock data changes in place, so the component renders itself again when it changes.
  */
-export const MockFullFileExplorer = (props: { strings?: IStrings }) => {
+export const MockFullFileExplorer = (props: {
+  strings?: IStrings;
+  enableUpload?: boolean;
+}) => {
   const [, setVersion] = React.useState(0);
   const explorerProperties = initMockFullFileExplorerProps(() =>
     setVersion((version) => version + 1)
   );
-  return <FullFileExplorer {...explorerProperties} strings={props.strings} />;
+  return (
+    <FullFileExplorer
+      {...explorerProperties}
+      uploadFiles={props.enableUpload ? mockUploadFiles : undefined}
+      strings={props.strings}
+    />
+  );
 };

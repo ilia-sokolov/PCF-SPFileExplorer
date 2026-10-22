@@ -36,6 +36,7 @@
       <value name="Compact" display-name-key="CompactView">1</value>
       <value name="Tiles" display-name-key="TileView">2</value>
     </property>
+    <property name="enableUpload" display-name-key="EnableUpload_Name" description-key="EnableUpload_Description" of-type="TwoOptions" usage="input" required="false" default-value="false"/>
     <property name="rememberViewType" display-name-key="RememberViewType_Name" description-key="RememberViewType_Description" of-type="TwoOptions" usage="input" required="false" default-value="true"/>
 
     <resources>

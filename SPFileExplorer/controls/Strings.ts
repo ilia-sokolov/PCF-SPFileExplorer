@@ -27,6 +27,12 @@ export const DEFAULT_STRINGS = {
   NoFolders: "There are no folders to show.",
   CheckedOut: "Checked out",
   Shared: "Shared",
+  DropFilesHere: "Drop files here to upload them to {0}",
+  Uploading: "Uploading {0} of {1}...",
+  UploadCompleted: "Upload completed.",
+  UploadFailed: "{0} could not be uploaded: {1}",
+  FoldersNotUploaded: "Folders cannot be uploaded: {0}",
+  Close: "Close",
 };
 
 export type IStrings = typeof DEFAULT_STRINGS;

@@ -133,4 +133,28 @@
   <data name="Shared" xml:space="preserve">
     <value>Shared</value>
   </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Enable drag and drop upload (experimental)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Define if files can be uploaded to the current folder by dragging them onto the control (by default it is disabled). Uses the UploadDocument action of the standard documents grid, which is not publicly documented.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Drop files here to upload them to {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Uploading {0} of {1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Upload completed.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>{0} could not be uploaded: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Folders cannot be uploaded: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
 </root>

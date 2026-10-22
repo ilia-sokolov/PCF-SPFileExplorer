@@ -22,6 +22,7 @@ import {
 } from "@fluentui/react/lib/DetailsList";
 
 import { Link } from "@fluentui/react/lib/Link";
+import { MessageBar, MessageBarType } from "@fluentui/react/lib/MessageBar";
 
 import { TilesView } from "./TilesView";
 import FolderExplorer from "./FolderExplorer";
@@ -53,6 +54,10 @@ interface IFullFileExplorerState {
   rootFolder: IFolder;
   folderStructureLoaded?: boolean;
   contextualMenuProps?: IContextualMenuProps;
+  dragActive?: boolean;
+  uploadProgress?: { uploaded: number; total: number };
+  uploadMessages?: string[];
+  uploadCompleted?: boolean;
 }
 
 const VIEW_TYPE_STORAGE_KEY = "SPFileExplorer.viewType";
@@ -75,6 +80,47 @@ const storeViewType = (viewType: ViewType) => {
   } catch {
     // Storage can be unavailable (e.g. blocked by browser settings).
   }
+};
+
+const findFolder = (folder: IFolder, path: string): IFolder | undefined => {
+  if (folder.path === path) {
+    return folder;
+  }
+  for (const child of folder.children ?? []) {
+    const found = findFolder(child, path);
+    if (found) {
+      return found;
+    }
+  }
+  return undefined;
+};
+
+/**
+ * Returns the files and the names of the folders dropped onto the control.
+ */
+const getDroppedItems = (
+  dataTransfer: DataTransfer
+): { files: File[]; folders: string[] } => {
+  const files: File[] = [];
+  const folders: string[] = [];
+  const items = Array.from(dataTransfer.items ?? []);
+  if (items.length > 0) {
+    items.forEach((item) => {
+      if (item.kind !== "file") {
+        return;
+      }
+      const entry = item.webkitGetAsEntry?.();
+      const file = item.getAsFile();
+      if (entry?.isDirectory) {
+        folders.push(entry.name);
+      } else if (file) {
+        files.push(file);
+      }
+    });
+  } else {
+    files.push(...Array.from(dataTransfer.files ?? []));
+  }
+  return { files, folders };
 };
 
 /**
@@ -103,6 +149,9 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     selectedFolderPath: props.currentFolderPath,
     expandedFolders: [props.currentFolderPath],
   } as IFullFileExplorerState);
+
+  // Counts nested dragenter/dragleave events of the files panel.
+  const dragDepth = useRef(0);
 
   // The selection is created once, so its handler reads the latest properties through the ref.
   const propsRef = useRef(props);
@@ -436,6 +485,140 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }
   };
 
+  const canUpload =
+    !!props.uploadFiles &&
+    !!controlState.rootFolder &&
+    !!controlState.selectedFolderPath &&
+    !controlState.uploadProgress;
+
+  const isFileDrag = (ev: React.DragEvent<HTMLElement>): boolean =>
+    Array.from(ev.dataTransfer?.types ?? []).indexOf("Files") >= 0;
+
+  const onDragEnter = (ev: React.DragEvent<HTMLElement>) => {
+    if (canUpload && isFileDrag(ev)) {
+      ev.preventDefault();
+      dragDepth.current++;
+      if (!controlState.dragActive) {
+        setControlState((prevState) => ({ ...prevState, dragActive: true }));
+      }
+    }
+  };
+
+  const onDragOver = (ev: React.DragEvent<HTMLElement>) => {
+    if (canUpload && isFileDrag(ev)) {
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = "copy";
+    }
+  };
+
+  const onDragLeave = (ev: React.DragEvent<HTMLElement>) => {
+    if (canUpload && isFileDrag(ev)) {
+      dragDepth.current = Math.max(0, dragDepth.current - 1);
+      if (dragDepth.current === 0) {
+        setControlState((prevState) => ({ ...prevState, dragActive: false }));
+      }
+    }
+  };
+
+  const onDrop = async (ev: React.DragEvent<HTMLElement>) => {
+    if (!canUpload || !props.uploadFiles || !isFileDrag(ev)) {
+      return;
+    }
+    ev.preventDefault();
+    dragDepth.current = 0;
+
+    const { files, folders } = getDroppedItems(ev.dataTransfer);
+    const messages =
+      folders.length > 0
+        ? [formatString(strings.FoldersNotUploaded, folders.join(", "))]
+        : [];
+    setControlState((prevState) => ({
+      ...prevState,
+      dragActive: false,
+      uploadMessages: messages,
+      uploadCompleted: false,
+      uploadProgress:
+        files.length > 0 ? { uploaded: 0, total: files.length } : undefined,
+    }));
+    if (files.length === 0) {
+      return;
+    }
+
+    const errors = await props.uploadFiles(
+      files,
+      controlState.selectedFolderPath,
+      (uploaded) =>
+        setControlState((prevState) => ({
+          ...prevState,
+          uploadProgress: { uploaded, total: files.length },
+        }))
+    );
+    setControlState((prevState) => ({
+      ...prevState,
+      uploadProgress: undefined,
+      uploadCompleted: errors.length < files.length,
+      uploadMessages: [
+        ...messages,
+        ...errors.map((e) =>
+          formatString(strings.UploadFailed, e.fileName, e.message)
+        ),
+      ],
+    }));
+  };
+
+  const dismissUploadMessages = () => {
+    setControlState((prevState) => ({
+      ...prevState,
+      uploadMessages: undefined,
+      uploadCompleted: false,
+    }));
+  };
+
+  const renderUploadMessages = (): JSX.Element | null => {
+    if (controlState.uploadProgress) {
+      return (
+        <MessageBar messageBarType={MessageBarType.info}>
+          {formatString(
+            strings.Uploading,
+            String(
+              Math.min(
+                controlState.uploadProgress.uploaded + 1,
+                controlState.uploadProgress.total
+              )
+            ),
+            String(controlState.uploadProgress.total)
+          )}
+        </MessageBar>
+      );
+    }
+    if (controlState.uploadMessages && controlState.uploadMessages.length > 0) {
+      return (
+        <MessageBar
+          messageBarType={MessageBarType.error}
+          isMultiline={true}
+          onDismiss={dismissUploadMessages}
+          dismissButtonAriaLabel={strings.Close}
+        >
+          {controlState.uploadMessages.map((message, i) => (
+            <div key={i}>{message}</div>
+          ))}
+        </MessageBar>
+      );
+    }
+    if (controlState.uploadCompleted) {
+      return (
+        <MessageBar
+          messageBarType={MessageBarType.success}
+          onDismiss={dismissUploadMessages}
+          dismissButtonAriaLabel={strings.Close}
+        >
+          {strings.UploadCompleted}
+        </MessageBar>
+      );
+    }
+    return null;
+  };
+
   const getViewColumns = (columns: IFileViewColumn[]): IColumn[] => {
     return columns.map((c) => {
       const columnDefinition: IColumn = {
@@ -494,13 +677,31 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           ></FolderExplorer>
         )}
 
-        <div className="filesViewPanel">
+        <div
+          className="filesViewPanel"
+          onDragEnter={onDragEnter}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+        >
           <CommandBar
             className="explorerCommandBar"
             items={[]}
             farItems={getViewTypeCommandBarItems()}
             ariaLabel={strings.FileActions}
           />
+          <div className="uploadMessages">{renderUploadMessages()}</div>
+          {controlState.dragActive && controlState.rootFolder && (
+            <div className="dropOverlay">
+              {formatString(
+                strings.DropFilesHere,
+                findFolder(
+                  controlState.rootFolder,
+                  controlState.selectedFolderPath
+                )?.name ?? controlState.rootFolder.name
+              )}
+            </div>
+          )}
           <div className="fileView">
             {controlState.selectedFolderPath ||
             (controlState.folderStructureLoaded && !controlState.rootFolder) ? (
