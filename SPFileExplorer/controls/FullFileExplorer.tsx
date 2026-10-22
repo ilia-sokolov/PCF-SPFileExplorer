@@ -40,6 +40,7 @@ import { IFullFileExplorerProps, ViewType } from "./IFullFileExplorerProps";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
 import { IFileViewColumn } from "./IFileViewColumn";
+import { DEFAULT_STRINGS, formatString } from "./Strings";
 
 interface IFullFileExplorerState {
   viewType: ViewType;
@@ -93,6 +94,7 @@ const getParentPaths = (folder: IFolder, path: string): string[] => {
 };
 
 const FullFileExplorer = (props: IFullFileExplorerProps) => {
+  const strings = props.strings ?? DEFAULT_STRINGS;
   const [controlState, setControlState] = useState({
     viewType:
       (props.rememberViewType !== false ? getStoredViewType() : undefined) ??
@@ -183,23 +185,23 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     switch (controlState.viewType) {
       case ViewType.List:
         viewIconName = "List";
-        viewName = "List view";
+        viewName = strings.ListView;
         break;
       case ViewType.Compact:
         viewIconName = "AlignLeft";
-        viewName = "Compact view";
+        viewName = strings.CompactView;
         break;
       default:
         viewIconName = "GridViewMedium";
-        viewName = "Tile view";
+        viewName = strings.TileView;
     }
 
     const farItems: ICommandBarItemProps[] = [
       {
         key: "listOptions",
         className: "commandBarNoChevron",
-        title: "Open the view options menu",
-        ariaLabel: `View options. ${viewName} selected.`,
+        title: strings.ViewOptionsTitle,
+        ariaLabel: formatString(strings.ViewOptionSelectedAriaLabel, viewName),
         name: viewName,
         iconProps: {
           iconName: viewIconName,
@@ -209,16 +211,19 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           items: [
             {
               key: ViewType.List.toString(),
-              name: "List view",
+              name: strings.ListView,
               iconProps: {
                 iconName: "List",
               },
               canCheck: true,
               checked: controlState.viewType === ViewType.List,
-              ariaLabel: `View options. List view${
-                controlState.viewType === ViewType.List ? " selected" : ""
-              }.`,
-              title: "View items and details in a list",
+              ariaLabel: formatString(
+                controlState.viewType === ViewType.List
+                  ? strings.ViewOptionSelectedAriaLabel
+                  : strings.ViewOptionAriaLabel,
+                strings.ListView
+              ),
+              title: strings.ListViewTitle,
               onClick: (
                 _ev?:
                   | React.MouseEvent<HTMLElement>
@@ -228,16 +233,19 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             },
             {
               key: ViewType.Compact.toString(),
-              name: "Compact view",
+              name: strings.CompactView,
               iconProps: {
                 iconName: "AlignLeft",
               },
               canCheck: true,
               checked: controlState.viewType === ViewType.Compact,
-              ariaLabel: `View options. Compact view${
-                controlState.viewType === ViewType.Compact ? " selected" : ""
-              }.`,
-              title: "View items and details in a compact list",
+              ariaLabel: formatString(
+                controlState.viewType === ViewType.Compact
+                  ? strings.ViewOptionSelectedAriaLabel
+                  : strings.ViewOptionAriaLabel,
+                strings.CompactView
+              ),
+              title: strings.CompactViewTitle,
               onClick: (
                 _ev?:
                   | React.MouseEvent<HTMLElement>
@@ -247,16 +255,19 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             },
             {
               key: ViewType.Tiles.toString(),
-              name: "Tile view",
+              name: strings.TileView,
               iconProps: {
                 iconName: "GridViewMedium",
               },
               canCheck: true,
               checked: controlState.viewType === ViewType.Tiles,
-              ariaLabel: `View options. Tile view${
-                controlState.viewType === ViewType.Tiles ? " selected" : ""
-              }.`,
-              title: "View items with tile previews",
+              ariaLabel: formatString(
+                controlState.viewType === ViewType.Tiles
+                  ? strings.ViewOptionSelectedAriaLabel
+                  : strings.ViewOptionAriaLabel,
+                strings.TileView
+              ),
+              title: strings.TileViewTitle,
               onClick: (
                 _ev?:
                   | React.MouseEvent<HTMLElement>
@@ -351,6 +362,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
               extension={item.filetype}
               size={"small"}
               className={`tileIcon small`}
+              strings={strings}
             />
           )}{" "}
           {fieldValue}
@@ -391,7 +403,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         items: [
           {
             key: "aToZ",
-            name: "Sort A to Z",
+            name: strings.SortAscending,
             //iconProps: { iconName: "SortUp" },
             canCheck: true,
             checked: column.isSorted && !column.isSortedDescending,
@@ -399,7 +411,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           },
           {
             key: "zToA",
-            name: "Sort Z to A",
+            name: strings.SortDescending,
             //iconProps: { iconName: "SortDown" },
             canCheck: true,
             checked: column.isSorted && column.isSortedDescending,
@@ -429,8 +441,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         isRowHeader: true,
         isSorted: c.isSorted,
         isSortedDescending: c.isSortedDescending,
-        sortAscendingAriaLabel: c.sortAscendingLabel ?? "Sorted A to Z",
-        sortDescendingAriaLabel: c.sortDescendingLabel ?? "Sorted Z to A",
+        sortAscendingAriaLabel: c.sortAscendingLabel ?? strings.SortedAscending,
+        sortDescendingAriaLabel: c.sortDescendingLabel ?? strings.SortedDescending,
 
         onColumnClick: onColumnClick,
         onRender: (item, index, column) =>
@@ -453,7 +465,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
               height: "100%",
             }}
             size={SpinnerSize.large}
-            label="Loading..."
+            label={strings.Loading}
             ariaLive="assertive"
             labelPosition="bottom"
           />
@@ -471,6 +483,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           <FolderExplorer
             rootItem={controlState.rootFolder}
             hideSearchBox={props.hideFoldersSearchBox}
+            strings={strings}
           ></FolderExplorer>
         )}
 
@@ -479,7 +492,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             className="explorerCommandBar"
             items={[]}
             farItems={getViewTypeCommandBarItems()}
-            ariaLabel="File actions"
+            ariaLabel={strings.FileActions}
           />
           <div className="fileView">
             {controlState.selectedFolderPath ||
@@ -515,6 +528,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
                           tileSize={"large"}
                           openFileItem={openFileItem}
                           selection={selection}
+                          strings={strings}
                         ></TilesView>
                       )}
                     </MarqueeSelection>
@@ -522,15 +536,13 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
                 ) : (
                   <div className="emptyFolderMessage">
                     {controlState.rootFolder
-                      ? "This folder is empty"
-                      : "There are no documents to show. Please, check that document management is enabled for this table and that a document location exists for this record."}
+                      ? strings.FolderEmpty
+                      : strings.NoDocumentLocation}
                   </div>
                 )}
               </>
             ) : (
-              <div className="selectFolderMessage">
-                Please, select a folder to explore its content.
-              </div>
+              <div className="selectFolderMessage">{strings.SelectFolder}</div>
             )}
           </div>
         </div>

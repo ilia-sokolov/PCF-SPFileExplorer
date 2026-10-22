@@ -4,11 +4,13 @@ import {IInputs, IOutputs} from "./generated/ManifestTypes";
 import FullFileExplorer from "./controls/FullFileExplorer";
 import { initMockFullFileExplorerProps } from "./controls/MockFullFileExplorerProps";
 import { ALL_ITEMS_PAGE_SIZE, initFullFileExplorerProps } from "./controls/FullFileExplorerProps";
+import { getStrings, IStrings } from "./controls/Strings";
 
 export class SPFileExplorer implements ComponentFramework.StandardControl<IInputs, IOutputs> {
     private _container: HTMLDivElement;
     private _controlCache: {[index: string]: any} = {};
     private _context: ComponentFramework.Context<IInputs>;
+    private _strings: IStrings;
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
@@ -20,6 +22,7 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
     public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement): void
     {
         this._container = container;
+        this._strings = getStrings((key) => context.resources.getString(key));
         if(this._isSandbox()){
             context.mode.trackContainerResize(true);
         }
@@ -59,7 +62,7 @@ export class SPFileExplorer implements ComponentFramework.StandardControl<IInput
             const recordKey = `${(context as any).page?.entityId ?? ""}_${explorerProperties.locationKey ?? ""}`;
 
             ReactDOM.render(React.createElement(FullFileExplorer,
-                { ...explorerProperties, key: recordKey }
+                { ...explorerProperties, strings: this._strings, key: recordKey }
             ), this._container);
         }
     }

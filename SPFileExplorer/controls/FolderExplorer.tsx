@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ISearchBoxProps, SearchBox } from "@fluentui/react/lib/SearchBox";
 import { FolderExplorerItem } from "./FolderExplorerItem";
 import { IFolder } from "./IFolder";
+import { DEFAULT_STRINGS, IStrings } from "./Strings";
 
 /**
  * Interface for folder explorer properties.
@@ -20,6 +21,10 @@ export interface IFolderExplorerProps {
    * Search box properties.
    */
   searchBoxProps?: ISearchBoxProps;
+  /**
+   * Localized texts.
+   */
+  strings?: IStrings;
 }
 
 interface IFolderExplorerState {
@@ -28,6 +33,7 @@ interface IFolderExplorerState {
 }
 
 const FolderExplorer = (props: IFolderExplorerProps) => {
+  const strings = props.strings ?? DEFAULT_STRINGS;
   const [state, setState] = useState<IFolderExplorerState>({
     folderItems: [props.rootItem],
   });
@@ -69,7 +75,7 @@ const FolderExplorer = (props: IFolderExplorerProps) => {
       {!props.hideSearchBox && (
         <SearchBox
           {...props.searchBoxProps}
-          placeholder="Filter folder by name"
+          placeholder={strings.FilterFolders}
           underlined={true}
           className="foldersSearchBox"
           onSearch={onFilterTextChanged}
@@ -85,8 +91,8 @@ const FolderExplorer = (props: IFolderExplorerProps) => {
       ) : (
         <div className="folderNavEmpty">
           {state.filterText
-            ? "Your search returned no results."
-            : "There are no folders to show."}
+            ? strings.FolderSearchNoResults
+            : strings.NoFolders}
         </div>
       )}
     </div>

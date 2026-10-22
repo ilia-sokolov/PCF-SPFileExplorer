@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Control enables seamless browsing of SharePoint documents in a manner similar to Windows Explorer. The user-friendly interface displays the entire folder hierarchy, offering the ability to quickly locate specific folders by name. This feature ensures swift access to the required files, enhancing overall efficiency.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Documents Dataset</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Minimum Height</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Minimum height of the control in pixels</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Hide folder tree</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Define if folders navigation pane should be hidden (by default it is visible)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Default view</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>View type that is shown when the control is opened (tile view by default)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Remember selected view</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Define if the view type selected by a user should be remembered in the browser and reused for other records (by default it is remembered)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>List view</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Compact view</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Tile view</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>View items and details in a list</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>View items and details in a compact list</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>View items with tile previews</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Open the view options menu</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>View options. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>View options. {0} selected.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Sort A to Z</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Sort Z to A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Sorted A to Z</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Sorted Z to A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>File actions</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>This folder is empty</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>There are no documents to show. Please, check that document management is enabled for this table and that a document location exists for this record.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Please, select a folder to explore its content.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Filter folder by name</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Your search returned no results.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>There are no folders to show.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Checked out</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Shared</value>
+  </data>
+</root>

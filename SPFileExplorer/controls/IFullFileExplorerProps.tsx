@@ -1,6 +1,7 @@
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFileViewColumn } from "./IFileViewColumn";
 import { IFolder } from "./IFolder";
+import { IStrings } from "./Strings";
 
 /**
  * Type of view to be presented to user.
@@ -49,6 +50,10 @@ export interface IFullFileExplorerProps {
    * The folder tree is loaded again when it changes.
    */
   locationKey?: string;
+  /**
+   * Localized texts (English texts are used if not specified).
+   */
+  strings?: IStrings;
   /**
    * Relative location path of the currently selected folder.
    */
