@@ -1,4 +1,7 @@
 import { IInputs } from "../generated/ManifestTypes";
+import { getContainingFolderPath, getSiteUrl, ILocationUrls } from "./FileLinks";
+import { GraphClient, IGraphClient } from "./graph/GraphClient";
+import { createMsalTokenProvider } from "./graph/MsalTokenProvider";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
 import {
@@ -12,6 +15,9 @@ export const ALL_ITEMS_PAGE_SIZE = 5000;
 const SHARED_LOCATION_GUID = "17de0dbb-153c-4c1a-b98a-223b3ea10125";
 const FOLDER_STRUCTURE_KEY = "FolderStructure";
 const LOCATION_KEY = "Location";
+const GRAPH_CLIENT_KEY = "GraphClient";
+// Maximum number of search results across all folders.
+const MAX_SEARCH_RESULTS = 500;
 const LOCATION_ENTITY_NAME = "sharepointdocumentlocation";
 // The whole folder tree is requested again at most once per interval.
 const FOLDER_TREE_REFRESH_INTERVAL_MS = 60000;
@@ -23,6 +29,7 @@ interface IFolderTreeCache {
   locationId: string;
   refreshedAt: number;
   refreshing: boolean;
+  urls?: Promise<ILocationUrls | null>;
 }
 
 const normalizeId = (id: unknown): string =>
@@ -244,6 +251,99 @@ const buildLocationPath = async (
   return path;
 };
 
+const getClientUrl = (context: ComponentFramework.Context<IInputs>): string =>
+  ((context as any).page?.getClientUrl?.() as string | undefined) ??
+  window.location.origin;
+
+/**
+ * Retrieves the SharePoint URLs of a document location with the documented
+ * RetrieveAbsoluteAndSiteCollectionUrl function.
+ */
+const retrieveLocationUrls = async (
+  context: ComponentFramework.Context<IInputs>,
+  locationId: string,
+  rootPath: string
+): Promise<ILocationUrls | null> => {
+  const response = await fetch(
+    `${getClientUrl(context)}/api/data/v9.2/sharepointdocumentlocations(${locationId})` +
+      "/Microsoft.Dynamics.CRM.RetrieveAbsoluteAndSiteCollectionUrl()",
+    {
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+        "OData-MaxVersion": "4.0",
+        "OData-Version": "4.0",
+      },
+    }
+  );
+  if (!response.ok) {
+    return null;
+  }
+  const result = await response.json();
+  return result?.AbsoluteUrl
+    ? {
+        locationUrl: result.AbsoluteUrl,
+        siteUrl: result.SiteCollectionUrl || getSiteUrl(result.AbsoluteUrl),
+        rootPath,
+      }
+    : null;
+};
+
+const getFormattedValue = (entity: ComponentFramework.WebApi.Entity, name: string) =>
+  entity[`${name}@OData.Community.Display.V1.FormattedValue`] ?? entity[name] ?? "";
+
+/**
+ * Searches the files of all folders of the record's documents (recursive fetch) by name.
+ */
+const searchDocuments = async (
+  context: ComponentFramework.Context<IInputs>,
+  text: string,
+  locationId: string
+): Promise<IFileSystemItem[]> => {
+  const dataSet = context.parameters.documentsDataSet;
+  const entityType = dataSet.getTargetEntityType();
+  const contextPage = (context as any).page;
+  const fetchXml = `<fetch mapping="logical" count="${ALL_ITEMS_PAGE_SIZE}">
+      <entity name="${entityType}">
+        <all-attributes/>
+        <filter type="and">
+          <condition attribute="isrecursivefetch" operator="eq" value="1"/>
+        </filter>
+        <link-entity name="${contextPage.entityTypeName}" from="${contextPage.entityTypeName}id" to="regardingobjectid" alias="bb">
+          <filter type="and">
+            <condition attribute="${contextPage.entityTypeName}id" operator="eq" uitype="${contextPage.entityTypeName}" value="${contextPage.entityId}"/>
+          </filter>
+        </link-entity>
+      </entity>
+    </fetch>`;
+  const result = await context.webAPI.retrieveMultipleRecords(
+    entityType,
+    "?fetchXml=" + encodeURIComponent(fetchXml)
+  );
+  const searchText = text.trim().toLowerCase();
+  return (result?.entities ?? [])
+    .filter(
+      (e) =>
+        String(e.fullname ?? "").toLowerCase().indexOf(searchText) >= 0 &&
+        // Documents of other locations of the record are not shown.
+        (!e.locationid || !locationId || normalizeId(e.locationid) === locationId)
+    )
+    .slice(0, MAX_SEARCH_RESULTS)
+    .map((e) => {
+      const item = {} as IFileSystemItem;
+      dataSet.columns.forEach((c) => (item[c.name] = getFormattedValue(e, c.name)));
+      item.fullname = e.fullname;
+      item.filetype = e.filetype;
+      item.ischeckedout = e.ischeckedout;
+      item.key = `search-${e.sharepointdocumentid ?? e.documentid ?? e.absoluteurl ?? e.fullname}`;
+      item.path = e.relativelocation;
+      item.absoluteurl = e.absoluteurl;
+      item.folderPath = getContainingFolderPath(e.relativelocation, e.fullname);
+      item.isSearchResult = true;
+      return item;
+    });
+};
+
 const readFileAsBase64 = (file: File): Promise<string> =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -332,6 +432,8 @@ export const initFullFileExplorerProps = (
     }
     itemData.reference = (record as any)._entityReference;
     itemData.key = record.getRecordId();
+    // Not part of every view; used for links when available.
+    itemData.absoluteurl = (record.getValue("absoluteurl") as string) ?? undefined;
     itemData.path = record.getFormattedValue("relativelocation");
     dataSet.columns.forEach((c) => {
       itemData[c.name] = record.getFormattedValue(c.name);
@@ -405,6 +507,38 @@ export const initFullFileExplorerProps = (
   };
 
   const defaultViewType = context.parameters.defaultViewType?.raw;
+
+  const getLocationUrls = (): Promise<ILocationUrls | null> => {
+    // The tree may have been loaded after these properties were created.
+    const tree = controlCache[folderStructureKey] as IFolderTreeCache | undefined;
+    if (!tree || !tree.locationId) {
+      return Promise.resolve(null);
+    }
+    tree.urls ??= retrieveLocationUrls(context, tree.locationId, tree.folder.path).catch(
+      () => null
+    );
+    return tree.urls;
+  };
+
+  // Microsoft Graph is used only if an application (client) ID is configured.
+  const graphClientId = context.parameters.graphClientId?.raw?.trim();
+  if (graphClientId && !controlCache[GRAPH_CLIENT_KEY]) {
+    controlCache[GRAPH_CLIENT_KEY] = new GraphClient(
+      createMsalTokenProvider(
+        graphClientId,
+        context.parameters.graphTenantId?.raw?.trim(),
+        () =>
+          context.webAPI
+            .retrieveRecord("systemuser", context.userSettings.userId, "?$select=domainname")
+            .then((user) => user.domainname as string)
+            .catch(() => undefined),
+        getClientUrl(context)
+      )
+    );
+  }
+  const graph = graphClientId
+    ? (controlCache[GRAPH_CLIENT_KEY] as IGraphClient)
+    : undefined;
 
   // Files can be uploaded only to the document location of a record.
   const uploadFiles =
@@ -489,6 +623,29 @@ export const initFullFileExplorerProps = (
     selectedRecordsKeys: dataSet.getSelectedRecordIds(),
     locationKey: locationId,
     uploadFiles,
+    isLoading: dataSet.loading,
+    refresh: () => {
+      // The folder tree is reloaded with the refreshed content (e.g. after a folder was created).
+      const tree = controlCache[folderStructureKey] as IFolderTreeCache | undefined;
+      if (tree) {
+        tree.refreshedAt = 0;
+      }
+      dataSet.refresh();
+    },
+    getLocationUrls,
+    graph,
+    showThumbnails: !!context.parameters.showThumbnails?.raw,
+    // Searching all folders needs the record of the documents.
+    searchAllFolders:
+      contextPage?.entityId && contextPage?.entityTypeName
+        ? (text: string) =>
+            searchDocuments(
+              context,
+              text,
+              (controlCache[folderStructureKey] as IFolderTreeCache | undefined)
+                ?.locationId ?? locationId
+            )
+        : undefined,
     refreshFolderStructure,
     getFolderStructure: (): Promise<IFolder | null> => {
       const locationFetchXml = `<fetch mapping="logical">

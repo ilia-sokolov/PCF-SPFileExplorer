@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Met het besturingselement kunt u SharePoint-documenten doorzoeken zoals in Windows Verkenner. De interface toont de volledige mappenstructuur en laat u een map snel op naam vinden, zodat u direct bij de benodigde bestanden komt.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Gegevensset met documenten</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Minimale hoogte</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Minimale hoogte van het besturingselement in pixels</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Mappenstructuur verbergen</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Bepaalt of het navigatiedeelvenster met mappen wordt verborgen (standaard is het zichtbaar)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Standaardweergave</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Weergave die wordt getoond wanneer het besturingselement wordt geopend (standaard tegelweergave)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Geselecteerde weergave onthouden</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Bepaalt of de door een gebruiker gekozen weergave in de browser wordt onthouden en voor andere records wordt gebruikt (standaard wordt deze onthouden)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Lijstweergave</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Compacte weergave</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Tegelweergave</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Items en details in een lijst weergeven</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Items en details in een compacte lijst weergeven</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Items als tegels weergeven</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Menu met weergaveopties openen</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Weergaveopties. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Weergaveopties. {0} geselecteerd.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Sorteren van A tot Z</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Sorteren van Z tot A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Gesorteerd van A tot Z</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Gesorteerd van Z tot A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Laden...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Bestandsacties</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Deze map is leeg</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Er zijn geen documenten om weer te geven. Controleer of documentbeheer is ingeschakeld voor deze tabel en of er een documentlocatie bestaat voor deze record.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Selecteer een map om de inhoud te bekijken.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Mappen filteren op naam</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Uw zoekopdracht heeft geen resultaten opgeleverd.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Er zijn geen mappen om weer te geven.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Uitgecheckt</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Gedeeld</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Uploaden via slepen en neerzetten inschakelen (experimenteel)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Bepaalt of bestanden naar de huidige map kunnen worden geüpload door ze op het besturingselement te slepen (standaard uitgeschakeld). Gebruikt de actie UploadDocument van het standaard documentenraster, die niet openbaar is gedocumenteerd.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Zet bestanden hier neer om ze te uploaden naar {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>{0} van {1} uploaden...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Uploaden voltooid.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>{0} kan niet worden geüpload: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Mappen kunnen niet worden geüpload: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Miniaturen weergeven</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Bepaalt of op de tegels voorbeeldafbeeldingen worden getoond in plaats van bestandspictogrammen (standaard niet). Gebruikt de voorbeeldafbeeldingen van SharePoint, of de miniaturen van Microsoft Graph als dat is geconfigureerd.</value>
+  </data>
+  <data name="GraphClientId_Name" xml:space="preserve">
+    <value>Client-id voor Microsoft Graph</value>
+  </data>
+  <data name="GraphClientId_Description" xml:space="preserve">
+    <value>Toepassings-id (client-id) van de Microsoft Entra-app-registratie waarmee Microsoft Graph wordt aangeroepen. Maakt het maken van mappen, miniaturen en volledige voorbeelden mogelijk. Zie de installatiehandleiding.</value>
+  </data>
+  <data name="GraphTenantId_Name" xml:space="preserve">
+    <value>Tenant-id voor Microsoft Graph</value>
+  </data>
+  <data name="GraphTenantId_Description" xml:space="preserve">
+    <value>Map-id (tenant-id) van de Microsoft Entra-app-registratie (optioneel, standaard de organisatie van de gebruiker).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Bestanden zoeken</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Alle mappen</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>In alle mappen zoeken</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Zoekresultaten voor "{0}"</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Er zijn geen bestanden die overeenkomen met uw zoekopdracht.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Zoeken...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>De zoekopdracht is mislukt: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sorteren</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Oplopend</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Aflopend</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Tegelgrootte</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Kleine tegels</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Grote tegels</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Mappen</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Voorbeeld</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Voorbeeldvenster weergeven of verbergen</value>
+  </data>
+  <data name="NoPreview" xml:space="preserve">
+    <value>Geen voorbeeld beschikbaar</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Selecteer een bestand om het voorbeeld te bekijken.</value>
+  </data>
+  <data name="ShowFullPreview" xml:space="preserve">
+    <value>Volledig voorbeeld weergeven</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Aanmelden bij Microsoft 365</value>
+  </data>
+  <data name="SignInHint" xml:space="preserve">
+    <value>Meld u aan bij Microsoft 365 om voorbeelden weer te geven en mappen te maken.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Openen</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Openen in browser</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Openen in bureaublad-app</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Downloaden</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Koppeling kopiëren</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>De koppeling is gekopieerd.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Openen in SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Bovenliggende map openen</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Meer acties</value>
+  </data>
+  <data name="NewFolder" xml:space="preserve">
+    <value>Nieuwe map</value>
+  </data>
+  <data name="NewFolderTitle" xml:space="preserve">
+    <value>Een map maken in {0}</value>
+  </data>
+  <data name="FolderName" xml:space="preserve">
+    <value>Mapnaam</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Maken</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="InvalidFolderName" xml:space="preserve">
+    <value>Voer een naam in zonder de tekens " * : &lt; &gt; ? / \ |.</value>
+  </data>
+  <data name="FolderCreated" xml:space="preserve">
+    <value>De map {0} is gemaakt.</value>
+  </data>
+  <data name="FolderCreateFailed" xml:space="preserve">
+    <value>De map kan niet worden gemaakt: {0}</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Vernieuwen...</value>
+  </data>
+</root>

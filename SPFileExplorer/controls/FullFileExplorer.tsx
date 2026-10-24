@@ -8,6 +8,7 @@ import {
 import {
   IContextualMenuProps,
   ContextualMenu,
+  ContextualMenuItemType,
   DirectionalHint,
   IContextualMenuItem,
 } from "@fluentui/react/lib/ContextualMenu";
@@ -23,6 +24,9 @@ import {
 
 import { Link } from "@fluentui/react/lib/Link";
 import { MessageBar, MessageBarType } from "@fluentui/react/lib/MessageBar";
+import { SearchBox } from "@fluentui/react/lib/SearchBox";
+import { Checkbox } from "@fluentui/react/lib/Checkbox";
+import { IconButton } from "@fluentui/react/lib/Button";
 
 import { TilesView } from "./TilesView";
 import FolderExplorer from "./FolderExplorer";
@@ -42,6 +46,37 @@ import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
 import { IFileViewColumn } from "./IFileViewColumn";
 import { DEFAULT_STRINGS, formatString } from "./Strings";
+import {
+  canPreview,
+  getBrowserUrl,
+  getDesktopAppUrl,
+  getDownloadUrl,
+  getFolderUrl,
+  getItemUrl,
+  getPreviewImageUrl,
+  ILocationUrls,
+} from "./FileLinks";
+import { GraphError, IThumbnailUrls, SignInRequiredError } from "./graph/GraphClient";
+import { PreviewPane } from "./PreviewPane";
+import { NewFolderDialog } from "./NewFolderDialog";
+
+type TileSize = "small" | "large";
+
+interface IMessage {
+  type: MessageBarType;
+  text: string;
+}
+
+interface IFullPreview {
+  key: string;
+  url?: string;
+  loading: boolean;
+}
+
+interface IClientSort {
+  column: string;
+  descending: boolean;
+}
 
 interface IFullFileExplorerState {
   viewType: ViewType;
@@ -58,28 +93,59 @@ interface IFullFileExplorerState {
   uploadProgress?: { uploaded: number; total: number };
   uploadMessages?: string[];
   uploadCompleted?: boolean;
+  selectedItems: IFileSystemItem[];
+  searchText: string;
+  searchAllFolders: boolean;
+  searchResults?: IFileSystemItem[];
+  searching?: boolean;
+  searchError?: string;
+  clientSort?: IClientSort;
+  showingCachedContent?: boolean;
+  tileSize: TileSize;
+  previewOpen: boolean;
+  narrow: boolean;
+  compactCommands: boolean;
+  foldersPanelOpen: boolean;
+  locationUrls?: ILocationUrls | null;
+  thumbnails?: Map<string, IThumbnailUrls>;
+  graphSignInRequired?: boolean;
+  fullPreview?: IFullPreview;
+  newFolderDialogOpen?: boolean;
+  message?: IMessage;
 }
 
 const VIEW_TYPE_STORAGE_KEY = "SPFileExplorer.viewType";
+const TILE_SIZE_STORAGE_KEY = "SPFileExplorer.tileSize";
+const PREVIEW_STORAGE_KEY = "SPFileExplorer.preview";
+// Width of the control below which the phone/tablet layout is used.
+const NARROW_WIDTH = 640;
+// Width of the files panel below which the commands are shown without text.
+const COMPACT_COMMANDS_WIDTH = 760;
+const SEARCH_DELAY_MS = 400;
+const MIN_SEARCH_LENGTH = 2;
 
-const getStoredViewType = (): ViewType | undefined => {
+const readSetting = (key: string): string | null => {
   try {
-    const storedValue = window.localStorage.getItem(VIEW_TYPE_STORAGE_KEY);
-    return storedValue !== null && ViewType[+storedValue] !== undefined
-      ? (+storedValue as ViewType)
-      : undefined;
+    return window.localStorage.getItem(key);
   } catch {
     // Storage can be unavailable (e.g. blocked by browser settings).
-    return undefined;
+    return null;
   }
 };
 
-const storeViewType = (viewType: ViewType) => {
+const writeSetting = (key: string, value: string) => {
   try {
-    window.localStorage.setItem(VIEW_TYPE_STORAGE_KEY, viewType.toString());
+    window.localStorage.setItem(key, value);
   } catch {
     // Storage can be unavailable (e.g. blocked by browser settings).
   }
+};
+
+const getStoredViewType = (): ViewType | undefined => {
+  const storedValue = readSetting(VIEW_TYPE_STORAGE_KEY);
+  return storedValue !== null && ViewType[+storedValue] !== undefined
+    ? (+storedValue as ViewType)
+    : undefined;
 };
 
 const findFolder = (folder: IFolder, path: string): IFolder | undefined => {
@@ -139,6 +205,23 @@ const getParentPaths = (folder: IFolder, path: string): string[] => {
   return [folder.path];
 };
 
+const isFolder = (item: IFileSystemItem): boolean => item.filetype === "folder";
+
+/**
+ * Opens an URL in a new tab, or an application link (e.g. ms-word:) in place.
+ */
+const openUrl = (url: string) => {
+  const link = document.createElement("a");
+  link.href = url;
+  if (/^https?:/i.test(url)) {
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+  }
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 const FullFileExplorer = (props: IFullFileExplorerProps) => {
   const strings = props.strings ?? DEFAULT_STRINGS;
   const [controlState, setControlState] = useState({
@@ -148,19 +231,44 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       ViewType.Tiles,
     selectedFolderPath: props.currentFolderPath,
     expandedFolders: [props.currentFolderPath],
-  } as IFullFileExplorerState);
+    selectedItems: [],
+    searchText: "",
+    searchAllFolders: false,
+    tileSize: readSetting(TILE_SIZE_STORAGE_KEY) === "small" ? "small" : "large",
+    previewOpen: readSetting(PREVIEW_STORAGE_KEY) === "true",
+    narrow: false,
+    compactCommands: false,
+    foldersPanelOpen: false,
+  } as unknown as IFullFileExplorerState);
 
   // Counts nested dragenter/dragleave events of the files panel.
   const dragDepth = useRef(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const filesPanelRef = useRef<HTMLDivElement>(null);
+  // Content of the folders opened before, by folder path (shown while the folder is reloaded).
+  const folderCache = useRef(new Map<string, IFileSystemItem[]>());
+  // Identifies the latest search across folders, so that older results are ignored.
+  const searchRequest = useRef(0);
+  // Identifies the latest thumbnails request, so that thumbnails of another folder are ignored.
+  const thumbnailsRequest = useRef(0);
 
   // The selection is created once, so its handler reads the latest properties through the ref.
   const propsRef = useRef(props);
   propsRef.current = props;
 
   const handleSelectionChange = () => {
+    const selectedItems = selection.getSelection() as IFileSystemItem[];
+    // Search results across folders are not records of the dataset.
     propsRef.current.selectRecords(
-      selection.getSelection().map((s) => (s.key ? s.key.toString() : ""))
+      selectedItems
+        .filter((s) => !s.isSearchResult)
+        .map((s) => (s.key ? s.key.toString() : ""))
     );
+    setControlState((prevState) => ({
+      ...prevState,
+      selectedItems,
+      fullPreview: undefined,
+    }));
   };
 
   const selection = React.useMemo(
@@ -172,6 +280,12 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       }),
     []
   );
+
+  const rootPath = controlState.rootFolder?.path ?? "";
+  const searchAcrossFolders =
+    controlState.searchAllFolders &&
+    !!props.searchAllFolders &&
+    controlState.searchText.trim().length >= MIN_SEARCH_LENGTH;
 
   useEffect(() => {
     setControlState((prevState) => ({
@@ -194,21 +308,61 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             }
           : { ...prevState, loading: false, folderStructureLoaded: true }
       );
+      if (folder) {
+        propsRef.current.getLocationUrls?.().then((locationUrls) =>
+          setControlState((prevState) => ({ ...prevState, locationUrls }))
+        );
+      }
     });
   }, []);
 
+  // Phone/tablet layout when the control is narrow.
   useEffect(() => {
-    selection.setChangeEvents(false);
-    selection.setItems(props.currentFolderContent);
-
-    props.selectedRecordsKeys.forEach((id) => {
-      selection.setKeySelected(id, true, false);
+    const element = rootRef.current;
+    if (!element || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const observer = new ResizeObserver((entries) => {
+      const narrow = entries[0].contentRect.width < NARROW_WIDTH;
+      setControlState((prevState) =>
+        prevState.narrow === narrow ? prevState : { ...prevState, narrow }
+      );
     });
-    selection.setChangeEvents(true);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  // Commands without text when the files panel is small (e.g. next to the preview pane).
+  useEffect(() => {
+    const element = filesPanelRef.current;
+    if (!element || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const observer = new ResizeObserver((entries) => {
+      const compactCommands = entries[0].contentRect.width < COMPACT_COMMANDS_WIDTH;
+      setControlState((prevState) =>
+        prevState.compactCommands === compactCommands
+          ? prevState
+          : { ...prevState, compactCommands }
+      );
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    // Content of a folder that is still being loaded is not shown, so that the
+    // cached content of the opened folder is not replaced by the previous folder.
+    if (props.isLoading) {
+      return;
+    }
+    const contentPath = props.currentFolderPath || rootPath;
+    folderCache.current.set(contentPath, props.currentFolderContent);
 
     setControlState((prevState) => ({
       ...prevState,
       currentFolderContent: props.currentFolderContent,
+      showingCachedContent: false,
       // New data has arrived (e.g. after sorting), so the spinner can be hidden
       // unless the folder structure is still being loaded.
       loading: prevState.folderStructureLoaded ? false : prevState.loading,
@@ -220,13 +374,129 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         setControlState((prevState) => ({ ...prevState }));
       }
     });
-  }, [props.currentFolderContent, props.selectedRecordsKeys]);
+  }, [props.currentFolderContent, props.isLoading]);
+
+  // Search across all folders, started after the user stops typing.
+  useEffect(() => {
+    if (!searchAcrossFolders || !props.searchAllFolders) {
+      setControlState((prevState) =>
+        prevState.searchResults || prevState.searching
+          ? { ...prevState, searchResults: undefined, searching: false, searchError: undefined }
+          : prevState
+      );
+      return;
+    }
+    const request = ++searchRequest.current;
+    setControlState((prevState) => ({ ...prevState, searching: true, searchError: undefined }));
+    const timer = window.setTimeout(() => {
+      propsRef.current
+        .searchAllFolders?.(controlState.searchText)
+        .then((searchResults) => {
+          if (request === searchRequest.current) {
+            setControlState((prevState) => ({ ...prevState, searchResults, searching: false }));
+          }
+        })
+        .catch((e) => {
+          if (request === searchRequest.current) {
+            setControlState((prevState) => ({
+              ...prevState,
+              searchResults: [],
+              searching: false,
+              searchError: (e as Error)?.message ?? String(e),
+            }));
+          }
+        });
+    }, SEARCH_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [controlState.searchText, searchAcrossFolders]);
+
+  const getDisplayedItems = (): IFileSystemItem[] => {
+    let items: IFileSystemItem[];
+    if (searchAcrossFolders) {
+      items = controlState.searchResults ?? [];
+    } else {
+      const searchText = controlState.searchText.trim().toLowerCase();
+      items = (controlState.currentFolderContent ?? []).filter(
+        (item) =>
+          !searchText ||
+          String(item.fullname ?? "").toLowerCase().indexOf(searchText) >= 0
+      );
+    }
+    const sort = controlState.clientSort;
+    if (searchAcrossFolders && sort) {
+      items = [...items].sort((a, b) => {
+        const result = String(a[sort.column] ?? "").localeCompare(
+          String(b[sort.column] ?? ""),
+          undefined,
+          { numeric: true, sensitivity: "base" }
+        );
+        return sort.descending ? -result : result;
+      });
+    }
+    return items;
+  };
+  const displayedItems = getDisplayedItems();
+
+  useEffect(() => {
+    selection.setChangeEvents(false);
+    selection.setItems(displayedItems, false);
+    if (!searchAcrossFolders) {
+      props.selectedRecordsKeys.forEach((id) => {
+        selection.setKeySelected(id, true, false);
+      });
+    }
+    selection.setChangeEvents(true);
+    setControlState((prevState) => ({
+      ...prevState,
+      selectedItems: selection.getSelection() as IFileSystemItem[],
+    }));
+  }, [displayedItems.map((i) => i.key).join("|"), props.selectedRecordsKeys]);
+
+  // Thumbnails of the current folder from Microsoft Graph (thumbnails and preview pane).
+  const thumbnailsWanted =
+    !!props.graph && (!!props.showThumbnails || controlState.previewOpen);
+  const currentFolderUrl =
+    controlState.locationUrls && controlState.selectedFolderPath
+      ? getFolderUrl(controlState.locationUrls, controlState.selectedFolderPath)
+      : undefined;
+  const loadThumbnails = () => {
+    if (!props.graph || !currentFolderUrl) {
+      return;
+    }
+    const request = ++thumbnailsRequest.current;
+    props.graph
+      .getThumbnails(currentFolderUrl)
+      .then((thumbnails) => {
+        if (request === thumbnailsRequest.current) {
+          setControlState((prevState) => ({
+            ...prevState,
+            thumbnails,
+            graphSignInRequired: false,
+          }));
+        }
+      })
+      .catch((e) => {
+        if (request === thumbnailsRequest.current && e instanceof SignInRequiredError) {
+          setControlState((prevState) => ({ ...prevState, graphSignInRequired: true }));
+        }
+      });
+  };
+  useEffect(() => {
+    thumbnailsRequest.current++;
+    setControlState((prevState) => ({ ...prevState, thumbnails: undefined }));
+    if (thumbnailsWanted && !searchAcrossFolders) {
+      loadThumbnails();
+    }
+  }, [thumbnailsWanted, currentFolderUrl, searchAcrossFolders]);
+
+  const showMessage = (type: MessageBarType, text: string) =>
+    setControlState((prevState) => ({ ...prevState, message: { type, text } }));
 
   const handleSwitchLayout = (item?: IContextualMenuItem) => {
     if (item) {
       const viewType = +item.key as ViewType;
       if (props.rememberViewType !== false) {
-        storeViewType(viewType);
+        writeSetting(VIEW_TYPE_STORAGE_KEY, viewType.toString());
       }
       setControlState((prevState) => ({
         ...prevState,
@@ -234,6 +504,63 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       }));
     }
   };
+
+  const setTileSize = (tileSize: TileSize) => {
+    writeSetting(TILE_SIZE_STORAGE_KEY, tileSize);
+    setControlState((prevState) => ({ ...prevState, tileSize }));
+  };
+
+  const togglePreview = () => {
+    writeSetting(PREVIEW_STORAGE_KEY, String(!controlState.previewOpen));
+    setControlState((prevState) => ({
+      ...prevState,
+      previewOpen: !prevState.previewOpen,
+      fullPreview: undefined,
+    }));
+  };
+
+  const getItemLink = (item: IFileSystemItem): string | undefined => {
+    const urls = controlState.locationUrls;
+    if (!urls) {
+      return item.absoluteurl || undefined;
+    }
+    return isFolder(item)
+      ? getFolderUrl(urls, item.path)
+      : getItemUrl(
+          urls,
+          item.absoluteurl,
+          item.fullname,
+          item.folderPath ?? controlState.selectedFolderPath
+        );
+  };
+
+  const getThumbnailUrl = (
+    item: IFileSystemItem,
+    size: "medium" | "large"
+  ): string | undefined => {
+    if (isFolder(item) || !canPreview(item.filetype)) {
+      return undefined;
+    }
+    const graphThumbnail = controlState.thumbnails?.get(
+      String(item.fullname ?? "").toLowerCase()
+    )?.[size];
+    if (graphThumbnail) {
+      return graphThumbnail;
+    }
+    const url = getItemLink(item);
+    return url && controlState.locationUrls
+      ? getPreviewImageUrl(controlState.locationUrls.siteUrl, url, size === "large" ? 4 : 1)
+      : undefined;
+  };
+
+  const copyLink = (url: string) => {
+    navigator.clipboard
+      ?.writeText(url)
+      .then(() => showMessage(MessageBarType.success, strings.LinkCopied))
+      .catch(() => showMessage(MessageBarType.error, url));
+  };
+
+  const iconOnlyCommands = controlState.narrow || controlState.compactCommands;
 
   const getViewTypeCommandBarItems = (): ICommandBarItemProps[] => {
     let viewIconName: string;
@@ -252,90 +579,92 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         viewName = strings.TileView;
     }
 
-    const farItems: ICommandBarItemProps[] = [
+    const viewItem = (
+      viewType: ViewType,
+      name: string,
+      iconName: string,
+      title: string
+    ): IContextualMenuItem => ({
+      key: viewType.toString(),
+      name,
+      iconProps: { iconName },
+      canCheck: true,
+      checked: controlState.viewType === viewType,
+      ariaLabel: formatString(
+        controlState.viewType === viewType
+          ? strings.ViewOptionSelectedAriaLabel
+          : strings.ViewOptionAriaLabel,
+        name
+      ),
+      title,
+      onClick: (
+        _ev?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>,
+        item?: IContextualMenuItem
+      ) => handleSwitchLayout(item),
+    });
+
+    return [
+      getSortCommandBarItem(),
       {
         key: "listOptions",
         className: "commandBarNoChevron",
         title: strings.ViewOptionsTitle,
         ariaLabel: formatString(strings.ViewOptionSelectedAriaLabel, viewName),
         name: viewName,
+        iconOnly: iconOnlyCommands,
         iconProps: {
           iconName: viewIconName,
         },
-        //iconOnly: true,
         subMenuProps: {
           items: [
+            viewItem(ViewType.List, strings.ListView, "List", strings.ListViewTitle),
+            viewItem(
+              ViewType.Compact,
+              strings.CompactView,
+              "AlignLeft",
+              strings.CompactViewTitle
+            ),
+            viewItem(ViewType.Tiles, strings.TileView, "GridViewMedium", strings.TileViewTitle),
+            { key: "tileSizeDivider", itemType: ContextualMenuItemType.Divider },
             {
-              key: ViewType.List.toString(),
-              name: strings.ListView,
-              iconProps: {
-                iconName: "List",
+              key: "tileSize",
+              itemType: ContextualMenuItemType.Section,
+              sectionProps: {
+                title: strings.TileSize,
+                items: [
+                  {
+                    key: "smallTiles",
+                    name: strings.SmallTiles,
+                    iconProps: { iconName: "GridViewSmall" },
+                    canCheck: true,
+                    checked: controlState.tileSize === "small",
+                    onClick: () => setTileSize("small"),
+                  },
+                  {
+                    key: "largeTiles",
+                    name: strings.LargeTiles,
+                    iconProps: { iconName: "GridViewLarge" },
+                    canCheck: true,
+                    checked: controlState.tileSize === "large",
+                    onClick: () => setTileSize("large"),
+                  },
+                ],
               },
-              canCheck: true,
-              checked: controlState.viewType === ViewType.List,
-              ariaLabel: formatString(
-                controlState.viewType === ViewType.List
-                  ? strings.ViewOptionSelectedAriaLabel
-                  : strings.ViewOptionAriaLabel,
-                strings.ListView
-              ),
-              title: strings.ListViewTitle,
-              onClick: (
-                _ev?:
-                  | React.MouseEvent<HTMLElement>
-                  | React.KeyboardEvent<HTMLElement>,
-                item?: IContextualMenuItem
-              ) => handleSwitchLayout(item),
-            },
-            {
-              key: ViewType.Compact.toString(),
-              name: strings.CompactView,
-              iconProps: {
-                iconName: "AlignLeft",
-              },
-              canCheck: true,
-              checked: controlState.viewType === ViewType.Compact,
-              ariaLabel: formatString(
-                controlState.viewType === ViewType.Compact
-                  ? strings.ViewOptionSelectedAriaLabel
-                  : strings.ViewOptionAriaLabel,
-                strings.CompactView
-              ),
-              title: strings.CompactViewTitle,
-              onClick: (
-                _ev?:
-                  | React.MouseEvent<HTMLElement>
-                  | React.KeyboardEvent<HTMLElement>,
-                item?: IContextualMenuItem
-              ) => handleSwitchLayout(item),
-            },
-            {
-              key: ViewType.Tiles.toString(),
-              name: strings.TileView,
-              iconProps: {
-                iconName: "GridViewMedium",
-              },
-              canCheck: true,
-              checked: controlState.viewType === ViewType.Tiles,
-              ariaLabel: formatString(
-                controlState.viewType === ViewType.Tiles
-                  ? strings.ViewOptionSelectedAriaLabel
-                  : strings.ViewOptionAriaLabel,
-                strings.TileView
-              ),
-              title: strings.TileViewTitle,
-              onClick: (
-                _ev?:
-                  | React.MouseEvent<HTMLElement>
-                  | React.KeyboardEvent<HTMLElement>,
-                item?: IContextualMenuItem
-              ) => handleSwitchLayout(item),
             },
           ],
         },
       },
+      {
+        key: "preview",
+        name: strings.Preview,
+        title: strings.PreviewTitle,
+        iconOnly: true,
+        iconProps: { iconName: "Preview" },
+        checked: controlState.previewOpen,
+        ariaLabel: strings.PreviewTitle,
+        onClick: togglePreview,
+      },
     ];
-    return farItems;
   };
 
   const buildBreadcrums = (folderInfo: IFolder): IBreadcrumbItem[] => {
@@ -376,9 +705,17 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const setCurrentFolder = (path: string) => {
+    const cachedContent = folderCache.current.get(path);
     setControlState((prevState) => ({
       ...prevState,
       selectedFolderPath: path,
+      // The content of a folder opened before is shown right away and refreshed.
+      currentFolderContent: cachedContent ?? prevState.currentFolderContent,
+      showingCachedContent: !!cachedContent,
+      loading: cachedContent ? prevState.loading : true,
+      foldersPanelOpen: false,
+      searchText: "",
+      fullPreview: undefined,
       error: false,
       errorMessage: undefined,
     }));
@@ -390,11 +727,101 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   };
 
   const openFileItem = (item: IFileSystemItem) => {
-    if (item.filetype == "folder") {
+    if (isFolder(item)) {
       setCurrentFolder(item.path);
+    } else if (item.isSearchResult) {
+      const url = getItemLink(item);
+      if (url) {
+        openUrl(url);
+      }
     } else {
       props.openRecord(item.reference);
     }
+  };
+
+  /**
+   * Actions of an item: context menu, command bar and preview pane.
+   */
+  const getItemActions = (item: IFileSystemItem): IContextualMenuItem[] => {
+    const url = getItemLink(item);
+    const actions: IContextualMenuItem[] = [
+      {
+        key: "open",
+        text: strings.Open,
+        iconProps: { iconName: isFolder(item) ? "FabricOpenFolderHorizontal" : "OpenFile" },
+        onClick: () => openFileItem(item),
+      },
+    ];
+    if (url && !isFolder(item)) {
+      actions.push({
+        key: "openInBrowser",
+        text: strings.OpenInBrowser,
+        iconProps: { iconName: "Globe" },
+        onClick: () => openUrl(getBrowserUrl(url)),
+      });
+      const desktopUrl = getDesktopAppUrl(url, item.filetype);
+      if (desktopUrl) {
+        actions.push({
+          key: "openInApp",
+          text: strings.OpenInApp,
+          iconProps: { iconName: "OpenInNewWindow" },
+          onClick: () => openUrl(desktopUrl),
+        });
+      }
+      actions.push({
+        key: "download",
+        text: strings.Download,
+        iconProps: { iconName: "Download" },
+        onClick: () => openUrl(getDownloadUrl(url)),
+      });
+    }
+    if (url) {
+      actions.push({
+        key: "copyLink",
+        text: strings.CopyLink,
+        iconProps: { iconName: "Link" },
+        onClick: () => copyLink(url),
+      });
+      if (isFolder(item)) {
+        actions.push({
+          key: "openInSharePoint",
+          text: strings.OpenInSharePoint,
+          iconProps: { iconName: "SharepointLogo" },
+          onClick: () => openUrl(url),
+        });
+      }
+    }
+    if (item.isSearchResult && item.folderPath !== undefined) {
+      actions.push({
+        key: "openContainingFolder",
+        text: strings.OpenContainingFolder,
+        iconProps: { iconName: "FolderOpen" },
+        onClick: () => setCurrentFolder(item.folderPath || rootPath),
+      });
+    }
+    return actions;
+  };
+
+  const showItemContextMenu = (
+    item: IFileSystemItem,
+    ev: React.MouseEvent<HTMLElement> | Event
+  ) => {
+    const index = displayedItems.findIndex((i) => i.key === item.key);
+    if (index >= 0 && !selection.isIndexSelected(index)) {
+      selection.setAllSelected(false);
+      selection.setIndexSelected(index, true, true);
+    }
+    // React reuses its event objects, so the menu is positioned with the native event.
+    const target = ("nativeEvent" in ev ? ev.nativeEvent : ev) as MouseEvent;
+    setControlState((prevState) => ({
+      ...prevState,
+      contextualMenuProps: {
+        items: getItemActions(item),
+        target,
+        directionalHint: DirectionalHint.bottomLeftEdge,
+        onDismiss: onActionMenuClosed,
+      },
+    }));
   };
 
   const renderCell = (
@@ -412,7 +839,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         <>
           {renderIcon && (
             <FileItemIcon
-              isFolder={item.filetype === "folder"}
+              isFolder={isFolder(item)}
               isCheckedOut={item.ischeckedout == 1}
               isSharedLocation={item.isSharedLocation}
               extension={item.filetype}
@@ -441,13 +868,75 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }));
   };
 
-  const onSortAction = (column: IColumn, ascending: boolean) => {
+  const onSortAction = (columnName: string, ascending: boolean) => {
+    if (searchAcrossFolders) {
+      // Search results are sorted in the browser.
+      setControlState((prevState) => ({
+        ...prevState,
+        clientSort: { column: columnName, descending: !ascending },
+      }));
+      return;
+    }
     setControlState((prevState) => ({
       ...prevState,
       loading: true,
     }));
 
-    props.setSorting(column.key, ascending);
+    props.setSorting(columnName, ascending);
+  };
+
+  const getSortState = (): IClientSort | undefined => {
+    if (searchAcrossFolders) {
+      return controlState.clientSort;
+    }
+    const sorted = props.columns.find((c) => c.isSorted);
+    return sorted ? { column: sorted.name, descending: !!sorted.isSortedDescending } : undefined;
+  };
+
+  /**
+   * Sort menu of the command bar, available in all views (also in the tile view).
+   */
+  const getSortCommandBarItem = (): ICommandBarItemProps => {
+    const sort = getSortState();
+    const columns = props.columns.filter((c) => c.isSortable);
+    return {
+      key: "sort",
+      name: strings.Sort,
+      title: strings.Sort,
+      iconOnly: iconOnlyCommands,
+      iconProps: { iconName: "Sort" },
+      ariaLabel: strings.Sort,
+      subMenuProps: {
+        items: [
+          ...columns.map((c) => ({
+            key: `sort-${c.name}`,
+            name: c.displayName,
+            canCheck: true,
+            checked: sort?.column === c.name,
+            onClick: () => onSortAction(c.name, !(sort?.descending ?? false)),
+          })),
+          { key: "sortDivider", itemType: ContextualMenuItemType.Divider },
+          {
+            key: "ascending",
+            name: strings.Ascending,
+            iconProps: { iconName: "SortUp" },
+            canCheck: true,
+            checked: !!sort && !sort.descending,
+            disabled: !sort,
+            onClick: () => sort && onSortAction(sort.column, true),
+          },
+          {
+            key: "descending",
+            name: strings.Descending,
+            iconProps: { iconName: "SortDown" },
+            canCheck: true,
+            checked: !!sort && sort.descending,
+            disabled: !sort,
+            onClick: () => sort && onSortAction(sort.column, false),
+          },
+        ],
+      },
+    };
   };
 
   const onColumnClick = (
@@ -460,18 +949,16 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           {
             key: "aToZ",
             name: strings.SortAscending,
-            //iconProps: { iconName: "SortUp" },
             canCheck: true,
             checked: column.isSorted && !column.isSortedDescending,
-            onClick: () => onSortAction(column, true),
+            onClick: () => onSortAction(column.key, true),
           },
           {
             key: "zToA",
             name: strings.SortDescending,
-            //iconProps: { iconName: "SortDown" },
             canCheck: true,
             checked: column.isSorted && column.isSortedDescending,
-            onClick: () => onSortAction(column, false),
+            onClick: () => onSortAction(column.key, false),
           },
         ],
         target: ev.currentTarget as HTMLElement,
@@ -489,7 +976,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     !!props.uploadFiles &&
     !!controlState.rootFolder &&
     !!controlState.selectedFolderPath &&
-    !controlState.uploadProgress;
+    !controlState.uploadProgress &&
+    !searchAcrossFolders;
 
   const isFileDrag = (ev: React.DragEvent<HTMLElement>): boolean =>
     Array.from(ev.dataTransfer?.types ?? []).indexOf("Files") >= 0;
@@ -566,15 +1054,16 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }));
   };
 
-  const dismissUploadMessages = () => {
+  const dismissMessages = () => {
     setControlState((prevState) => ({
       ...prevState,
       uploadMessages: undefined,
       uploadCompleted: false,
+      message: undefined,
     }));
   };
 
-  const renderUploadMessages = (): JSX.Element | null => {
+  const renderMessages = (): JSX.Element | null => {
     if (controlState.uploadProgress) {
       return (
         <MessageBar messageBarType={MessageBarType.info}>
@@ -596,7 +1085,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         <MessageBar
           messageBarType={MessageBarType.error}
           isMultiline={true}
-          onDismiss={dismissUploadMessages}
+          onDismiss={dismissMessages}
           dismissButtonAriaLabel={strings.Close}
         >
           {controlState.uploadMessages.map((message, i) => (
@@ -609,17 +1098,193 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       return (
         <MessageBar
           messageBarType={MessageBarType.success}
-          onDismiss={dismissUploadMessages}
+          onDismiss={dismissMessages}
           dismissButtonAriaLabel={strings.Close}
         >
           {strings.UploadCompleted}
         </MessageBar>
       );
     }
+    if (controlState.message) {
+      return (
+        <MessageBar
+          messageBarType={controlState.message.type}
+          isMultiline={true}
+          onDismiss={dismissMessages}
+          dismissButtonAriaLabel={strings.Close}
+        >
+          {controlState.message.text}
+        </MessageBar>
+      );
+    }
     return null;
   };
 
+  const createFolder = async (name: string): Promise<string | undefined> => {
+    if (!props.graph || !controlState.locationUrls) {
+      return undefined;
+    }
+    try {
+      await props.graph.createFolder(
+        getFolderUrl(controlState.locationUrls, controlState.selectedFolderPath),
+        name
+      );
+      showMessage(MessageBarType.success, formatString(strings.FolderCreated, name));
+      props.refresh?.();
+      return undefined;
+    } catch (e) {
+      return formatString(
+        strings.FolderCreateFailed,
+        e instanceof GraphError || e instanceof Error ? e.message : String(e)
+      );
+    }
+  };
+
+  const signInToGraph = () => {
+    props.graph
+      ?.signIn()
+      .then(() => {
+        setControlState((prevState) => ({ ...prevState, graphSignInRequired: false }));
+        loadThumbnails();
+      })
+      .catch((e) => showMessage(MessageBarType.error, (e as Error)?.message ?? String(e)));
+  };
+
+  const showFullPreview = (item: IFileSystemItem) => {
+    const url = getItemLink(item);
+    if (!props.graph || !url) {
+      return;
+    }
+    setControlState((prevState) => ({
+      ...prevState,
+      fullPreview: { key: item.key, loading: true },
+    }));
+    props.graph
+      .getPreviewUrl(url, true)
+      .then((previewUrl) => {
+        setControlState((prevState) => ({
+          ...prevState,
+          fullPreview: { key: item.key, url: previewUrl, loading: false },
+          graphSignInRequired: false,
+        }));
+        if (!previewUrl) {
+          showMessage(MessageBarType.info, strings.NoPreview);
+        }
+      })
+      .catch((e) => {
+        setControlState((prevState) => ({ ...prevState, fullPreview: undefined }));
+        showMessage(MessageBarType.error, (e as Error)?.message ?? String(e));
+      });
+  };
+
+  const toggleSearchAllFolders = () =>
+    setControlState((prevState) => ({
+      ...prevState,
+      searchAllFolders: !prevState.searchAllFolders,
+    }));
+
+  const getCommandBarItems = (): ICommandBarItemProps[] => {
+    const items: ICommandBarItemProps[] = [];
+    if (controlState.narrow && controlState.rootFolder && !props.hideFoldersPane) {
+      items.push({
+        key: "folders",
+        name: strings.Folders,
+        iconOnly: true,
+        iconProps: { iconName: "FabricFolder" },
+        ariaLabel: strings.Folders,
+        checked: controlState.foldersPanelOpen,
+        onClick: () =>
+          setControlState((prevState) => ({
+            ...prevState,
+            foldersPanelOpen: !prevState.foldersPanelOpen,
+          })),
+      });
+    }
+    items.push({
+      key: "search",
+      onRender: () => (
+        <div className={`searchCommand${iconOnlyCommands ? " compact" : ""}`}>
+          <SearchBox
+            className="filesSearchBox"
+            placeholder={strings.SearchFiles}
+            ariaLabel={strings.SearchFiles}
+            value={controlState.searchText}
+            onChange={(_e, value) =>
+              setControlState((prevState) => ({
+                ...prevState,
+                searchText: value ?? "",
+                clientSort: undefined,
+              }))
+            }
+            onClear={() =>
+              setControlState((prevState) => ({ ...prevState, searchText: "" }))
+            }
+          />
+          {props.searchAllFolders &&
+            (iconOnlyCommands ? (
+              <IconButton
+                className="searchAllFoldersButton"
+                iconProps={{ iconName: "FabricFolderSearch" }}
+                title={strings.SearchAllFoldersTitle}
+                ariaLabel={strings.SearchAllFoldersTitle}
+                toggle={true}
+                checked={controlState.searchAllFolders}
+                onClick={toggleSearchAllFolders}
+              />
+            ) : (
+              <Checkbox
+                className="searchAllFolders"
+                label={strings.SearchAllFolders}
+                title={strings.SearchAllFoldersTitle}
+                checked={controlState.searchAllFolders}
+                onChange={toggleSearchAllFolders}
+              />
+            ))}
+        </div>
+      ),
+    });
+    if (props.graph && controlState.locationUrls && !searchAcrossFolders) {
+      items.push({
+        key: "newFolder",
+        name: strings.NewFolder,
+        title: strings.NewFolder,
+        iconOnly: iconOnlyCommands,
+        iconProps: { iconName: "NewFolder" },
+        onClick: () =>
+          setControlState((prevState) => ({ ...prevState, newFolderDialogOpen: true })),
+      });
+    }
+    if (controlState.locationUrls && controlState.selectedFolderPath) {
+      const folderUrl = getFolderUrl(controlState.locationUrls, controlState.selectedFolderPath);
+      items.push({
+        key: "openFolderInSharePoint",
+        name: strings.OpenInSharePoint,
+        title: strings.OpenInSharePoint,
+        iconOnly: iconOnlyCommands,
+        iconProps: { iconName: "SharepointLogo" },
+        onClick: () => openUrl(folderUrl),
+      });
+    }
+    if (controlState.selectedItems.length === 1) {
+      const actions = getItemActions(controlState.selectedItems[0]).filter(
+        (a) => a.key !== "open"
+      );
+      if (actions.length > 0) {
+        items.push({
+          key: "itemActions",
+          name: strings.MoreActions,
+          iconOnly: true,
+          iconProps: { iconName: "More" },
+          ariaLabel: strings.MoreActions,
+          subMenuProps: { items: actions },
+        });
+      }
+    }
+    return items;
+  };
+
   const getViewColumns = (columns: IFileViewColumn[]): IColumn[] => {
+    const sort = getSortState();
     return columns.map((c) => {
       const columnDefinition: IColumn = {
         key: c.name,
@@ -629,8 +1294,8 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         maxWidth: 0,
         isResizable: true,
         isRowHeader: true,
-        isSorted: c.isSorted,
-        isSortedDescending: c.isSortedDescending,
+        isSorted: searchAcrossFolders ? sort?.column === c.name : c.isSorted,
+        isSortedDescending: searchAcrossFolders ? sort?.descending : c.isSortedDescending,
         sortAscendingAriaLabel: c.sortAscendingLabel ?? strings.SortedAscending,
         sortDescendingAriaLabel: c.sortDescendingLabel ?? strings.SortedDescending,
 
@@ -643,8 +1308,86 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     });
   };
 
+  const renderFolderExplorer = () =>
+    controlState.rootFolder &&
+    !props.hideFoldersPane &&
+    (!controlState.narrow || controlState.foldersPanelOpen) && (
+      <FolderExplorer
+        rootItem={controlState.rootFolder}
+        hideSearchBox={props.hideFoldersSearchBox}
+        strings={strings}
+      ></FolderExplorer>
+    );
+
+  const previewItem =
+    controlState.selectedItems.length === 1 ? controlState.selectedItems[0] : undefined;
+  const fullPreview =
+    previewItem && controlState.fullPreview?.key === previewItem.key
+      ? controlState.fullPreview
+      : undefined;
+
+  const renderContent = () => {
+    if (searchAcrossFolders && controlState.searching) {
+      return (
+        <div className="emptyFolderMessage">
+          <Spinner size={SpinnerSize.small} label={strings.Searching} labelPosition="right" />
+        </div>
+      );
+    }
+    if (displayedItems.length === 0) {
+      return (
+        <div className="emptyFolderMessage">
+          {controlState.searchError
+            ? formatString(strings.SearchFailed, controlState.searchError)
+            : controlState.searchText.trim()
+            ? strings.NoSearchResults
+            : controlState.rootFolder
+            ? strings.FolderEmpty
+            : strings.NoDocumentLocation}
+        </div>
+      );
+    }
+    return (
+      <div className="fileViewContent">
+        <MarqueeSelection selection={selection}>
+          {controlState.viewType !== ViewType.Tiles ? (
+            <DetailsList
+              items={displayedItems}
+              compact={controlState.viewType === ViewType.Compact}
+              columns={getViewColumns(props.columns)}
+              setKey="key"
+              selection={selection}
+              onItemContextMenu={(item, _index, ev) => {
+                if (item && ev) {
+                  ev.preventDefault?.();
+                  showItemContextMenu(item, ev);
+                }
+                return false;
+              }}
+            />
+          ) : (
+            <TilesView
+              items={displayedItems}
+              tileSize={controlState.tileSize}
+              openFileItem={openFileItem}
+              selection={selection}
+              getThumbnailUrl={
+                props.showThumbnails ? (item) => getThumbnailUrl(item, "medium") : undefined
+              }
+              onItemContextMenu={showItemContextMenu}
+              strings={strings}
+            ></TilesView>
+          )}
+        </MarqueeSelection>
+      </div>
+    );
+  };
+
   return (
-    <div className="spFileExplorer">
+    <div
+      className={`spFileExplorer${controlState.narrow ? " narrow" : ""}`}
+      ref={rootRef}
+    >
       {controlState.loading && (
         <div className="loadingContainer">
           <Spinner
@@ -669,16 +1412,17 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           setExpandedFoldersPaths: setExpandedFoldersPaths,
         }}
       >
-        {controlState.rootFolder && !props.hideFoldersPane && (
-          <FolderExplorer
-            rootItem={controlState.rootFolder}
-            hideSearchBox={props.hideFoldersSearchBox}
-            strings={strings}
-          ></FolderExplorer>
+        {controlState.narrow ? (
+          controlState.foldersPanelOpen && (
+            <div className="foldersOverlay">{renderFolderExplorer()}</div>
+          )
+        ) : (
+          renderFolderExplorer()
         )}
 
         <div
           className="filesViewPanel"
+          ref={filesPanelRef}
           onDragEnter={onDragEnter}
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
@@ -686,11 +1430,11 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         >
           <CommandBar
             className="explorerCommandBar"
-            items={[]}
+            items={getCommandBarItems()}
             farItems={getViewTypeCommandBarItems()}
             ariaLabel={strings.FileActions}
           />
-          <div className="uploadMessages">{renderUploadMessages()}</div>
+          <div className="uploadMessages">{renderMessages()}</div>
           {controlState.dragActive && controlState.rootFolder && (
             <div className="dropOverlay">
               {formatString(
@@ -706,47 +1450,30 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             {controlState.selectedFolderPath ||
             (controlState.folderStructureLoaded && !controlState.rootFolder) ? (
               <>
-                {controlState.rootFolder && (
-                  <Breadcrumb
-                    items={buildBreadcrums(controlState.rootFolder)}
-                  ></Breadcrumb>
-                )}
-                {controlState.currentFolderContent &&
-                controlState.currentFolderContent.length > 0 ? (
-                  <div className="fileViewContent">
-                    <MarqueeSelection selection={selection}>
-                      {controlState.viewType !== ViewType.Tiles ? (
-                        <>
-                          <DetailsList
-                            items={controlState.currentFolderContent}
-                            compact={controlState.viewType === ViewType.Compact}
-                            columns={getViewColumns(props.columns)}
-                            setKey="key"
-                            selection={selection}
-                          />
-                          {controlState.contextualMenuProps && (
-                            <ContextualMenu
-                              {...controlState.contextualMenuProps}
-                            />
-                          )}
-                        </>
-                      ) : (
-                        <TilesView
-                          items={controlState.currentFolderContent}
-                          tileSize={"large"}
-                          openFileItem={openFileItem}
-                          selection={selection}
-                          strings={strings}
-                        ></TilesView>
-                      )}
-                    </MarqueeSelection>
+                {searchAcrossFolders ? (
+                  <div className="searchResultsTitle">
+                    {formatString(strings.SearchResults, controlState.searchText.trim())}
                   </div>
                 ) : (
-                  <div className="emptyFolderMessage">
-                    {controlState.rootFolder
-                      ? strings.FolderEmpty
-                      : strings.NoDocumentLocation}
-                  </div>
+                  controlState.rootFolder && (
+                    <div className="breadcrumbRow">
+                      <Breadcrumb
+                        items={buildBreadcrums(controlState.rootFolder)}
+                      ></Breadcrumb>
+                      {controlState.showingCachedContent && props.isLoading && (
+                        <Spinner
+                          className="refreshingIndicator"
+                          size={SpinnerSize.xSmall}
+                          title={strings.Refreshing}
+                          ariaLabel={strings.Refreshing}
+                        />
+                      )}
+                    </div>
+                  )
+                )}
+                {renderContent()}
+                {controlState.contextualMenuProps && (
+                  <ContextualMenu {...controlState.contextualMenuProps} />
                 )}
               </>
             ) : (
@@ -754,6 +1481,42 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
             )}
           </div>
         </div>
+        {/* On narrow screens the preview covers the files, so it is shown only for a selected item. */}
+        {controlState.previewOpen && (!controlState.narrow || previewItem) && (
+          <div className={controlState.narrow ? "previewOverlay" : "previewPanel"}>
+            <PreviewPane
+              item={previewItem}
+              columns={props.columns}
+              imageUrl={previewItem ? getThumbnailUrl(previewItem, "large") : undefined}
+              fullPreviewUrl={fullPreview?.url}
+              fullPreviewLoading={fullPreview?.loading}
+              onShowFullPreview={
+                props.graph && previewItem && !isFolder(previewItem) && getItemLink(previewItem)
+                  ? () => showFullPreview(previewItem)
+                  : undefined
+              }
+              signInRequired={controlState.graphSignInRequired}
+              onSignIn={props.graph ? signInToGraph : undefined}
+              actions={previewItem ? getItemActions(previewItem) : []}
+              strings={strings}
+              onClose={togglePreview}
+            />
+          </div>
+        )}
+        {controlState.newFolderDialogOpen && (
+          <NewFolderDialog
+            parentName={
+              (controlState.rootFolder &&
+                findFolder(controlState.rootFolder, controlState.selectedFolderPath)?.name) ??
+              ""
+            }
+            strings={strings}
+            onCreate={createFolder}
+            onDismiss={() =>
+              setControlState((prevState) => ({ ...prevState, newFolderDialogOpen: false }))
+            }
+          />
+        )}
       </FolderExplorerContext.Provider>
     </div>
   );
