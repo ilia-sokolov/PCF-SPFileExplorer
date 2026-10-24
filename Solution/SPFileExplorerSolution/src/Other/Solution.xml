@@ -88,7 +88,9 @@
         </Address>
       </Addresses>
     </Publisher>
-    <RootComponents />
+    <RootComponents>
+      <RootComponent type="61" schemaName="dotact_/spfileexplorer/authredirect.html" behavior="0" />
+    </RootComponents>
     <MissingDependencies />
   </SolutionManifest>
 </ImportExportXml>

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Kontrolelementet gør det muligt at gennemse SharePoint-dokumenter på samme måde som i Stifinder i Windows. Brugerfladen viser hele mappehierarkiet og gør det muligt hurtigt at finde en mappe efter navn, så du hurtigt får adgang til de filer, du skal bruge.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Datasæt med dokumenter</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Minimumshøjde</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Kontrolelementets minimumshøjde i pixel</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Skjul mappetræet</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Angiver, om navigationsruden med mapper skjules (som standard vises den)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Standardvisning</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Visning, der vises, når kontrolelementet åbnes (feltvisning som standard)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Husk den valgte visning</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Angiver, om den visning, som en bruger vælger, gemmes i browseren og bruges til andre poster (som standard gemmes den)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Listevisning</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Kompakt visning</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Feltvisning</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Vis elementer og detaljer på en liste</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Vis elementer og detaljer på en kompakt liste</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Vis elementer som felter</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Åbn menuen med visningsindstillinger</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Visningsindstillinger. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Visningsindstillinger. {0} er valgt.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Sortér fra A til Å</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Sortér fra Å til A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Sorteret fra A til Å</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Sorteret fra Å til A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Indlæser...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Filhandlinger</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Denne mappe er tom</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Der er ingen dokumenter at vise. Kontrollér, at dokumentstyring er aktiveret for denne tabel, og at der findes en dokumentplacering for denne post.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Vælg en mappe for at se dens indhold.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Filtrer mapper efter navn</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Søgningen gav ingen resultater.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Der er ingen mapper at vise.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Tjekket ud</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Delt</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Aktivér upload med træk og slip (eksperimentel)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Angiver, om filer kan uploades til den aktuelle mappe ved at trække dem hen på kontrolelementet (deaktiveret som standard). Bruger handlingen UploadDocument i standarddokumentgitteret, som ikke er offentligt dokumenteret.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Slip filer her for at uploade dem til {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Uploader {0} af {1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Upload fuldført.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>{0} kunne ikke uploades: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Mapper kan ikke uploades: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Luk</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Vis miniaturer</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Angiver, om der vises eksempelbilleder på felterne i stedet for filikoner (som standard vises de ikke). Bruger eksempelbillederne i SharePoint eller miniaturerne i Microsoft Graph, når det er konfigureret.</value>
+  </data>
+  <data name="GraphClientId_Name" xml:space="preserve">
+    <value>Klient-id til Microsoft Graph</value>
+  </data>
+  <data name="GraphClientId_Description" xml:space="preserve">
+    <value>Program-id (klient-id) for den Microsoft Entra-appregistrering, der bruges til at kalde Microsoft Graph. Gør det muligt at oprette mapper og vise miniaturer og fulde eksempler. Se installationsvejledningen.</value>
+  </data>
+  <data name="GraphTenantId_Name" xml:space="preserve">
+    <value>Lejer-id til Microsoft Graph</value>
+  </data>
+  <data name="GraphTenantId_Description" xml:space="preserve">
+    <value>Mappe-id (lejer-id) for Microsoft Entra-appregistreringen (valgfrit, som standard brugerens organisation).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Søg efter filer</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Alle mapper</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Søg i alle mapper</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Søgeresultater for "{0}"</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Ingen filer matcher din søgning.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Søger...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>Søgningen mislykkedes: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sortér</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Stigende</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Faldende</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Feltstørrelse</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Små felter</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Store felter</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Mapper</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Eksempel</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Vis eller skjul eksempelruden</value>
+  </data>
+  <data name="NoPreview" xml:space="preserve">
+    <value>Intet eksempel tilgængeligt</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Vælg en fil for at se et eksempel.</value>
+  </data>
+  <data name="ShowFullPreview" xml:space="preserve">
+    <value>Vis fuldt eksempel</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Log på Microsoft 365</value>
+  </data>
+  <data name="SignInHint" xml:space="preserve">
+    <value>Log på Microsoft 365 for at vise eksempler og oprette mapper.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Åbn</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Åbn i browser</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Åbn i skrivebordsappen</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Kopiér link</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Linket er kopieret.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Åbn i SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Åbn overordnet mappe</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Flere handlinger</value>
+  </data>
+  <data name="NewFolder" xml:space="preserve">
+    <value>Ny mappe</value>
+  </data>
+  <data name="NewFolderTitle" xml:space="preserve">
+    <value>Opret en mappe i {0}</value>
+  </data>
+  <data name="FolderName" xml:space="preserve">
+    <value>Mappenavn</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Opret</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuller</value>
+  </data>
+  <data name="InvalidFolderName" xml:space="preserve">
+    <value>Angiv et navn uden tegnene " * : &lt; &gt; ? / \ |.</value>
+  </data>
+  <data name="FolderCreated" xml:space="preserve">
+    <value>Mappen {0} er oprettet.</value>
+  </data>
+  <data name="FolderCreateFailed" xml:space="preserve">
+    <value>Mappen kunne ikke oprettes: {0}</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detaljer</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Opdaterer...</value>
+  </data>
+</root>

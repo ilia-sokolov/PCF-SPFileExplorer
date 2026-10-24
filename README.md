@@ -10,8 +10,15 @@ The control ensures that users have access to all the features available in the 
 - Folder tree view with folder search by name.
 - Comprehensive access to all features available in standard views, including sorting, keyword filtering, seamless integration with the standard command bar, and more.
 - Three view types: tile view, list view, and compact list view. The default view can be configured, and the view selected by a user is remembered in the browser.
+- Search for files in the current folder or in all folders of the record.
+- Fast folder navigation: folders opened before are shown immediately and refreshed in the background.
+- File actions (open in the browser or in the desktop app, download, copy link, open in SharePoint) from the context menu, the command bar and the preview pane.
+- Preview pane with a preview image, the details and the actions of the selected file, and optional thumbnails in the tile view.
+- Sort menu and small or large tiles in the tile view.
+- Layout for phones and narrow forms.
+- New folders, file thumbnails and full previews with Microsoft Graph (optional, see [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews)).
 - Upload of files to the current folder by drag and drop (experimental, has to be enabled).
-- English and German user interface.
+- User interface in 14 languages.
 
 ## Prerequisites
 
@@ -38,10 +45,41 @@ The following properties can be set when the control is added to a view or to a 
 | **Default view** | `Tile view` | View type (tile, list or compact list) that is shown when the control is opened. |
 | **Remember selected view** | `Yes` | Remembers the view type selected by a user in the browser and reuses it for other records. Set it to `No` to always open the **Default view**. |
 | **Enable drag and drop upload (experimental)** | `No` | Allows users to upload files to the current folder by dragging them onto the control. Works on the documents of a record (documents subgrid or related **Documents** tab). See [Drag and drop upload](#drag-and-drop-upload). |
+| **Show thumbnails** | `No` | Shows preview images of images, PDF and Office files on the tiles instead of file icons. See [Thumbnails and previews](#thumbnails-and-previews). |
+| **Microsoft Graph client ID** | *(empty)* | Application (client) ID of a Microsoft Entra app registration. Enables new folders, Microsoft Graph thumbnails and full previews. See [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews). |
+| **Microsoft Graph tenant ID** | *(empty)* | Directory (tenant) ID of the app registration. Optional; by default users sign in to their own organization. |
 
-**Default view** and **Remember selected view** are available from control version 0.0.3, **Enable drag and drop upload** from 0.0.4 (see the [changelog](/CHANGELOG.md)).
+**Default view** and **Remember selected view** are available from control version 0.0.3, **Enable drag and drop upload** from 0.0.4, **Show thumbnails** and the Microsoft Graph properties from 0.0.5 (see the [changelog](/CHANGELOG.md)).
 
 The control reuses the columns, sorting and filters of the view it is applied to.
+
+## Working with files
+
+- **Search**: the search box above the files filters the current folder by name. Select **All folders** to search the file names in all folders of the record's documents; the results show the folder of each file, and **Open containing folder** opens it. Searching all folders is available for the documents of a record (documents subgrid or related **Documents** tab).
+- **File actions**: right-click a file or folder, use **More actions** (…) in the command bar when one item is selected, or use the buttons of the preview pane: **Open**, **Open in browser**, **Open in desktop app** (Word, Excel, PowerPoint, Visio and Project files), **Download**, **Copy link** and, for folders, **Open in SharePoint**. **Open in SharePoint** in the command bar opens the current folder.
+- **Preview pane**: the **Preview** button on the right side of the command bar shows the preview image, the details (columns of the view) and the actions of the selected file. The pane stays open for other records until it is closed.
+- **Sort and tile size**: the **Sort** menu sorts by the columns of the view in all view types, including the tile view. The view menu switches between small and large tiles.
+- **Phones and narrow forms**: when the control is narrower than 640 pixels, the folder tree opens from the **Folders** button and the preview pane covers the files.
+- **Folder navigation**: the content of folders opened before is shown immediately while it is loaded again; a small spinner next to the breadcrumb shows that the content is being refreshed.
+
+### Thumbnails and previews
+
+The preview images are rendered by SharePoint for images, PDF and Office files. They are loaded by the browser directly from SharePoint, with the user's SharePoint session. If the browser blocks third-party cookies, or if the user has not signed in to SharePoint yet, the file icon is shown instead. With [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews) configured, the control uses the thumbnails returned by Microsoft Graph, which do not depend on the SharePoint session, and **Show full preview** in the preview pane shows the document itself.
+
+### Microsoft Graph (new folders, thumbnails and full previews)
+
+Creating folders, Microsoft Graph thumbnails and full previews call [Microsoft Graph](https://learn.microsoft.com/en-us/graph/api/resources/onedrive) on behalf of the signed-in user. Users can only access files they have access to in SharePoint. To enable these features:
+
+1. In the [Microsoft Entra admin center](https://entra.microsoft.com), go to **App registrations** → **New registration**. Enter a name (for example *SharePoint Full File Explorer*), keep **Accounts in this organizational directory only** and click **Register**.
+2. In **Authentication**, click **Add a platform** → **Single-page application** and add the redirect URI of each environment that uses the control:
+   `https://<your environment>.crm.dynamics.com/WebResources/dotact_/spfileexplorer/authredirect.html`
+   (use the URL of the environment as shown in the browser, e.g. `https://contoso.crm4.dynamics.com/...`). The page is installed with the solution.
+3. In **API permissions**, click **Add a permission** → **Microsoft Graph** → **Delegated permissions**, select **Files.ReadWrite.All** and click **Add permissions**. If users are not allowed to consent to applications in your organization, click **Grant admin consent**.
+4. Copy the **Application (client) ID** and the **Directory (tenant) ID** from **Overview** into the **Microsoft Graph client ID** and **Microsoft Graph tenant ID** properties of the control.
+
+The control signs the user in silently with the Microsoft 365 account of the Dataverse user. If that is not possible (for example, consent is missing), the preview pane shows **Sign in to Microsoft 365**, which opens a sign-in popup. Creating a folder opens the popup when needed.
+
+The control declares `graph.microsoft.com` and `login.microsoftonline.com` as external services, so Power Apps classifies it as a premium component. Model-driven apps already require a premium license, so this has no effect on users of model-driven apps. If [content security policy](https://learn.microsoft.com/en-us/power-platform/admin/content-security-policy) is enforced for model-driven apps in your environment, allow `https://graph.microsoft.com` and `https://login.microsoftonline.com` in `connect-src` and `frame-src`, and the SharePoint and OneDrive domains of your organization in `frame-src` and `img-src`.
 
 ### Drag and drop upload
 
@@ -51,7 +89,7 @@ The upload uses the `UploadDocument` action of Dataverse, which the standard **D
 
 ### Languages
 
-The user interface and the property names are available in English and German; other languages fall back to English. To add a language, copy `SPFileExplorer/strings/SPFileExplorer.1033.resx` to `SPFileExplorer.<LCID>.resx`, translate the values and add the file to the `resources` element of `SPFileExplorer/ControlManifest.Input.xml`.
+The user interface and the property names are available in English, Czech, Danish, Dutch, Finnish, French, German, Italian, Norwegian (Bokmål), Polish, Portuguese (Brazil), Spanish, Swedish and Ukrainian; other languages fall back to English. Corrections from native speakers are welcome. To add a language, copy `SPFileExplorer/strings/SPFileExplorer.1033.resx` to `SPFileExplorer.<LCID>.resx`, translate the values and add the file to the `resources` element of `SPFileExplorer/ControlManifest.Input.xml`.
 
 ## Troubleshooting
 
@@ -67,6 +105,18 @@ Increase the **Minimum Height** property of the control.
 **"There are no documents to show" is displayed.**
 No active SharePoint document location was found for the record. Check that document management is enabled for the table and open the standard **Documents** tab once, so that the document location and the SharePoint folder are created.
 
+**Thumbnails or preview images are not shown.**
+SharePoint preview images need the user's SharePoint session and third-party cookies (see [Thumbnails and previews](#thumbnails-and-previews)). Open SharePoint once in the same browser, or configure [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews). Thumbnails are available for images, PDF and Office files.
+
+**The sign-in popup shows "AADSTS50011" (redirect URI mismatch).**
+The redirect URI of the environment is missing in the app registration. Add `https://<your environment>/WebResources/dotact_/spfileexplorer/authredirect.html` as a **Single-page application** redirect URI (see [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews)).
+
+**The sign-in popup does not open.**
+Allow popups for the Dataverse environment in the browser, then click **Sign in to Microsoft 365** or **New folder** again.
+
+**New folder is not shown.**
+The command is shown when the **Microsoft Graph client ID** property is set and the SharePoint URL of the document location is known; it is not available while searching all folders.
+
 **Files cannot be dropped onto the control.**
 Check that **Enable drag and drop upload (experimental)** is set and that the control shows the documents of a record; in a table view of all documents there is no record to upload the files to.
 
@@ -75,6 +125,8 @@ Check that **Enable drag and drop upload (experimental)** is set and that the co
 - The folder tree is built for the document location of the shown documents. When a record has several document locations and the selected location contains no documents, the tree of the oldest location is shown.
 - The control loads up to 5,000 documents of the current folder. The folder tree is requested with one query per folder when it is loaded and refreshed at most once per minute, so very large folder hierarchies take longer to load.
 - Drag and drop upload is experimental (see [Drag and drop upload](#drag-and-drop-upload)) and does not upload folders.
+- **All folders** search compares file names only (not the content), loads up to 5,000 documents of the record and shows up to 500 results.
+- Folders opened before are shown from the browser memory until their content is reloaded, which usually takes less than a second.
 
 ## Build from source
 
@@ -88,6 +140,14 @@ npm start          # build and run the control with mock data in the local test 
 
 # build the managed solution into Solution/SPFileExplorerSolution/bin/Release
 dotnet build Solution/SPFileExplorerSolution --configuration Release
+```
+
+In the local test harness, set **Microsoft Graph client ID** to any value to try new folders, thumbnails and previews with mock data.
+
+The sign-in redirect page (`Solution/SPFileExplorerSolution/src/WebResources/dotact_/spfileexplorer/authredirect.html`) is generated from the installed `@azure/msal-browser` package. Generate it again after updating the package:
+
+```bash
+node scripts/auth-bridge/build.mjs
 ```
 
 ## Release process

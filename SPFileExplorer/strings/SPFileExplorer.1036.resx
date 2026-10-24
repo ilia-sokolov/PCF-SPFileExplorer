@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Le contrôle permet de parcourir les documents SharePoint comme dans l'Explorateur Windows. L'interface affiche toute l'arborescence des dossiers et permet de trouver rapidement un dossier par son nom, pour accéder sans attendre aux fichiers nécessaires.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Jeu de données des documents</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Hauteur minimale</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Hauteur minimale du contrôle en pixels</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Masquer l'arborescence des dossiers</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Indique si le volet de navigation des dossiers est masqué (il est visible par défaut)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Affichage par défaut</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Affichage utilisé à l'ouverture du contrôle (vignettes par défaut)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Mémoriser l'affichage sélectionné</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Indique si l'affichage choisi par un utilisateur est mémorisé dans le navigateur et réutilisé pour les autres enregistrements (il est mémorisé par défaut)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Liste</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Liste compacte</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Vignettes</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Afficher les éléments et leurs détails dans une liste</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Afficher les éléments et leurs détails dans une liste compacte</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Afficher les éléments sous forme de vignettes</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Ouvrir le menu des options d'affichage</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Options d'affichage. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Options d'affichage. {0} sélectionné.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Trier de A à Z</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Trier de Z à A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Trié de A à Z</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Trié de Z à A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Chargement...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Actions sur les fichiers</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Ce dossier est vide</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Aucun document à afficher. Vérifiez que la gestion des documents est activée pour cette table et qu'un emplacement de document existe pour cet enregistrement.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Sélectionnez un dossier pour afficher son contenu.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Filtrer les dossiers par nom</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Votre recherche n'a donné aucun résultat.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Aucun dossier à afficher.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Extrait</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Partagé</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Activer le chargement par glisser-déposer (expérimental)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Indique si des fichiers peuvent être chargés dans le dossier actif en les faisant glisser sur le contrôle (désactivé par défaut). Utilise l'action UploadDocument de la grille de documents standard, qui n'est pas documentée publiquement.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Déposez les fichiers ici pour les charger dans {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Chargement de {0} sur {1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Chargement terminé.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Impossible de charger {0} : {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Les dossiers ne peuvent pas être chargés : {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Afficher les miniatures</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Indique si des images d'aperçu remplacent les icônes de fichier sur les vignettes (désactivé par défaut). Utilise les images d'aperçu de SharePoint, ou les miniatures de Microsoft Graph s'il est configuré.</value>
+  </data>
+  <data name="GraphClientId_Name" xml:space="preserve">
+    <value>ID client Microsoft Graph</value>
+  </data>
+  <data name="GraphClientId_Description" xml:space="preserve">
+    <value>ID d'application (client) de l'inscription d'application Microsoft Entra utilisée pour appeler Microsoft Graph. Permet de créer des dossiers et d'afficher des miniatures et des aperçus complets. Voir le guide d'installation.</value>
+  </data>
+  <data name="GraphTenantId_Name" xml:space="preserve">
+    <value>ID de locataire Microsoft Graph</value>
+  </data>
+  <data name="GraphTenantId_Description" xml:space="preserve">
+    <value>ID de répertoire (locataire) de l'inscription d'application Microsoft Entra (facultatif, par défaut l'organisation de l'utilisateur).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Rechercher des fichiers</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Tous les dossiers</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Rechercher dans tous les dossiers</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Résultats de la recherche pour « {0} »</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Aucun fichier ne correspond à votre recherche.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Recherche en cours...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>La recherche a échoué : {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Trier</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Croissant</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Décroissant</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Taille des vignettes</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Petites vignettes</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Grandes vignettes</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Dossiers</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Aperçu</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Afficher ou masquer le volet d'aperçu</value>
+  </data>
+  <data name="NoPreview" xml:space="preserve">
+    <value>Aucun aperçu disponible</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Sélectionnez un fichier pour afficher son aperçu.</value>
+  </data>
+  <data name="ShowFullPreview" xml:space="preserve">
+    <value>Afficher l'aperçu complet</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Se connecter à Microsoft 365</value>
+  </data>
+  <data name="SignInHint" xml:space="preserve">
+    <value>Connectez-vous à Microsoft 365 pour afficher les aperçus et créer des dossiers.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Ouvrir</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Ouvrir dans le navigateur</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Ouvrir dans l'application de bureau</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Télécharger</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Copier le lien</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Le lien a été copié.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Ouvrir dans SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Ouvrir le dossier parent</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Plus d'actions</value>
+  </data>
+  <data name="NewFolder" xml:space="preserve">
+    <value>Nouveau dossier</value>
+  </data>
+  <data name="NewFolderTitle" xml:space="preserve">
+    <value>Créer un dossier dans {0}</value>
+  </data>
+  <data name="FolderName" xml:space="preserve">
+    <value>Nom du dossier</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Créer</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="InvalidFolderName" xml:space="preserve">
+    <value>Entrez un nom sans les caractères " * : &lt; &gt; ? / \ |.</value>
+  </data>
+  <data name="FolderCreated" xml:space="preserve">
+    <value>Le dossier {0} a été créé.</value>
+  </data>
+  <data name="FolderCreateFailed" xml:space="preserve">
+    <value>Impossible de créer le dossier : {0}</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Détails</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Actualisation...</value>
+  </data>
+</root>
