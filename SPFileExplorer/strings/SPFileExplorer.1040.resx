@@ -161,19 +161,7 @@
     <value>Mostra anteprime</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Definisce se sui riquadri vengono mostrate immagini di anteprima invece delle icone dei file (per impostazione predefinita no). Usa le immagini di anteprima di SharePoint, oppure le anteprime di Microsoft Graph se configurato.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>ID client di Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>ID applicazione (client) della registrazione dell'app Microsoft Entra usata per chiamare Microsoft Graph. Consente di creare cartelle e di mostrare anteprime e anteprime complete. Vedere la guida all'installazione.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>ID tenant di Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>ID directory (tenant) della registrazione dell'app Microsoft Entra (facoltativo, per impostazione predefinita l'organizzazione dell'utente).</value>
+    <value>Definisce se sui riquadri vengono mostrate immagini di anteprima invece delle icone dei file (per impostazione predefinita no).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Cerca file</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Mostra o nascondi il riquadro di anteprima</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Nessuna anteprima disponibile</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Selezionare un file per visualizzarne l'anteprima.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Mostra anteprima completa</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Accedi a Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Accedere a Microsoft 365 per mostrare le anteprime e creare cartelle.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Apri</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Altre azioni</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Nuova cartella</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Crea una cartella in {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Nome cartella</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Crea</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Annulla</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Immettere un nome senza i caratteri " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>La cartella {0} è stata creata.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Impossibile creare la cartella: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Dettagli</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Aggiornamento...</value>

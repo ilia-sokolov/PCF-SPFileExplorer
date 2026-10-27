@@ -161,19 +161,7 @@
     <value>Näytä pikkukuvat</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Määrittää, näytetäänkö ruuduissa esikatselukuvat tiedostokuvakkeiden sijaan (oletusarvoisesti ei). Käyttää SharePointin esikatselukuvia tai Microsoft Graphin pikkukuvia, jos se on määritetty.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Microsoft Graphin asiakastunnus</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Microsoft Entra -sovellusrekisteröinnin sovellustunnus (asiakastunnus), jolla Microsoft Graphia kutsutaan. Mahdollistaa kansioiden luomisen sekä pikkukuvat ja täydet esikatselut. Katso asennusopas.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Microsoft Graphin vuokraajatunnus</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Microsoft Entra -sovellusrekisteröinnin hakemistotunnus (vuokraajatunnus) (valinnainen, oletusarvoisesti käyttäjän organisaatio).</value>
+    <value>Määrittää, näytetäänkö ruuduissa esikatselukuvat tiedostokuvakkeiden sijaan (oletusarvoisesti ei).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Hae tiedostoja</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Näytä tai piilota esikatseluruutu</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Esikatselu ei ole käytettävissä</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Valitse tiedosto, jonka haluat esikatsella.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Näytä koko esikatselu</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Kirjaudu Microsoft 365:een</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Kirjaudu Microsoft 365:een, jotta voit näyttää esikatseluja ja luoda kansioita.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Avaa</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Lisää toimintoja</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Uusi kansio</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Luo kansio kohteeseen {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Kansion nimi</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Luo</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Peruuta</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Anna nimi, jossa ei ole merkkejä " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Kansio {0} on luotu.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Kansiota ei voitu luoda: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Tiedot</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Päivitetään...</value>

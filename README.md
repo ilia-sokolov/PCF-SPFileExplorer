@@ -13,10 +13,9 @@ The control ensures that users have access to all the features available in the 
 - Search for files in the current folder or in all folders of the record.
 - Fast folder navigation: folders opened before are shown immediately and refreshed in the background.
 - File actions (open in the browser or in the desktop app, download, copy link, open in SharePoint) from the context menu, the command bar and the preview pane.
-- Preview pane with a preview image, the details and the actions of the selected file, and optional thumbnails in the tile view.
+- Preview pane with a full-height preview of the selected file (Office documents with Office for the web, other files as a preview image) and its actions, and optional thumbnails in the tile view.
 - Sort menu and small or large tiles in the tile view.
 - Layout for phones and narrow forms.
-- New folders, file thumbnails and full previews with Microsoft Graph (optional, see [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews)).
 - Upload of files to the current folder by drag and drop (experimental, has to be enabled).
 - User interface in 14 languages.
 
@@ -46,40 +45,25 @@ The following properties can be set when the control is added to a view or to a 
 | **Remember selected view** | `Yes` | Remembers the view type selected by a user in the browser and reuses it for other records. Set it to `No` to always open the **Default view**. |
 | **Enable drag and drop upload (experimental)** | `No` | Allows users to upload files to the current folder by dragging them onto the control. Works on the documents of a record (documents subgrid or related **Documents** tab). See [Drag and drop upload](#drag-and-drop-upload). |
 | **Show thumbnails** | `No` | Shows preview images of images, PDF and Office files on the tiles instead of file icons. See [Thumbnails and previews](#thumbnails-and-previews). |
-| **Microsoft Graph client ID** | *(empty)* | Application (client) ID of a Microsoft Entra app registration. Enables new folders, Microsoft Graph thumbnails and full previews. See [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews). |
-| **Microsoft Graph tenant ID** | *(empty)* | Directory (tenant) ID of the app registration. Optional; by default users sign in to their own organization. |
 
-**Default view** and **Remember selected view** are available from control version 0.0.3, **Enable drag and drop upload** from 0.0.4, **Show thumbnails** and the Microsoft Graph properties from 0.0.5 (see the [changelog](/CHANGELOG.md)).
+**Default view** and **Remember selected view** are available from control version 0.0.3, **Enable drag and drop upload** from 0.0.4, **Show thumbnails** from 0.0.5 (see the [changelog](/CHANGELOG.md)).
 
 The control reuses the columns, sorting and filters of the view it is applied to.
 
 ## Working with files
 
 - **Search**: the search box above the files filters the current folder by name. Select **All folders** to search the file names in all folders of the record's documents; the results show the folder of each file, and **Open containing folder** opens it. Searching all folders is available for the documents of a record (documents subgrid or related **Documents** tab).
-- **File actions**: right-click a file or folder, use **More actions** (…) in the command bar when one item is selected, or use the buttons of the preview pane: **Open**, **Open in browser**, **Open in desktop app** (Word, Excel, PowerPoint, Visio and Project files), **Download**, **Copy link** and, for folders, **Open in SharePoint**. **Open in SharePoint** in the command bar opens the current folder.
-- **Preview pane**: the **Preview** button on the right side of the command bar shows the preview image, the details (columns of the view) and the actions of the selected file. The pane stays open for other records until it is closed.
+- **File actions**: right-click a file or folder, use **More actions** (…) in the command bar when one item is selected, or use the command bar at the bottom of the preview pane: **Open**, **Open in browser**, **Open in desktop app** (Word, Excel, PowerPoint, Visio and Project files), **Download**, **Copy link** and, for folders, **Open in SharePoint**. **Open in SharePoint** in the command bar opens the current folder.
+- **Preview pane**: the **Preview** button on the right side of the command bar shows a preview of the selected file over the full height of the pane, with its actions in a command bar below. Word, Excel, PowerPoint and Visio files are shown as documents, other files as a preview image. The pane stays open for other records until it is closed.
 - **Sort and tile size**: the **Sort** menu sorts by the columns of the view in all view types, including the tile view. The view menu switches between small and large tiles.
 - **Phones and narrow forms**: when the control is narrower than 640 pixels, the folder tree opens from the **Folders** button and the preview pane covers the files.
 - **Folder navigation**: the content of folders opened before is shown immediately while it is loaded again; a small spinner next to the breadcrumb shows that the content is being refreshed.
 
 ### Thumbnails and previews
 
-The preview images are rendered by SharePoint for images, PDF and Office files. They are loaded by the browser directly from SharePoint, with the user's SharePoint session. If the browser blocks third-party cookies, or if the user has not signed in to SharePoint yet, the file icon is shown instead. With [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews) configured, the control uses the thumbnails returned by Microsoft Graph, which do not depend on the SharePoint session, and **Show full preview** in the preview pane shows the document itself.
+The preview images are rendered by SharePoint for images, PDF and Office files (`_layouts/15/getpreview.ashx`). When a Word, Excel, PowerPoint or Visio file is selected, the preview pane shows it with Office for the web (`_layouts/15/WopiFrame.aspx`, embedded view); it can take a few seconds to appear. Both are loaded by the browser directly from SharePoint, with the user's SharePoint session, and the user only sees files they have access to in SharePoint. If the browser blocks third-party cookies, or if the user has not signed in to SharePoint yet, the file icon is shown instead and the full preview stays empty.
 
-### Microsoft Graph (new folders, thumbnails and full previews)
-
-Creating folders, Microsoft Graph thumbnails and full previews call [Microsoft Graph](https://learn.microsoft.com/en-us/graph/api/resources/onedrive) on behalf of the signed-in user. Users can only access files they have access to in SharePoint. To enable these features:
-
-1. In the [Microsoft Entra admin center](https://entra.microsoft.com), go to **App registrations** → **New registration**. Enter a name (for example *SharePoint Full File Explorer*), keep **Accounts in this organizational directory only** and click **Register**.
-2. In **Authentication**, click **Add a platform** → **Single-page application** and add the redirect URI of each environment that uses the control:
-   `https://<your environment>.crm.dynamics.com/WebResources/dotact_/spfileexplorer/authredirect.html`
-   (use the URL of the environment as shown in the browser, e.g. `https://contoso.crm4.dynamics.com/...`). The page is installed with the solution.
-3. In **API permissions**, click **Add a permission** → **Microsoft Graph** → **Delegated permissions**, select **Files.ReadWrite.All** and click **Add permissions**. If users are not allowed to consent to applications in your organization, click **Grant admin consent**.
-4. Copy the **Application (client) ID** and the **Directory (tenant) ID** from **Overview** into the **Microsoft Graph client ID** and **Microsoft Graph tenant ID** properties of the control.
-
-The control signs the user in silently with the Microsoft 365 account of the Dataverse user. If that is not possible (for example, consent is missing), the preview pane shows **Sign in to Microsoft 365**, which opens a sign-in popup. Creating a folder opens the popup when needed.
-
-The control declares `graph.microsoft.com` and `login.microsoftonline.com` as external services, so Power Apps classifies it as a premium component. Model-driven apps already require a premium license, so this has no effect on users of model-driven apps. If [content security policy](https://learn.microsoft.com/en-us/power-platform/admin/content-security-policy) is enforced for model-driven apps in your environment, allow `https://graph.microsoft.com` and `https://login.microsoftonline.com` in `connect-src` and `frame-src`, and the SharePoint and OneDrive domains of your organization in `frame-src` and `img-src`.
+If [content security policy](https://learn.microsoft.com/en-us/power-platform/admin/content-security-policy) is enforced for model-driven apps in your environment, allow the SharePoint domain of your organization (for example `https://contoso.sharepoint.com`) in `img-src` and `frame-src`.
 
 ### Drag and drop upload
 
@@ -105,17 +89,8 @@ Increase the **Minimum Height** property of the control.
 **"There are no documents to show" is displayed.**
 No active SharePoint document location was found for the record. Check that document management is enabled for the table and open the standard **Documents** tab once, so that the document location and the SharePoint folder are created.
 
-**Thumbnails or preview images are not shown.**
-SharePoint preview images need the user's SharePoint session and third-party cookies (see [Thumbnails and previews](#thumbnails-and-previews)). Open SharePoint once in the same browser, or configure [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews). Thumbnails are available for images, PDF and Office files.
-
-**The sign-in popup shows "AADSTS50011" (redirect URI mismatch).**
-The redirect URI of the environment is missing in the app registration. Add `https://<your environment>/WebResources/dotact_/spfileexplorer/authredirect.html` as a **Single-page application** redirect URI (see [Microsoft Graph](#microsoft-graph-new-folders-thumbnails-and-full-previews)).
-
-**The sign-in popup does not open.**
-Allow popups for the Dataverse environment in the browser, then click **Sign in to Microsoft 365** or **New folder** again.
-
-**New folder is not shown.**
-The command is shown when the **Microsoft Graph client ID** property is set and the SharePoint URL of the document location is known; it is not available while searching all folders.
+**Thumbnails, preview images or the full preview are not shown.**
+They need the user's SharePoint session and third-party cookies (see [Thumbnails and previews](#thumbnails-and-previews)). Open SharePoint once in the same browser and check that the browser does not block third-party cookies for the SharePoint domain. Thumbnails are available for images, PDF and Office files, the full preview for Word, Excel, PowerPoint and Visio files.
 
 **Files cannot be dropped onto the control.**
 Check that **Enable drag and drop upload (experimental)** is set and that the control shows the documents of a record; in a table view of all documents there is no record to upload the files to.
@@ -142,13 +117,7 @@ npm start          # build and run the control with mock data in the local test 
 dotnet build Solution/SPFileExplorerSolution --configuration Release
 ```
 
-In the local test harness, set **Microsoft Graph client ID** to any value to try new folders, thumbnails and previews with mock data.
-
-The sign-in redirect page (`Solution/SPFileExplorerSolution/src/WebResources/dotact_/spfileexplorer/authredirect.html`) is generated from the installed `@azure/msal-browser` package. Generate it again after updating the package:
-
-```bash
-node scripts/auth-bridge/build.mjs
-```
+The local test harness has no SharePoint, so it shows file icons instead of thumbnails, and the full preview cannot load.
 
 ## Release process
 

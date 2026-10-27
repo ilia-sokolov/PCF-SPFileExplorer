@@ -161,19 +161,7 @@
     <value>Pokaż miniatury</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Określa, czy na kafelkach są wyświetlane obrazy podglądu zamiast ikon plików (domyślnie nie). Używa obrazów podglądu SharePoint lub miniatur Microsoft Graph, jeśli jest skonfigurowany.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Identyfikator klienta Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Identyfikator aplikacji (klienta) rejestracji aplikacji Microsoft Entra używanej do wywoływania Microsoft Graph. Umożliwia tworzenie folderów oraz wyświetlanie miniatur i pełnych podglądów. Zobacz przewodnik instalacji.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Identyfikator dzierżawy Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Identyfikator katalogu (dzierżawy) rejestracji aplikacji Microsoft Entra (opcjonalny, domyślnie organizacja użytkownika).</value>
+    <value>Określa, czy na kafelkach są wyświetlane obrazy podglądu zamiast ikon plików (domyślnie nie).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Wyszukaj pliki</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Pokaż lub ukryj okienko podglądu</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Podgląd niedostępny</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Wybierz plik, aby wyświetlić jego podgląd.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Pokaż pełny podgląd</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Zaloguj się do Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Zaloguj się do Microsoft 365, aby wyświetlać podglądy i tworzyć foldery.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Otwórz</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Więcej akcji</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Nowy folder</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Utwórz folder w folderze {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Nazwa folderu</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Utwórz</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Anuluj</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Wprowadź nazwę bez znaków " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Folder {0} został utworzony.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Nie można utworzyć folderu: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Szczegóły</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Odświeżanie...</value>

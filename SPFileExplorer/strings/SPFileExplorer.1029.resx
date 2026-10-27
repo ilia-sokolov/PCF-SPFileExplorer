@@ -161,19 +161,7 @@
     <value>Zobrazit miniatury</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Určuje, zda se na dlaždicích místo ikon souborů zobrazují náhledové obrázky (ve výchozím nastavení ne). Používá náhledové obrázky SharePointu nebo miniatury Microsoft Graphu, pokud je nakonfigurován.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>ID klienta Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>ID aplikace (klienta) registrace aplikace Microsoft Entra, která se používá k volání Microsoft Graphu. Umožňuje vytvářet složky a zobrazovat miniatury a úplné náhledy. Viz instalační příručka.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>ID tenanta Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>ID adresáře (tenanta) registrace aplikace Microsoft Entra (volitelné, ve výchozím nastavení organizace uživatele).</value>
+    <value>Určuje, zda se na dlaždicích místo ikon souborů zobrazují náhledové obrázky (ve výchozím nastavení ne).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Hledat soubory</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Zobrazit nebo skrýt podokno náhledu</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Náhled není k dispozici</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Vyberte soubor a zobrazte jeho náhled.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Zobrazit úplný náhled</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Přihlásit se k Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Přihlaste se k Microsoft 365, abyste mohli zobrazovat náhledy a vytvářet složky.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Otevřít</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Další akce</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Nová složka</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Vytvořit složku v {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Název složky</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Vytvořit</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Zrušit</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Zadejte název bez znaků " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Složka {0} byla vytvořena.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Složku nelze vytvořit: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Podrobnosti</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Aktualizace...</value>

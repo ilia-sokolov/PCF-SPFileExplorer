@@ -161,19 +161,7 @@
     <value>Afficher les miniatures</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Indique si des images d'aperçu remplacent les icônes de fichier sur les vignettes (désactivé par défaut). Utilise les images d'aperçu de SharePoint, ou les miniatures de Microsoft Graph s'il est configuré.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>ID client Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>ID d'application (client) de l'inscription d'application Microsoft Entra utilisée pour appeler Microsoft Graph. Permet de créer des dossiers et d'afficher des miniatures et des aperçus complets. Voir le guide d'installation.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>ID de locataire Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>ID de répertoire (locataire) de l'inscription d'application Microsoft Entra (facultatif, par défaut l'organisation de l'utilisateur).</value>
+    <value>Indique si des images d'aperçu remplacent les icônes de fichier sur les vignettes (désactivé par défaut).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Rechercher des fichiers</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Afficher ou masquer le volet d'aperçu</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Aucun aperçu disponible</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Sélectionnez un fichier pour afficher son aperçu.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Afficher l'aperçu complet</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Se connecter à Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Connectez-vous à Microsoft 365 pour afficher les aperçus et créer des dossiers.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Ouvrir</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Plus d'actions</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Nouveau dossier</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Créer un dossier dans {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Nom du dossier</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Créer</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Annuler</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Entrez un nom sans les caractères " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Le dossier {0} a été créé.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Impossible de créer le dossier : {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Détails</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Actualisation...</value>

@@ -51,26 +51,20 @@ import {
   getBrowserUrl,
   getDesktopAppUrl,
   getDownloadUrl,
+  getEmbedPreviewUrl,
   getFolderUrl,
   getItemUrl,
   getPreviewImageUrl,
   ILocationUrls,
+  toEncodedUrl,
 } from "./FileLinks";
-import { GraphError, IThumbnailUrls, SignInRequiredError } from "./graph/GraphClient";
 import { PreviewPane } from "./PreviewPane";
-import { NewFolderDialog } from "./NewFolderDialog";
 
 type TileSize = "small" | "large";
 
 interface IMessage {
   type: MessageBarType;
   text: string;
-}
-
-interface IFullPreview {
-  key: string;
-  url?: string;
-  loading: boolean;
 }
 
 interface IClientSort {
@@ -107,10 +101,6 @@ interface IFullFileExplorerState {
   compactCommands: boolean;
   foldersPanelOpen: boolean;
   locationUrls?: ILocationUrls | null;
-  thumbnails?: Map<string, IThumbnailUrls>;
-  graphSignInRequired?: boolean;
-  fullPreview?: IFullPreview;
-  newFolderDialogOpen?: boolean;
   message?: IMessage;
 }
 
@@ -249,8 +239,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
   const folderCache = useRef(new Map<string, IFileSystemItem[]>());
   // Identifies the latest search across folders, so that older results are ignored.
   const searchRequest = useRef(0);
-  // Identifies the latest thumbnails request, so that thumbnails of another folder are ignored.
-  const thumbnailsRequest = useRef(0);
 
   // The selection is created once, so its handler reads the latest properties through the ref.
   const propsRef = useRef(props);
@@ -267,7 +255,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     setControlState((prevState) => ({
       ...prevState,
       selectedItems,
-      fullPreview: undefined,
     }));
   };
 
@@ -452,43 +439,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     }));
   }, [displayedItems.map((i) => i.key).join("|"), props.selectedRecordsKeys]);
 
-  // Thumbnails of the current folder from Microsoft Graph (thumbnails and preview pane).
-  const thumbnailsWanted =
-    !!props.graph && (!!props.showThumbnails || controlState.previewOpen);
-  const currentFolderUrl =
-    controlState.locationUrls && controlState.selectedFolderPath
-      ? getFolderUrl(controlState.locationUrls, controlState.selectedFolderPath)
-      : undefined;
-  const loadThumbnails = () => {
-    if (!props.graph || !currentFolderUrl) {
-      return;
-    }
-    const request = ++thumbnailsRequest.current;
-    props.graph
-      .getThumbnails(currentFolderUrl)
-      .then((thumbnails) => {
-        if (request === thumbnailsRequest.current) {
-          setControlState((prevState) => ({
-            ...prevState,
-            thumbnails,
-            graphSignInRequired: false,
-          }));
-        }
-      })
-      .catch((e) => {
-        if (request === thumbnailsRequest.current && e instanceof SignInRequiredError) {
-          setControlState((prevState) => ({ ...prevState, graphSignInRequired: true }));
-        }
-      });
-  };
-  useEffect(() => {
-    thumbnailsRequest.current++;
-    setControlState((prevState) => ({ ...prevState, thumbnails: undefined }));
-    if (thumbnailsWanted && !searchAcrossFolders) {
-      loadThumbnails();
-    }
-  }, [thumbnailsWanted, currentFolderUrl, searchAcrossFolders]);
-
   const showMessage = (type: MessageBarType, text: string) =>
     setControlState((prevState) => ({ ...prevState, message: { type, text } }));
 
@@ -515,7 +465,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     setControlState((prevState) => ({
       ...prevState,
       previewOpen: !prevState.previewOpen,
-      fullPreview: undefined,
     }));
   };
 
@@ -541,12 +490,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     if (isFolder(item) || !canPreview(item.filetype)) {
       return undefined;
     }
-    const graphThumbnail = controlState.thumbnails?.get(
-      String(item.fullname ?? "").toLowerCase()
-    )?.[size];
-    if (graphThumbnail) {
-      return graphThumbnail;
-    }
     const url = getItemLink(item);
     return url && controlState.locationUrls
       ? getPreviewImageUrl(controlState.locationUrls.siteUrl, url, size === "large" ? 4 : 1)
@@ -555,7 +498,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
 
   const copyLink = (url: string) => {
     navigator.clipboard
-      ?.writeText(url)
+      ?.writeText(toEncodedUrl(url))
       .then(() => showMessage(MessageBarType.success, strings.LinkCopied))
       .catch(() => showMessage(MessageBarType.error, url));
   };
@@ -715,7 +658,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
       loading: cachedContent ? prevState.loading : true,
       foldersPanelOpen: false,
       searchText: "",
-      fullPreview: undefined,
       error: false,
       errorMessage: undefined,
     }));
@@ -1120,61 +1062,12 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
     return null;
   };
 
-  const createFolder = async (name: string): Promise<string | undefined> => {
-    if (!props.graph || !controlState.locationUrls) {
-      return undefined;
-    }
-    try {
-      await props.graph.createFolder(
-        getFolderUrl(controlState.locationUrls, controlState.selectedFolderPath),
-        name
-      );
-      showMessage(MessageBarType.success, formatString(strings.FolderCreated, name));
-      props.refresh?.();
-      return undefined;
-    } catch (e) {
-      return formatString(
-        strings.FolderCreateFailed,
-        e instanceof GraphError || e instanceof Error ? e.message : String(e)
-      );
-    }
-  };
-
-  const signInToGraph = () => {
-    props.graph
-      ?.signIn()
-      .then(() => {
-        setControlState((prevState) => ({ ...prevState, graphSignInRequired: false }));
-        loadThumbnails();
-      })
-      .catch((e) => showMessage(MessageBarType.error, (e as Error)?.message ?? String(e)));
-  };
-
-  const showFullPreview = (item: IFileSystemItem) => {
-    const url = getItemLink(item);
-    if (!props.graph || !url) {
-      return;
-    }
-    setControlState((prevState) => ({
-      ...prevState,
-      fullPreview: { key: item.key, loading: true },
-    }));
-    props.graph
-      .getPreviewUrl(url, true)
-      .then((previewUrl) => {
-        setControlState((prevState) => ({
-          ...prevState,
-          fullPreview: { key: item.key, url: previewUrl, loading: false },
-          graphSignInRequired: false,
-        }));
-        if (!previewUrl) {
-          showMessage(MessageBarType.info, strings.NoPreview);
-        }
-      })
-      .catch((e) => {
-        setControlState((prevState) => ({ ...prevState, fullPreview: undefined }));
-        showMessage(MessageBarType.error, (e as Error)?.message ?? String(e));
-      });
+  // Office for the web view of a file, shown in the preview pane.
+  const getFullPreviewUrl = (item: IFileSystemItem): string | undefined => {
+    const url = !isFolder(item) ? getItemLink(item) : undefined;
+    return url && controlState.locationUrls
+      ? getEmbedPreviewUrl(controlState.locationUrls.siteUrl, url, item.filetype)
+      : undefined;
   };
 
   const toggleSearchAllFolders = () =>
@@ -1243,17 +1136,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         </div>
       ),
     });
-    if (props.graph && controlState.locationUrls && !searchAcrossFolders) {
-      items.push({
-        key: "newFolder",
-        name: strings.NewFolder,
-        title: strings.NewFolder,
-        iconOnly: iconOnlyCommands,
-        iconProps: { iconName: "NewFolder" },
-        onClick: () =>
-          setControlState((prevState) => ({ ...prevState, newFolderDialogOpen: true })),
-      });
-    }
     if (controlState.locationUrls && controlState.selectedFolderPath) {
       const folderUrl = getFolderUrl(controlState.locationUrls, controlState.selectedFolderPath);
       items.push({
@@ -1321,10 +1203,6 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
 
   const previewItem =
     controlState.selectedItems.length === 1 ? controlState.selectedItems[0] : undefined;
-  const fullPreview =
-    previewItem && controlState.fullPreview?.key === previewItem.key
-      ? controlState.fullPreview
-      : undefined;
 
   const renderContent = () => {
     if (searchAcrossFolders && controlState.searching) {
@@ -1486,36 +1364,13 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
           <div className={controlState.narrow ? "previewOverlay" : "previewPanel"}>
             <PreviewPane
               item={previewItem}
-              columns={props.columns}
               imageUrl={previewItem ? getThumbnailUrl(previewItem, "large") : undefined}
-              fullPreviewUrl={fullPreview?.url}
-              fullPreviewLoading={fullPreview?.loading}
-              onShowFullPreview={
-                props.graph && previewItem && !isFolder(previewItem) && getItemLink(previewItem)
-                  ? () => showFullPreview(previewItem)
-                  : undefined
-              }
-              signInRequired={controlState.graphSignInRequired}
-              onSignIn={props.graph ? signInToGraph : undefined}
+              fullPreviewUrl={previewItem ? getFullPreviewUrl(previewItem) : undefined}
               actions={previewItem ? getItemActions(previewItem) : []}
               strings={strings}
               onClose={togglePreview}
             />
           </div>
-        )}
-        {controlState.newFolderDialogOpen && (
-          <NewFolderDialog
-            parentName={
-              (controlState.rootFolder &&
-                findFolder(controlState.rootFolder, controlState.selectedFolderPath)?.name) ??
-              ""
-            }
-            strings={strings}
-            onCreate={createFolder}
-            onDismiss={() =>
-              setControlState((prevState) => ({ ...prevState, newFolderDialogOpen: false }))
-            }
-          />
         )}
       </FolderExplorerContext.Provider>
     </div>

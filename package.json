@@ -12,7 +12,6 @@
     "refreshTypes": "pcf-scripts refreshTypes"
   },
   "dependencies": {
-    "@azure/msal-browser": "^5.24.0",
     "@fluentui/react": "8.121.1",
     "@fluentui/react-experiments": "^8.14.95",
     "@fluentui/react-file-type-icons": "^8.9.3",

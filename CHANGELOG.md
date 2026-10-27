@@ -7,17 +7,17 @@
 - **Search**: filter the current folder by name, or search the file names in all folders of the record (**All folders**). Search results show the folder of each file and can open it.
 - **Fast folder navigation**: folders opened before are shown immediately and refreshed in the background.
 - **File actions**: open in the browser or in the desktop app, download, copy link and open in SharePoint, from the context menu (right-click), the command bar (**More actions**) and the preview pane. **Open in SharePoint** in the command bar opens the current folder.
-- **Preview pane** with a preview image, the details and the actions of the selected file.
-- **Show thumbnails** property: preview images on the tiles.
-- **New folder**, Microsoft Graph thumbnails and full previews with Microsoft Graph, enabled by the **Microsoft Graph client ID** and **Microsoft Graph tenant ID** properties. The solution contains the sign-in redirect page `dotact_/spfileexplorer/authredirect.html` (web resource).
+- **Preview pane** with a full-height preview of the selected file and its actions in a command bar below. Word, Excel, PowerPoint and Visio files are shown with Office for the web as soon as they are selected, other files as a preview image.
+- **Show thumbnails** property: preview images rendered by SharePoint on the tiles.
 - **Sort** menu for all view types, including the tile view, and small or large tiles.
 - Layout for phones and narrow forms: the folder tree opens from the **Folders** button.
 - Czech, Danish, Dutch, Finnish, French, Italian, Norwegian, Polish, Portuguese (Brazil), Spanish, Swedish and Ukrainian user interface.
 
-### Changed
+### Fixed
 
-- The control declares `graph.microsoft.com` and `login.microsoftonline.com` as external services (used only when Microsoft Graph is configured).
-- New dependency: `@azure/msal-browser` 5.24.0 (sign-in for Microsoft Graph). The bundle grows from 112 KiB to 448 KiB.
+- Drag and drop upload failed in Dataverse with "Feature 'Utility.getEntityMetadata' is required"; the primary key of the record is now read with the Web API.
+- Drag and drop upload to a subfolder of a subfolder failed with "Folder … has been renamed or deleted".
+- The control uses the full width of the form section.
 
 ### Security
 

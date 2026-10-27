@@ -161,19 +161,7 @@
     <value>Vis miniatyrbilder</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Angir om forhåndsvisningsbilder vises på flisene i stedet for filikoner (de vises ikke som standard). Bruker forhåndsvisningsbildene i SharePoint, eller miniatyrbildene i Microsoft Graph når det er konfigurert.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Klient-ID for Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Program-ID (klient-ID) for Microsoft Entra-appregistreringen som brukes til å kalle Microsoft Graph. Gjør det mulig å opprette mapper og vise miniatyrbilder og fullstendige forhåndsvisninger. Se installasjonsveiledningen.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Leier-ID for Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Katalog-ID (leier-ID) for Microsoft Entra-appregistreringen (valgfritt, som standard brukerens organisasjon).</value>
+    <value>Angir om forhåndsvisningsbilder vises på flisene i stedet for filikoner (de vises ikke som standard).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Søk etter filer</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Vis eller skjul forhåndsvisningsruten</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Ingen forhåndsvisning tilgjengelig</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Velg en fil for å forhåndsvise den.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Vis fullstendig forhåndsvisning</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Logg på Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Logg på Microsoft 365 for å vise forhåndsvisninger og opprette mapper.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Åpne</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Flere handlinger</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Ny mappe</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Opprett en mappe i {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Mappenavn</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Opprett</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Avbryt</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Angi et navn uten tegnene " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Mappen {0} er opprettet.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Mappen kunne ikke opprettes: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detaljer</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Oppdaterer...</value>

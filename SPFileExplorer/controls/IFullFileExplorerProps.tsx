@@ -3,7 +3,6 @@ import { IFileViewColumn } from "./IFileViewColumn";
 import { IFolder } from "./IFolder";
 import { IStrings } from "./Strings";
 import { ILocationUrls } from "./FileLinks";
-import { IGraphClient } from "./graph/GraphClient";
 
 /**
  * Type of view to be presented to user.
@@ -99,17 +98,9 @@ export interface IFullFileExplorerProps {
    */
   isLoading?: boolean;
   /**
-   * Reloads the content of the current folder.
-   */
-  refresh?: () => void;
-  /**
    * Returns the SharePoint URLs of the document location (null if not available).
    */
   getLocationUrls?: () => Promise<ILocationUrls | null>;
-  /**
-   * Microsoft Graph client; specified only if an application (client) ID is configured.
-   */
-  graph?: IGraphClient;
   /**
    * Indicates if thumbnails are shown in the tile view.
    */

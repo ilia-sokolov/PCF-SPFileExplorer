@@ -161,19 +161,7 @@
     <value>Show thumbnails</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Define if preview images are shown on the tiles instead of file icons (by default they are not shown). Uses the preview images of SharePoint, or the thumbnails of Microsoft Graph when it is configured.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Microsoft Graph client ID</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Application (client) ID of the Microsoft Entra app registration used to call Microsoft Graph. Enables creating folders, thumbnails and full previews. See the installation guide.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Microsoft Graph tenant ID</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Directory (tenant) ID of the Microsoft Entra app registration (optional, the organization of the user by default).</value>
+    <value>Define if preview images are shown on the tiles instead of file icons (by default they are not shown).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Search files</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Show or hide the preview pane</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>No preview available</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Select a file to see its preview.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Show full preview</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Sign in to Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Sign in to Microsoft 365 to show previews and create folders.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Open</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>More actions</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>New folder</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Create a folder in {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Folder name</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Create</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Enter a name without the characters " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>The folder {0} has been created.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>The folder could not be created: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Details</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Refreshing...</value>

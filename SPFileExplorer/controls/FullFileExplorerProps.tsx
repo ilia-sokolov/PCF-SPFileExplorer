@@ -1,7 +1,5 @@
 import { IInputs } from "../generated/ManifestTypes";
 import { getContainingFolderPath, getSiteUrl, ILocationUrls } from "./FileLinks";
-import { GraphClient, IGraphClient } from "./graph/GraphClient";
-import { createMsalTokenProvider } from "./graph/MsalTokenProvider";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
 import {
@@ -15,7 +13,6 @@ export const ALL_ITEMS_PAGE_SIZE = 5000;
 const SHARED_LOCATION_GUID = "17de0dbb-153c-4c1a-b98a-223b3ea10125";
 const FOLDER_STRUCTURE_KEY = "FolderStructure";
 const LOCATION_KEY = "Location";
-const GRAPH_CLIENT_KEY = "GraphClient";
 // Maximum number of search results across all folders.
 const MAX_SEARCH_RESULTS = 500;
 const LOCATION_ENTITY_NAME = "sharepointdocumentlocation";
@@ -32,8 +29,35 @@ interface IFolderTreeCache {
   urls?: Promise<ILocationUrls | null>;
 }
 
-const normalizeId = (id: unknown): string =>
-  id ? String(id).replace(/[{}]/g, "").toLowerCase() : "";
+// Dataverse returns this id as locationid of every SharePoint document.
+const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+// Attributes of the standard document views. The recursive fetch fails with
+// <all-attributes/> (type mismatch of createdby) and also with some smaller lists.
+const SEARCH_ATTRIBUTES = [
+  "documentid",
+  "fullname",
+  "relativelocation",
+  "sharepointcreatedon",
+  "ischeckedout",
+  "filetype",
+  "modified",
+  "sharepointmodifiedby",
+  "servicetype",
+  "absoluteurl",
+  "title",
+  "author",
+  "sharepointdocumentid",
+  "readurl",
+  "editurl",
+  "locationid",
+  "iconclassname",
+  "locationname",
+];
+
+const normalizeId = (id: unknown): string => {
+  const normalized = id ? String(id).replace(/[{}]/g, "").toLowerCase() : "";
+  return normalized === EMPTY_GUID ? "" : normalized;
+};
 
 const retrieveSubFoldersRecursive = (
   context: ComponentFramework.Context<IInputs>,
@@ -303,11 +327,19 @@ const searchDocuments = async (
   const dataSet = context.parameters.documentsDataSet;
   const entityType = dataSet.getTargetEntityType();
   const contextPage = (context as any).page;
+  // The columns of the view are requested too, so that they can be shown for the results.
+  const attributes = new Set([
+    ...SEARCH_ATTRIBUTES,
+    ...dataSet.columns.map((c) => c.name).filter((name) => /^\w+$/.test(name)),
+  ]);
+  // Without a location condition, only the documents of the record's first location are returned.
   const fetchXml = `<fetch mapping="logical" count="${ALL_ITEMS_PAGE_SIZE}">
       <entity name="${entityType}">
-        <all-attributes/>
+        ${[...attributes].map((a) => `<attribute name="${a}"/>`).join("")}
+        <order attribute="relativelocation" descending="false"/>
         <filter type="and">
           <condition attribute="isrecursivefetch" operator="eq" value="1"/>
+          ${locationId ? `<condition attribute="locationid" operator="eq" value="${locationId}"/>` : ""}
         </filter>
         <link-entity name="${contextPage.entityTypeName}" from="${contextPage.entityTypeName}id" to="regardingobjectid" alias="bb">
           <filter type="and">
@@ -326,7 +358,7 @@ const searchDocuments = async (
       (e) =>
         String(e.fullname ?? "").toLowerCase().indexOf(searchText) >= 0 &&
         // Documents of other locations of the record are not shown.
-        (!e.locationid || !locationId || normalizeId(e.locationid) === locationId)
+        (!normalizeId(e.locationid) || !locationId || normalizeId(e.locationid) === locationId)
     )
     .slice(0, MAX_SEARCH_RESULTS)
     .map((e) => {
@@ -365,11 +397,16 @@ const uploadDocument = async (
 ): Promise<void> => {
   const contextPage = (context as any).page;
   const entityTypeName: string = contextPage.entityTypeName;
-  const metadata = await context.utils.getEntityMetadata(entityTypeName);
-  const primaryIdAttribute: string =
-    metadata.PrimaryIdAttribute ?? `${entityTypeName}id`;
   const clientUrl: string =
     contextPage.getClientUrl?.() ?? window.location.origin;
+  // context.utils.getEntityMetadata is rejected by the platform even with the Utility feature declared.
+  const metadataResponse = await fetch(
+    `${clientUrl}/api/data/v9.2/EntityDefinitions(LogicalName='${entityTypeName}')?$select=PrimaryIdAttribute`,
+    { credentials: "same-origin", headers: { Accept: "application/json" } }
+  );
+  const metadata = metadataResponse.ok ? await metadataResponse.json() : null;
+  const primaryIdAttribute: string =
+    metadata?.PrimaryIdAttribute ?? `${entityTypeName}id`;
 
   const response = await fetch(`${clientUrl}/api/data/v9.2/UploadDocument`, {
     method: "POST",
@@ -392,7 +429,8 @@ const uploadDocument = async (
         "@odata.type": `Microsoft.Dynamics.CRM.${entityTypeName}`,
         [primaryIdAttribute]: normalizeId(contextPage.entityId),
       },
-      FolderPath: folderPath,
+      // A nested path without a leading slash is not found ("Folder/Subfolder" fails, "/Folder/Subfolder" works).
+      FolderPath: folderPath ? `/${folderPath}` : "",
     }),
   });
   if (!response.ok) {
@@ -520,26 +558,6 @@ export const initFullFileExplorerProps = (
     return tree.urls;
   };
 
-  // Microsoft Graph is used only if an application (client) ID is configured.
-  const graphClientId = context.parameters.graphClientId?.raw?.trim();
-  if (graphClientId && !controlCache[GRAPH_CLIENT_KEY]) {
-    controlCache[GRAPH_CLIENT_KEY] = new GraphClient(
-      createMsalTokenProvider(
-        graphClientId,
-        context.parameters.graphTenantId?.raw?.trim(),
-        () =>
-          context.webAPI
-            .retrieveRecord("systemuser", context.userSettings.userId, "?$select=domainname")
-            .then((user) => user.domainname as string)
-            .catch(() => undefined),
-        getClientUrl(context)
-      )
-    );
-  }
-  const graph = graphClientId
-    ? (controlCache[GRAPH_CLIENT_KEY] as IGraphClient)
-    : undefined;
-
   // Files can be uploaded only to the document location of a record.
   const uploadFiles =
     context.parameters.enableUpload?.raw &&
@@ -624,16 +642,7 @@ export const initFullFileExplorerProps = (
     locationKey: locationId,
     uploadFiles,
     isLoading: dataSet.loading,
-    refresh: () => {
-      // The folder tree is reloaded with the refreshed content (e.g. after a folder was created).
-      const tree = controlCache[folderStructureKey] as IFolderTreeCache | undefined;
-      if (tree) {
-        tree.refreshedAt = 0;
-      }
-      dataSet.refresh();
-    },
     getLocationUrls,
-    graph,
     showThumbnails: !!context.parameters.showThumbnails?.raw,
     // Searching all folders needs the record of the documents.
     searchAllFolders:

@@ -61,6 +61,26 @@ const PREVIEW_EXTENSIONS = [
   "mp4",
 ];
 
+// File types shown by Office for the web in the full preview.
+const EMBED_PREVIEW_EXTENSIONS = [
+  "doc",
+  "docx",
+  "docm",
+  "dot",
+  "dotx",
+  "xls",
+  "xlsx",
+  "xlsm",
+  "xlsb",
+  "ppt",
+  "pptx",
+  "pptm",
+  "pps",
+  "ppsx",
+  "vsd",
+  "vsdx",
+];
+
 const encodePath = (path: string): string =>
   path
     .split("/")
@@ -119,18 +139,35 @@ export const getItemUrl = (
 /**
  * Returns the path of the folder that contains an item, based on its relative location.
  * The relative location of a file can either be the path of its folder or its own path.
+ * Dataverse returns the file name in the path URL-encoded for files in subfolders
+ * (for example "Folder/Sub folder/My%20file.docx"), so both forms of the name are accepted.
  */
 export const getContainingFolderPath = (
   relativeLocation: string,
   name: string
 ): string => {
   const location = trimSlashes(relativeLocation ?? "");
-  if (location === name) {
-    return "";
+  for (const fileName of [name, encodeURIComponent(name)]) {
+    if (location === fileName) {
+      return "";
+    }
+    if (location.endsWith(`/${fileName}`)) {
+      return location.substring(0, location.length - fileName.length - 1);
+    }
   }
-  return location.endsWith(`/${name}`)
-    ? location.substring(0, location.length - name.length - 1)
-    : location;
+  return location;
+};
+
+/**
+ * Returns the URL with the characters encoded that must be encoded in a link. Dataverse returns
+ * URLs with unencoded spaces in folder names; characters that are already encoded are kept.
+ */
+export const toEncodedUrl = (url: string): string => {
+  try {
+    return new URL(url).href;
+  } catch {
+    return url;
+  }
 };
 
 const withQuery = (url: string, query: string): string =>
@@ -155,7 +192,7 @@ export const getDesktopAppUrl = (
   extension: string | undefined
 ): string | undefined => {
   const scheme = OFFICE_DESKTOP_SCHEMES[(extension ?? "").toLowerCase()];
-  return scheme ? `${scheme}:ofe|u|${fileUrl}` : undefined;
+  return scheme ? `${scheme}:ofe|u|${toEncodedUrl(fileUrl)}` : undefined;
 };
 
 /**
@@ -178,35 +215,24 @@ export const getPreviewImageUrl = (
   )}&resolution=${resolution}`;
 
 /**
- * Identifier of a sharing URL for the Microsoft Graph shares API ("u!" + base64url of the URL).
+ * URL of the Office for the web view of a file that can be shown in a frame (requires the user
+ * to be signed in to SharePoint), or undefined for file types that Office for the web cannot show.
  */
-export const getGraphShareId = (url: string): string => {
-  const bytes = new TextEncoder().encode(url);
-  let binary = "";
-  bytes.forEach((b) => (binary += String.fromCharCode(b)));
-  return `u!${btoa(binary)
-    .replace(/=+$/, "")
-    .replace(/\//g, "_")
-    .replace(/\+/g, "-")}`;
-};
-
-/**
- * Characters SharePoint does not allow in file and folder names.
- */
-const INVALID_NAME_CHARACTERS = /["*:<>?/\\|]/;
-
-/**
- * Validates the name of a new folder. Returns true if the name can be used.
- */
-export const isValidFolderName = (name: string): boolean => {
-  const trimmed = name.trim();
-  return (
-    trimmed.length > 0 &&
-    trimmed.length <= 250 &&
-    !INVALID_NAME_CHARACTERS.test(trimmed) &&
-    !trimmed.endsWith(".") &&
-    !trimmed.startsWith("~") &&
-    trimmed !== "." &&
-    trimmed !== ".."
-  );
+export const getEmbedPreviewUrl = (
+  siteUrl: string,
+  fileUrl: string,
+  extension: string | undefined
+): string | undefined => {
+  if (EMBED_PREVIEW_EXTENSIONS.indexOf((extension ?? "").toLowerCase()) < 0) {
+    return undefined;
+  }
+  let path: string;
+  try {
+    path = decodeURIComponent(new URL(toEncodedUrl(fileUrl)).pathname);
+  } catch {
+    return undefined;
+  }
+  return `${trimSlashes(siteUrl)}/_layouts/15/WopiFrame.aspx?sourcedoc=${encodeURIComponent(
+    path
+  )}&action=embedview`;
 };

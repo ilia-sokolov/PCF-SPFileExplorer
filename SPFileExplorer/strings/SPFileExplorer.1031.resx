@@ -161,19 +161,7 @@
     <value>Miniaturansichten anzeigen</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Legt fest, ob auf den Kacheln Vorschaubilder statt Dateisymbolen angezeigt werden (standardmäßig nicht). Verwendet die Vorschaubilder von SharePoint oder, wenn konfiguriert, die Miniaturansichten von Microsoft Graph.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Microsoft Graph-Client-ID</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Anwendungs-ID (Client-ID) der Microsoft Entra-App-Registrierung, mit der Microsoft Graph aufgerufen wird. Ermöglicht das Erstellen von Ordnern, Miniaturansichten und vollständige Vorschauen. Siehe Installationsanleitung.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Microsoft Graph-Mandanten-ID</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Verzeichnis-ID (Mandanten-ID) der Microsoft Entra-App-Registrierung (optional, standardmäßig die Organisation des Benutzers).</value>
+    <value>Legt fest, ob auf den Kacheln Vorschaubilder statt Dateisymbolen angezeigt werden (standardmäßig nicht).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Dateien durchsuchen</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Vorschaubereich ein- oder ausblenden</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Keine Vorschau verfügbar</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Wählen Sie eine Datei aus, um ihre Vorschau anzuzeigen.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Vollständige Vorschau anzeigen</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Bei Microsoft 365 anmelden</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Melden Sie sich bei Microsoft 365 an, um Vorschauen anzuzeigen und Ordner zu erstellen.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Öffnen</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Weitere Aktionen</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Neuer Ordner</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Ordner in {0} erstellen</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Ordnername</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Erstellen</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Abbrechen</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Geben Sie einen Namen ohne die Zeichen " * : &lt; &gt; ? / \ | ein.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Der Ordner {0} wurde erstellt.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Der Ordner konnte nicht erstellt werden: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Details</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Wird aktualisiert...</value>

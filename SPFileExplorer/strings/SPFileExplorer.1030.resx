@@ -161,19 +161,7 @@
     <value>Vis miniaturer</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Angiver, om der vises eksempelbilleder på felterne i stedet for filikoner (som standard vises de ikke). Bruger eksempelbillederne i SharePoint eller miniaturerne i Microsoft Graph, når det er konfigureret.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Klient-id til Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Program-id (klient-id) for den Microsoft Entra-appregistrering, der bruges til at kalde Microsoft Graph. Gør det muligt at oprette mapper og vise miniaturer og fulde eksempler. Se installationsvejledningen.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Lejer-id til Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Mappe-id (lejer-id) for Microsoft Entra-appregistreringen (valgfrit, som standard brugerens organisation).</value>
+    <value>Angiver, om der vises eksempelbilleder på felterne i stedet for filikoner (som standard vises de ikke).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Søg efter filer</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Vis eller skjul eksempelruden</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Intet eksempel tilgængeligt</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Vælg en fil for at se et eksempel.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Vis fuldt eksempel</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Log på Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Log på Microsoft 365 for at vise eksempler og oprette mapper.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Åbn</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Flere handlinger</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Ny mappe</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Opret en mappe i {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Mappenavn</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Opret</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Annuller</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Angiv et navn uden tegnene " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Mappen {0} er oprettet.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Mappen kunne ikke oprettes: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detaljer</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Opdaterer...</value>

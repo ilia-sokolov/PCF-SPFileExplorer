@@ -55,7 +55,6 @@ export class SPFileExplorer implements ComponentFramework.ReactControl<IInputs, 
                 {
                     strings: this._strings,
                     enableUpload: !!context.parameters.enableUpload?.raw,
-                    enableGraph: !!context.parameters.graphClientId?.raw,
                     showThumbnails: !!context.parameters.showThumbnails?.raw,
                 });
         } else {

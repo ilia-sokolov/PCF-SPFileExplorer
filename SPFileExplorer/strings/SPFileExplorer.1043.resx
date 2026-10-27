@@ -161,19 +161,7 @@
     <value>Miniaturen weergeven</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Bepaalt of op de tegels voorbeeldafbeeldingen worden getoond in plaats van bestandspictogrammen (standaard niet). Gebruikt de voorbeeldafbeeldingen van SharePoint, of de miniaturen van Microsoft Graph als dat is geconfigureerd.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Client-id voor Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Toepassings-id (client-id) van de Microsoft Entra-app-registratie waarmee Microsoft Graph wordt aangeroepen. Maakt het maken van mappen, miniaturen en volledige voorbeelden mogelijk. Zie de installatiehandleiding.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Tenant-id voor Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Map-id (tenant-id) van de Microsoft Entra-app-registratie (optioneel, standaard de organisatie van de gebruiker).</value>
+    <value>Bepaalt of op de tegels voorbeeldafbeeldingen worden getoond in plaats van bestandspictogrammen (standaard niet).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Bestanden zoeken</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Voorbeeldvenster weergeven of verbergen</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Geen voorbeeld beschikbaar</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Selecteer een bestand om het voorbeeld te bekijken.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Volledig voorbeeld weergeven</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Aanmelden bij Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Meld u aan bij Microsoft 365 om voorbeelden weer te geven en mappen te maken.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Openen</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Meer acties</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Nieuwe map</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Een map maken in {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Mapnaam</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Maken</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Annuleren</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Voer een naam in zonder de tekens " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>De map {0} is gemaakt.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>De map kan niet worden gemaakt: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Details</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Vernieuwen...</value>

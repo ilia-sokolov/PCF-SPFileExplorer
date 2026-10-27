@@ -161,19 +161,7 @@
     <value>Mostrar miniaturas</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Define se imagens de visualização são mostradas nos blocos em vez dos ícones de arquivo (por padrão não são). Usa as imagens de visualização do SharePoint, ou as miniaturas do Microsoft Graph quando configurado.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>ID do cliente do Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>ID do aplicativo (cliente) do registro de aplicativo do Microsoft Entra usado para chamar o Microsoft Graph. Permite criar pastas e mostrar miniaturas e visualizações completas. Consulte o guia de instalação.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>ID do locatário do Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>ID do diretório (locatário) do registro de aplicativo do Microsoft Entra (opcional, por padrão a organização do usuário).</value>
+    <value>Define se imagens de visualização são mostradas nos blocos em vez dos ícones de arquivo (por padrão não são).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Pesquisar arquivos</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Mostrar ou ocultar o painel de visualização</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Nenhuma visualização disponível</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Selecione um arquivo para ver a visualização.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Mostrar visualização completa</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Entrar no Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Entre no Microsoft 365 para mostrar visualizações e criar pastas.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Abrir</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Mais ações</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Nova pasta</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Criar uma pasta em {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Nome da pasta</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Criar</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Cancelar</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Digite um nome sem os caracteres " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>A pasta {0} foi criada.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Não foi possível criar a pasta: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detalhes</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Atualizando...</value>

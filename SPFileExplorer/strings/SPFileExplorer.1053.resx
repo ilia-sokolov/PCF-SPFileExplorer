@@ -161,19 +161,7 @@
     <value>Visa miniatyrer</value>
   </data>
   <data name="ShowThumbnails_Description" xml:space="preserve">
-    <value>Anger om förhandsgranskningsbilder visas på panelerna i stället för filikoner (som standard visas de inte). Använder förhandsgranskningsbilderna i SharePoint, eller miniatyrerna i Microsoft Graph när det är konfigurerat.</value>
-  </data>
-  <data name="GraphClientId_Name" xml:space="preserve">
-    <value>Klient-ID för Microsoft Graph</value>
-  </data>
-  <data name="GraphClientId_Description" xml:space="preserve">
-    <value>Program-ID (klient-ID) för Microsoft Entra-appregistreringen som används för att anropa Microsoft Graph. Gör det möjligt att skapa mappar och visa miniatyrer och fullständiga förhandsgranskningar. Se installationsguiden.</value>
-  </data>
-  <data name="GraphTenantId_Name" xml:space="preserve">
-    <value>Klientorganisations-ID för Microsoft Graph</value>
-  </data>
-  <data name="GraphTenantId_Description" xml:space="preserve">
-    <value>Katalog-ID (klientorganisations-ID) för Microsoft Entra-appregistreringen (valfritt, som standard användarens organisation).</value>
+    <value>Anger om förhandsgranskningsbilder visas på panelerna i stället för filikoner (som standard visas de inte).</value>
   </data>
   <data name="SearchFiles" xml:space="preserve">
     <value>Sök efter filer</value>
@@ -223,20 +211,8 @@
   <data name="PreviewTitle" xml:space="preserve">
     <value>Visa eller dölj förhandsgranskningsfönstret</value>
   </data>
-  <data name="NoPreview" xml:space="preserve">
-    <value>Ingen förhandsgranskning tillgänglig</value>
-  </data>
   <data name="SelectFileToPreview" xml:space="preserve">
     <value>Välj en fil för att förhandsgranska den.</value>
-  </data>
-  <data name="ShowFullPreview" xml:space="preserve">
-    <value>Visa fullständig förhandsgranskning</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Logga in på Microsoft 365</value>
-  </data>
-  <data name="SignInHint" xml:space="preserve">
-    <value>Logga in på Microsoft 365 för att visa förhandsgranskningar och skapa mappar.</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Öppna</value>
@@ -264,33 +240,6 @@
   </data>
   <data name="MoreActions" xml:space="preserve">
     <value>Fler åtgärder</value>
-  </data>
-  <data name="NewFolder" xml:space="preserve">
-    <value>Ny mapp</value>
-  </data>
-  <data name="NewFolderTitle" xml:space="preserve">
-    <value>Skapa en mapp i {0}</value>
-  </data>
-  <data name="FolderName" xml:space="preserve">
-    <value>Mappnamn</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Skapa</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Avbryt</value>
-  </data>
-  <data name="InvalidFolderName" xml:space="preserve">
-    <value>Ange ett namn utan tecknen " * : &lt; &gt; ? / \ |.</value>
-  </data>
-  <data name="FolderCreated" xml:space="preserve">
-    <value>Mappen {0} har skapats.</value>
-  </data>
-  <data name="FolderCreateFailed" xml:space="preserve">
-    <value>Mappen kunde inte skapas: {0}</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Information</value>
   </data>
   <data name="Refreshing" xml:space="preserve">
     <value>Uppdaterar...</value>

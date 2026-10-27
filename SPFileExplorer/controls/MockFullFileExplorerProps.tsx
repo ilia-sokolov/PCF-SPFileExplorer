@@ -5,8 +5,6 @@ import { IFileViewColumn } from "./IFileViewColumn";
 import { IFolder } from "./IFolder";
 import { IFullFileExplorerProps, IUploadError } from "./IFullFileExplorerProps";
 import { IStrings } from "./Strings";
-import { canPreview, getPathBelowRoot } from "./FileLinks";
-import { IGraphClient, IThumbnailUrls } from "./graph/GraphClient";
 
 const MOCK_SHAREPOINT_URL = "https://mock.sharepoint.com/documents";
 // Delay of the mock dataset when a folder is opened (shows the cached folder content).
@@ -440,9 +438,6 @@ let refreshMockComponent: () => void;
 let sortColumn: string | null = null;
 let isSorAscending: boolean | null = null;
 let loadingTimer: number | undefined;
-// Folder tree shown by the component; it is updated in place when a folder is created.
-let mockRootFolder: IFolder | undefined;
-let folderStructureChanged = false;
 
 const getFileType = (name: string): string =>
   name.indexOf(".") < 0 ? "folder" : name.split(".").pop() ?? "";
@@ -492,16 +487,7 @@ const mockFullFileExplorerProps: IFullFileExplorerProps = {
   selectedRecordsKeys: [],
   currentFolderContent: getFolderContent(mockFileStructure.path),
   getFolderStructure: function (): Promise<IFolder> {
-    mockRootFolder = getFolderFromMock(mockFileStructure);
-    return Promise.resolve(mockRootFolder);
-  },
-  refreshFolderStructure: function (): Promise<boolean> {
-    if (!folderStructureChanged || !mockRootFolder) {
-      return Promise.resolve(false);
-    }
-    folderStructureChanged = false;
-    mockRootFolder.children = getFolderFromMock(mockFileStructure).children;
-    return Promise.resolve(true);
+    return Promise.resolve(getFolderFromMock(mockFileStructure));
   },
   getLocationUrls: function () {
     return Promise.resolve({
@@ -521,11 +507,6 @@ const mockFullFileExplorerProps: IFullFileExplorerProps = {
       mockFullFileExplorerProps.isLoading = false;
       refreshMockComponent?.();
     }, MOCK_LOADING_DELAY_MS);
-  },
-  refresh: function (): void {
-    mockFullFileExplorerProps.setCurrentFolder(
-      mockFullFileExplorerProps.currentFolderPath
-    );
   },
   searchAllFolders: function (text: string): Promise<IFileSystemItem[]> {
     const searchText = text.trim().toLowerCase();
@@ -627,87 +608,6 @@ const mockUploadFiles = async (
   return errors;
 };
 
-const MOCK_THUMBNAIL_COLORS = ["#2b579a", "#217346", "#b7472a", "#a4373a", "#5c2d91", "#0078d4"];
-
-/**
- * Image with the name of the file, used as mock thumbnail.
- */
-const getMockThumbnail = (name: string, width: number, height: number): string => {
-  const color =
-    MOCK_THUMBNAIL_COLORS[
-      name.split("").reduce((sum, c) => sum + c.charCodeAt(0), 0) % MOCK_THUMBNAIL_COLORS.length
-    ];
-  const label = name.replace(/[<>&"]/g, "");
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-    `<rect width="100%" height="100%" fill="${color}"/>` +
-    `<text x="50%" y="50%" fill="white" font-family="Segoe UI, sans-serif" font-size="${Math.round(
-      width / 14
-    )}" text-anchor="middle" dominant-baseline="middle">${label}</text></svg>`;
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-};
-
-const getMockFolder = (folderUrl: string): any =>
-  findFolderRecursively(
-    mockFileStructure,
-    getPathBelowRoot(mockFileStructure.path, folderUrl) === ""
-      ? mockFileStructure.path
-      : `${mockFileStructure.path}/${decodeURIComponent(
-          getPathBelowRoot(mockFileStructure.path, folderUrl)
-        )}`
-  );
-
-/**
- * Microsoft Graph client that works with the mock data.
- */
-const mockGraph: IGraphClient = {
-  signIn: () => Promise.resolve(),
-  createFolder: async (parentFolderUrl: string, name: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const parent = getMockFolder(parentFolderUrl);
-    if (!parent) {
-      throw new Error("The folder was not found.");
-    }
-    if (
-      parent.children?.some((m: any) => m.name.toLowerCase() === name.toLowerCase())
-    ) {
-      throw new Error("An item with the same name already exists.");
-    }
-    parent.children = parent.children ?? [];
-    parent.children.push({
-      name,
-      key: `mock-folder-${Date.now()}`,
-      path: `${parent.path}/${name}`,
-      modified: new Date().toLocaleString(),
-      sharepointmodifiedby: "Mock user",
-      children: [],
-    });
-    folderStructureChanged = true;
-  },
-  getThumbnails: async (folderUrl: string) => {
-    const thumbnails = new Map<string, IThumbnailUrls>();
-    getMockFolder(folderUrl)?.children?.forEach((m: any) => {
-      if (canPreview(getFileType(m.name))) {
-        thumbnails.set(m.name.toLowerCase(), {
-          small: getMockThumbnail(m.name, 96, 96),
-          medium: getMockThumbnail(m.name, 176, 144),
-          large: getMockThumbnail(m.name, 800, 600),
-        });
-      }
-    });
-    return thumbnails;
-  },
-  getPreviewUrl: async (fileUrl: string) => {
-    const name = decodeURIComponent(fileUrl.split("/").pop() ?? "");
-    return `data:text/html;charset=utf-8,${encodeURIComponent(
-      `<body style="font-family:Segoe UI,sans-serif;margin:24px">Mock preview of <b>${name.replace(
-        /[<>&"]/g,
-        ""
-      )}</b></body>`
-    )}`;
-  },
-};
-
 /**
  * Full file explorer with mock data for the local test harness.
  * The mock data changes in place, so the component renders itself again when it changes.
@@ -715,7 +615,6 @@ const mockGraph: IGraphClient = {
 export const MockFullFileExplorer = (props: {
   strings?: IStrings;
   enableUpload?: boolean;
-  enableGraph?: boolean;
   showThumbnails?: boolean;
 }) => {
   const [, setVersion] = React.useState(0);
@@ -726,7 +625,6 @@ export const MockFullFileExplorer = (props: {
     <FullFileExplorer
       {...explorerProperties}
       uploadFiles={props.enableUpload ? mockUploadFiles : undefined}
-      graph={props.enableGraph ? mockGraph : undefined}
       showThumbnails={props.showThumbnails}
       strings={props.strings}
     />

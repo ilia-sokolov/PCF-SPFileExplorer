@@ -48,7 +48,7 @@ You can use the control for table views and for associated grids (on forms).
    ![Add subgrid](https://github.com/ilia-sokolov/PCF-SPFileExplorer/raw/master/Media/installation-step-16.png)
 7. In **Built by others** tab select **SharePoint Full File Explorer** component and click **Add**.
    ![Add subgrid](https://github.com/ilia-sokolov/PCF-SPFileExplorer/raw/master/Media/installation-step-17.png)
-8. Configure the [properties of the control](/README.md#configuration) (**Minimum Height**, **Hide folder tree**, **Default view**, **Remember selected view**, **Enable drag and drop upload (experimental)**, **Show thumbnails** and the optional [Microsoft Graph](/README.md#microsoft-graph-new-folders-thumbnails-and-full-previews) properties) and click **Done**. If the control is rendered too small on the tab, increase **Minimum Height**.
+8. Configure the [properties of the control](/README.md#configuration) (**Minimum Height**, **Hide folder tree**, **Default view**, **Remember selected view**, **Enable drag and drop upload (experimental)**, **Show thumbnails**) and click **Done**. If the control is rendered too small on the tab, increase **Minimum Height**.
    ![Add subgrid](https://github.com/ilia-sokolov/PCF-SPFileExplorer/raw/master/Media/installation-step-18.png)
 9. Click **Save and Publish**.
     ![Publish view](https://github.com/ilia-sokolov/PCF-SPFileExplorer/raw/master/Media/installation-step-19.png)
