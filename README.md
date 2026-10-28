@@ -1,9 +1,9 @@
-# SharePoint Full File Explorer PCF Control
+# SharePoint File Explorer PCF Control
 
 The control enables seamless browsing of SharePoint documents in a manner similar to Windows Explorer. The user-friendly interface displays the entire folder hierarchy, offering the ability to quickly locate specific folders by name. This feature ensures swift access to the required files, enhancing overall efficiency.
 The control ensures that users have access to all the features available in the standard views, including sorting, keyword filtering, the ability to add new documents, and more.
 
-![SharePoint Full File Explorer interface](https://github.com/ilia-sokolov/PCF-SPFileExplorer/raw/master/Media/screenshot1.png)
+![SharePoint File Explorer interface](https://github.com/ilia-sokolov/PCF-SPFileExplorer/raw/master/Media/screenshot1.png)
 
 ## Key Features
 
@@ -78,11 +78,13 @@ Check that **Enable drag and drop upload (experimental)** is set and that the co
 
 ## Build from source
 
-You need [Node.js](https://nodejs.org/) 22 and, to create the solution package, the [.NET SDK](https://dotnet.microsoft.com/download) 8.
+You need [Node.js](https://nodejs.org/) 22.13 or later in the 22.x release line and, to create the solution package, the [.NET SDK](https://dotnet.microsoft.com/download) 8.
 
 ```bash
 npm ci             # install dependencies
 npm run build      # build the control into out/controls
+npm test           # compile and run the TypeScript unit tests
+npm run lint       # lint the control
 npm start          # build and run the control with mock data in the local test harness
                    # (the harness, pcf-start, is downloaded on first use)
 
@@ -90,15 +92,24 @@ npm start          # build and run the control with mock data in the local test 
 dotnet build Solution/SPFileExplorerSolution --configuration Release
 ```
 
+Unit tests use Node.js's built-in test runner. Add tests under `tests/`; the test
+TypeScript project compiles them to the ignored `.test-build` directory before
+running them.
+
+The managed solution is branded as **SharePoint File Explorer**, published by
+**BAMU Solutions** (`BAMUSolutions`, customization prefix `bamu`). The PCF
+identity is `BAMUSolutions.SharePointFileExplorer`, and the author is Sebastian
+Müller @ BAMU Solutions. Version `0.0.1` is the first BAMU release.
+
 ## Release process
 
-The packaged solution (`Solution/SPFullFileExplorer.zip`) is built and updated automatically by the [Build solution](/.github/workflows/build-solution.yml) GitHub Actions workflow:
+The managed package (`Solution/BAMU-SharePoint-File-Explorer.zip`) is built automatically by the [Build solution](/.github/workflows/build-solution.yml) GitHub Actions workflow:
 
-1. Increase the `version` of the control in `SPFileExplorer/ControlManifest.Input.xml` (e.g. `0.0.3` → `0.0.4`) and add the changes to the [changelog](/CHANGELOG.md). Dataverse applies an updated control only if its version is higher than the installed one.
+1. Increase the `version` of the control in `SPFileExplorer/ControlManifest.Input.xml` and add the changes to the [changelog](/CHANGELOG.md). Dataverse applies an updated control only if its version is higher than the installed one.
 2. Merge the changes into `master`.
-3. The workflow builds the managed solution and commits the updated `Solution/SPFullFileExplorer.zip` to `master`.
+3. The workflow builds the managed solution and commits the updated `Solution/BAMU-SharePoint-File-Explorer.zip` to `master`.
 
-The solution version is derived from the control version: `<major>.<minor>` from `Solution/SPFileExplorerSolution/src/Other/Solution.xml`, followed by `<control major × 100 + control minor>.<control patch>` (e.g. control `0.0.4` → solution `1.1.0.4`).
+The solution version is derived from the control version: `<major>.<minor>` from `Solution/SPFileExplorerSolution/src/Other/Solution.xml`, followed by `<control major × 100 + control minor>.<control patch>` (control `0.0.1` → solution `1.1.0.1`). The version check only compares package versions when the PCF namespace and constructor match, so the first BAMU release does not inherit the upstream control's version history.
 
 If the control version was not increased, the package is built but not committed. A lower control version than the packaged one fails the build. Every push to any branch and every pull request is linted and built as well, and the resulting package can be downloaded from the workflow run artifacts for testing.
 

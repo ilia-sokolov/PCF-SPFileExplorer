@@ -32,7 +32,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SPFileExplorer_Name" xml:space="preserve">
-    <value>SharePoint Full File Explorer</value>
+    <value>SharePoint File Explorer</value>
   </data>
   <data name="SPFileExplorer_Description" xml:space="preserve">
     <value>Control enables seamless browsing of SharePoint documents in a manner similar to Windows Explorer. The user-friendly interface displays the entire folder hierarchy, offering the ability to quickly locate specific folders by name. This feature ensures swift access to the required files, enhancing overall efficiency.</value>

@@ -1,8 +1,7 @@
 name: Build solution
 
-# Builds and lints the control and builds the managed solution package on every push.
-# On master, Solution/SPFullFileExplorer.zip is updated and committed when the
-# control version in ControlManifest.Input.xml is higher than the packaged one.
+# Builds, lints, and tests the control and builds the managed solution package on every push.
+# On master, the distribution package is committed when the control identity/version changes.
 
 on:
   # Build and lint every push; the solution package is committed only from master.
@@ -21,7 +20,7 @@ permissions:
 
 env:
   SOLUTION_PROJECT: Solution/SPFileExplorerSolution
-  SOLUTION_ZIP: Solution/SPFullFileExplorer.zip
+  SOLUTION_ZIP: Solution/BAMU-SharePoint-File-Explorer.zip
 
 jobs:
   build:
@@ -49,6 +48,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Test
+        run: npm test
+
       - name: Prepare solution version
         id: version
         run: node .github/scripts/prepare-solution-version.mjs
@@ -62,7 +64,7 @@ jobs:
       - name: Upload solution package
         uses: actions/upload-artifact@v4
         with:
-          name: SPFullFileExplorer-${{ steps.version.outputs.control_version }}
+          name: BAMU-SharePoint-File-Explorer-${{ steps.version.outputs.control_version }}
           path: ${{ env.SOLUTION_ZIP }}
 
       - name: Report unchanged control version

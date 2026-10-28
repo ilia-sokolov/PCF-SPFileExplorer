@@ -2,11 +2,16 @@ import * as React from "react";
 import {IInputs, IOutputs} from "./generated/ManifestTypes";
 import FullFileExplorer from "./controls/FullFileExplorer";
 import { MockFullFileExplorer } from "./controls/MockFullFileExplorerProps";
-import { ALL_ITEMS_PAGE_SIZE, initFullFileExplorerProps } from "./controls/FullFileExplorerProps";
+import {
+    ALL_ITEMS_PAGE_SIZE,
+    getContextPage,
+    IControlCache,
+    initFullFileExplorerProps,
+} from "./controls/FullFileExplorerProps";
 import { getStrings, IStrings } from "./controls/Strings";
 
-export class SPFileExplorer implements ComponentFramework.ReactControl<IInputs, IOutputs> {
-    private _controlCache: {[index: string]: any} = {};
+export class SharePointFileExplorer implements ComponentFramework.ReactControl<IInputs, IOutputs> {
+    private _controlCache: IControlCache = {};
     private _strings: IStrings;
     private _lastElement: React.ReactElement = React.createElement(React.Fragment);
 
@@ -58,7 +63,7 @@ export class SPFileExplorer implements ComponentFramework.ReactControl<IInputs, 
 
             // The key forces a fresh component (and folder tree) when the control is reused for another
             // record or when another document location is selected.
-            const recordKey = `${(context as any).page?.entityId ?? ""}_${explorerProperties.locationKey ?? ""}`;
+            const recordKey = `${getContextPage(context)?.entityId ?? ""}_${explorerProperties.locationKey ?? ""}`;
             explorer = React.createElement(FullFileExplorer,
                 { ...explorerProperties, strings: this._strings, key: recordKey });
         }

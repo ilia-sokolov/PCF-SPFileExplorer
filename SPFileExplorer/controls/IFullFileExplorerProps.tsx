@@ -111,7 +111,7 @@ export interface IFullFileExplorerProps {
    * Opens the specified record.
    * @param reference Reference of the record to be opened.
    */
-  openRecord: (reference: any) => void;
+  openRecord: (reference: ComponentFramework.EntityReference) => void;
   /**
    *  Sets sorting for presented reords.
    * @param column Name of the column that shoulb be used to sort records.

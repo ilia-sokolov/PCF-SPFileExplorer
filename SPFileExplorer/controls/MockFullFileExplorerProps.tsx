@@ -8,7 +8,17 @@ import { IStrings } from "./Strings";
 
 const MOCK_SHAREPOINT_URL = "https://mock.sharepoint.com/documents";
 
-const mockFileStructure: any = {
+interface IMockItem {
+  name: string;
+  path: string;
+  key: string;
+  modified?: string;
+  sharepointmodifiedby?: string;
+  ischeckedout?: boolean;
+  children?: IMockItem[];
+}
+
+const mockFileStructure: IMockItem = {
   name: "Documents on SharePoint Site",
   path: `${MOCK_SHAREPOINT_URL}/Account_4FA38AE04D0EEA11A813000D3A1BBD52`,
   key: "9307182d-e6e8-4202-3333-000000000000",
@@ -401,27 +411,27 @@ const mockColumns: IFileViewColumn[] = [
   },
 ];
 
-const getFolderFromMock: (mockItem: any) => IFolder = (mockItem: any) => {
+const getFolderFromMock = (mockItem: IMockItem): IFolder => {
   const folder: IFolder = {
     key: mockItem.key,
     name: mockItem.name,
     path: mockItem.path,
     children: mockItem.children
-      ?.filter((m: any) => m.name.indexOf(".") < 0)
-      .map((m: any) => getFolderFromMock(m)),
+      ?.filter((m) => m.name.indexOf(".") < 0)
+      .map((m) => getFolderFromMock(m)),
   };
   return folder;
 };
 
-const findFolderRecursively: (mockItem: any, path: string) => any = (
-  mockItem: any,
+const findFolderRecursively = (
+  mockItem: IMockItem,
   path: string
-): any => {
-  let matchItem: any = null;
+): IMockItem | undefined => {
+  let matchItem: IMockItem | undefined;
   if (mockItem.path == path) {
     matchItem = mockItem;
   } else {
-    mockItem.children?.forEach((m: any) => {
+    mockItem.children?.forEach((m) => {
       const matchChildren = findFolderRecursively(m, path);
       if (matchChildren && !matchItem) {
         matchItem = matchChildren;
@@ -440,40 +450,52 @@ const getFolderContent: (path: string) => IFileSystemItem[] = (
   path: string
 ): IFileSystemItem[] => {
   const folder = findFolderRecursively(mockFileStructure, path);
-  return folder
-    ? folder.children
-        .map((m: any) => {
-          return {
-            id: m.key,
-            fullname: m.name,
-            key: m.key,
-            modified: m.modified,
-            locationname: mockFileStructure.name,
-            servicetype: "SharePoint",
-            path: m.path,
-            sharepointmodifiedby: m.sharepointmodifiedby,
-            relativelocation: m.path.replace(`${MOCK_SHAREPOINT_URL}/`, ""),
-            filetype:
-              m.name.indexOf(".") < 0 ? "folder" : m.name.split(".").pop(),
-            reference: m.key,
-          };
-        })
-        .sort((a: any, b: any) => {
-          let result = 0;
-          if (sortColumn) {
-            result =
-              a[sortColumn] < b[sortColumn]
-                ? -1
-                : a[sortColumn] > b[sortColumn]
-                ? 1
-                : 0;
-            if (!isSorAscending && isSorAscending != null) {
-              result = -1 * result;
-            }
-          }
-          return result;
-        })
-    : [];
+  const children = folder?.children ?? [];
+  return children
+    .map((m): IFileSystemItem => {
+      return {
+        id: m.key,
+        fullname: m.name,
+        key: m.key,
+        modified: m.modified ?? "",
+        locationname: mockFileStructure.name,
+        servicetype: "SharePoint",
+        path: m.path,
+        sharepointmodifiedby: m.sharepointmodifiedby ?? "",
+        relativelocation: m.path.replace(`${MOCK_SHAREPOINT_URL}/`, ""),
+        filetype:
+          m.name.indexOf(".") < 0
+            ? "folder"
+            : (m.name.split(".").pop() ?? ""),
+        reference: {
+          id: { guid: m.key },
+          etn: "sharepointdocument",
+          name: m.name,
+        },
+      };
+    })
+    .sort((a, b) => {
+      let result = 0;
+      if (sortColumn) {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue !== bValue) {
+          result =
+            aValue === undefined || aValue === null
+              ? -1
+              : bValue === undefined || bValue === null
+              ? 1
+              : String(aValue).localeCompare(String(bValue), undefined, {
+                  numeric: true,
+                  sensitivity: "base",
+                });
+        }
+        if (!isSorAscending && isSorAscending != null) {
+          result = -1 * result;
+        }
+      }
+      return result;
+    });
 };
 
 const mockFullFileExplorerProps: IFullFileExplorerProps = {
@@ -497,9 +519,11 @@ const mockFullFileExplorerProps: IFullFileExplorerProps = {
     mockFullFileExplorerProps.selectedRecordsKeys = ids;
   },
 
-  openRecord: function (id: string): void {
+  openRecord: function (
+    reference: ComponentFramework.EntityReference
+  ): void {
     const record = mockFullFileExplorerProps.currentFolderContent.find(
-      (m) => m.id === id
+      (m) => m.id === reference.id.guid
     );
     if (record) {
       if (record.filetype == "folder") {
@@ -545,8 +569,9 @@ const mockUploadFiles = async (
     if (!folder || files[i].name.toLowerCase().indexOf("fail") >= 0) {
       errors.push({ fileName: files[i].name, message: "Mock upload error." });
     } else {
-      folder.children = folder.children ?? [];
-      folder.children.push({
+      const children = folder.children ?? [];
+      folder.children = children;
+      children.push({
         name: files[i].name,
         key: `mock-upload-${Date.now()}-${i}`,
         path: `${folder.path}/${files[i].name}`,

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "jsx": "react",
+    "rootDir": ".",
+    "outDir": ".test-build",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": [
+    "SPFileExplorer/controls/IFolder.tsx",
+    "SPFileExplorer/controls/folderUtils.ts",
+    "tests/**/*.test.ts"
+  ]
+}

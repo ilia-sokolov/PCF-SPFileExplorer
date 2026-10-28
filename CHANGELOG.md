@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Changed
+
+- Branded the control and managed solution as **SharePoint File Explorer** by **BAMU Solutions**.
+- Published the control as `BAMUSolutions.SharePointFileExplorer` version `0.0.1`, authored by Sebastian Müller @ BAMU Solutions.
+- Replaced the remaining explicit `any` types with typed PCF records, context, cache, tile, and mock-data structures.
+
 ### Security
 
 - Build tooling dependencies updated to versions without known vulnerabilities: `npm audit fix` (cross-spawn, flatted, js-yaml, lodash, minimatch, picomatch, semver, brace-expansion), `@typescript-eslint/*` 5 → 8 with ESLint 8.57, `ajv` 7 → 8, and `@opentelemetry/core` / `@opentelemetry/sdk-trace-base` 2.x for the telemetry of `pcf-scripts` (npm `overrides`). The control itself and its bundle are unchanged.

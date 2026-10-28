@@ -5,6 +5,7 @@
 
 # generated directory
 **/generated
+/.test-build
 
 # output directory
 /out

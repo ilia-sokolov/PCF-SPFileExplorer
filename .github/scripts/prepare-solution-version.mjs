@@ -11,7 +11,7 @@ import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs
 
 const MANIFEST = "SPFileExplorer/ControlManifest.Input.xml";
 const SOLUTION_XML = "Solution/SPFileExplorerSolution/src/Other/Solution.xml";
-const PACKAGE_ZIP = "Solution/SPFullFileExplorer.zip";
+const PACKAGE_ZIP = "Solution/BAMU-SharePoint-File-Explorer.zip";
 
 const parseVersion = (version) => version.split(".").map((part) => parseInt(part, 10));
 
@@ -24,27 +24,42 @@ const compareVersions = (a, b) => {
   return 0;
 };
 
-const readControlVersion = (manifest) => {
-  // A whitespace is required before "version" so that "api-version" is not matched.
-  const match = /<control\s[^>]*?\sversion="([^"]+)"/.exec(manifest);
-  if (!match) throw new Error("Control version is not found in the manifest.");
-  return match[1];
+const readControlIdentity = (manifest) => {
+  const controlTag = /<control\s([^>]+)>/.exec(manifest)?.[1];
+  if (!controlTag) throw new Error("Control declaration is not found in the manifest.");
+  const attributes = Object.fromEntries(
+    [...controlTag.matchAll(/([-\w]+)="([^"]*)"/g)].map(([, key, value]) => [
+      key,
+      value,
+    ])
+  );
+  const { namespace, constructor, version } = attributes;
+  if (!namespace || !constructor || !version) {
+    throw new Error("Control namespace, constructor, or version is missing.");
+  }
+  return { namespace, constructor, version };
 };
 
-const controlVersion = readControlVersion(readFileSync(MANIFEST, "utf8"));
+const controlIdentity = readControlIdentity(readFileSync(MANIFEST, "utf8"));
+const controlVersion = controlIdentity.version;
 if (!/^\d+\.\d+\.\d+$/.test(controlVersion)) {
   throw new Error(`Control version "${controlVersion}" must have the format major.minor.patch.`);
 }
 
-let packagedVersion = "";
+let packagedIdentity;
 if (existsSync(PACKAGE_ZIP)) {
   const packagedManifest = execFileSync(
     "unzip",
     ["-p", PACKAGE_ZIP, "Controls/*/ControlManifest.xml"],
     { encoding: "utf8" }
   );
-  packagedVersion = readControlVersion(packagedManifest);
+  packagedIdentity = readControlIdentity(packagedManifest);
 }
+
+const sameControl =
+  packagedIdentity?.namespace === controlIdentity.namespace &&
+  packagedIdentity?.constructor === controlIdentity.constructor;
+const packagedVersion = sameControl ? packagedIdentity.version : "";
 
 if (packagedVersion && compareVersions(controlVersion, packagedVersion) < 0) {
   throw new Error(
@@ -69,7 +84,8 @@ writeFileSync(
   solutionXml.replace(solutionVersionMatch[0], `<Version>${solutionVersion}</Version>`)
 );
 
-const changed = !packagedVersion || compareVersions(controlVersion, packagedVersion) > 0;
+const changed =
+  !sameControl || compareVersions(controlVersion, packagedVersion) > 0;
 
 console.log(`Control version:   ${controlVersion}`);
 console.log(`Packaged version:  ${packagedVersion || "(none)"}`);

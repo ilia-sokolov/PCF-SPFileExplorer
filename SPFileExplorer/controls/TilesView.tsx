@@ -15,7 +15,7 @@ import { IFileSystemItem } from "./IFileSystemItem";
 import { IStrings } from "./Strings";
 
 export interface ITileViewProp {
-  items: any[];
+  items: IFileSystemItem[];
   tileSize?: TileSize;
   selection?: ISelection;
   isSelectable?: boolean;
@@ -30,9 +30,11 @@ export const TilesView = (props: ITileViewProp) => {
     window.dispatchEvent(new Event("resize"));
   }, []);
 
-  const getTileCells = (items: any[]): ITilesGridItem<any>[] => {
+  const getTileCells = (
+    items: IFileSystemItem[]
+  ): ITilesGridItem<IFileSystemItem>[] => {
     return items?.map((item) => {
-      const gridItem: ITilesGridItem<any> = {
+      const gridItem: ITilesGridItem<IFileSystemItem> = {
         key: item.key,
         content: item,
         onRenderCell: renderDocumentCell,
@@ -42,7 +44,7 @@ export const TilesView = (props: ITileViewProp) => {
   };
 
   const renderDocumentCell = (
-    cellProps: ITilesGridItemCellProps<any>
+    cellProps: ITilesGridItemCellProps<IFileSystemItem>
   ): JSX.Element => {
     const item = cellProps.item;
     const itemIndex =

@@ -1,7 +1,8 @@
 {
-  "name": "pcf-project",
-  "version": "1.0.0",
-  "description": "Project containing your PowerApps Component Framework (PCF) control.",
+  "name": "bamu-sharepoint-file-explorer",
+  "version": "0.0.1",
+  "description": "BAMU Solutions SharePoint File Explorer Power Apps Component Framework control.",
+  "author": "Sebastian Müller @ BAMU Solutions",
   "scripts": {
     "build": "pcf-scripts build",
     "clean": "pcf-scripts clean",
@@ -9,6 +10,7 @@
     "lint:fix": "pcf-scripts lint fix",
     "rebuild": "pcf-scripts rebuild",
     "start": "pcf-scripts build && npx --yes --package=pcf-start@1.51.1 --package=uuid@11.1.0 -- pcf-start --codePath out/controls/SPFileExplorer",
+    "test": "tsc --project tsconfig.test.json && node --test .test-build/tests/*.test.js",
     "refreshTypes": "pcf-scripts refreshTypes"
   },
   "dependencies": {

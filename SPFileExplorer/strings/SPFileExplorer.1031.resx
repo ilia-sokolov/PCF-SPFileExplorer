@@ -32,7 +32,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SPFileExplorer_Name" xml:space="preserve">
-    <value>SharePoint Full File Explorer</value>
+    <value>SharePoint-Datei-Explorer</value>
   </data>
   <data name="SPFileExplorer_Description" xml:space="preserve">
     <value>Das Steuerelement ermöglicht das Durchsuchen von SharePoint-Dokumenten ähnlich wie im Windows-Explorer. Die benutzerfreundliche Oberfläche zeigt die gesamte Ordnerhierarchie an und ermöglicht es, bestimmte Ordner schnell nach Namen zu finden. So gelangen Sie schnell zu den benötigten Dateien.</value>

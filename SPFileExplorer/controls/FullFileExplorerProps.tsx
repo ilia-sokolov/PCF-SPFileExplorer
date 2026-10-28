@@ -18,12 +18,31 @@ const FOLDER_TREE_REFRESH_INTERVAL_MS = 60000;
 // Guards the walk up the parent locations against cycles.
 const MAX_LOCATION_DEPTH = 10;
 
-interface IFolderTreeCache {
+export interface IFolderTreeCache {
   folder: IFolder;
   locationId: string;
   refreshedAt: number;
   refreshing: boolean;
 }
+
+export interface IControlCache {
+  [key: string]: IFolderTreeCache | string | undefined;
+}
+
+interface IContextPage {
+  entityId?: string;
+  entityTypeName?: string;
+  getClientUrl?: () => string;
+}
+
+export const getContextPage = (
+  context: ComponentFramework.Context<IInputs>
+): IContextPage | undefined =>
+  (
+    context as ComponentFramework.Context<IInputs> & {
+      page?: IContextPage;
+    }
+  ).page;
 
 const normalizeId = (id: unknown): string =>
   id ? String(id).replace(/[{}]/g, "").toLowerCase() : "";
@@ -35,7 +54,7 @@ const retrieveSubFoldersRecursive = (
   return new Promise<IFolder[]>((resolve) => {
     const entityType =
       context.parameters.documentsDataSet.getTargetEntityType();
-    const contextPage = (context as any).page;
+    const contextPage = getContextPage(context);
     const escapedRelativeUrl = relativeUrl
       .split("&")
       .join("&amp;")
@@ -263,8 +282,12 @@ const uploadDocument = async (
   locationId: string,
   folderPath: string
 ): Promise<void> => {
-  const contextPage = (context as any).page;
-  const entityTypeName: string = contextPage.entityTypeName;
+  const contextPage = getContextPage(context);
+  const entityTypeName = contextPage?.entityTypeName;
+  const entityId = contextPage?.entityId;
+  if (!entityTypeName || !entityId) {
+    throw new Error("A record context is required to upload files.");
+  }
   const metadata = await context.utils.getEntityMetadata(entityTypeName);
   const primaryIdAttribute: string =
     metadata.PrimaryIdAttribute ?? `${entityTypeName}id`;
@@ -290,7 +313,7 @@ const uploadDocument = async (
       OverwriteExisting: false,
       ParentEntityReference: {
         "@odata.type": `Microsoft.Dynamics.CRM.${entityTypeName}`,
-        [primaryIdAttribute]: normalizeId(contextPage.entityId),
+        [primaryIdAttribute]: normalizeId(entityId),
       },
       FolderPath: folderPath,
     }),
@@ -308,10 +331,10 @@ const uploadDocument = async (
  */
 export const initFullFileExplorerProps = (
   context: ComponentFramework.Context<IInputs>,
-  controlCache: { [index: string]: any }
+  controlCache: IControlCache
 ): IFullFileExplorerProps => {
   const dataSet = context.parameters.documentsDataSet;
-  const contextPage = (context as any).page;
+  const contextPage = getContextPage(context);
   const recordId = normalizeId(contextPage?.entityId);
 
   // The primary sort expression is read without removing it from the dataset.
@@ -330,13 +353,17 @@ export const initFullFileExplorerProps = (
     if (locationId && locationId !== SHARED_LOCATION_GUID) {
       recordLocationIds.add(locationId);
     }
-    itemData.reference = (record as any)._entityReference;
+    itemData.reference = record.getNamedReference();
     itemData.key = record.getRecordId();
     itemData.path = record.getFormattedValue("relativelocation");
     dataSet.columns.forEach((c) => {
       itemData[c.name] = record.getFormattedValue(c.name);
       if (c.name === "ischeckedout") {
-        itemData[c.name] = record.getValue(c.name);
+        const checkedOutValue = record.getValue(c.name);
+        itemData.ischeckedout =
+          checkedOutValue === true ||
+          checkedOutValue === 1 ||
+          checkedOutValue === "1";
       }
     });
 
@@ -361,14 +388,16 @@ export const initFullFileExplorerProps = (
   if (recordLocationIds.size === 1) {
     controlCache[locationKey] = recordLocationIds.values().next().value;
   }
-  const locationId: string = controlCache[locationKey] ?? "";
+  const cachedLocationId = controlCache[locationKey];
+  const locationId =
+    typeof cachedLocationId === "string" ? cachedLocationId : "";
 
   // The folder structure is cached per record and location, so that the tree of
   // one record or location is never shown for another one.
   const folderStructureKey = `${FOLDER_STRUCTURE_KEY}_${recordId}_${locationId}`;
-  const folderTree = controlCache[folderStructureKey] as
-    | IFolderTreeCache
-    | undefined;
+  const cachedFolderTree = controlCache[folderStructureKey];
+  const folderTree =
+    typeof cachedFolderTree === "object" ? cachedFolderTree : undefined;
   const folderStructure = folderTree?.folder;
 
   if (folderTree && folderStructure) {
@@ -417,9 +446,8 @@ export const initFullFileExplorerProps = (
           onProgress: (uploaded: number) => void
         ): Promise<IUploadError[]> => {
           // The tree may have been loaded after these properties were created.
-          const tree = controlCache[folderStructureKey] as
-            | IFolderTreeCache
-            | undefined;
+          const cachedTree = controlCache[folderStructureKey];
+          const tree = typeof cachedTree === "object" ? cachedTree : undefined;
           if (!tree) {
             return files.map((f) => ({
               fileName: f.name,
@@ -480,8 +508,8 @@ export const initFullFileExplorerProps = (
           isSortedDescending: sortExpression?.sortDirection == 1,
         };
       }),
-    openRecord: (reference: any) => {
-      dataSet.openDatasetItem(reference as ComponentFramework.EntityReference);
+    openRecord: (reference: ComponentFramework.EntityReference) => {
+      dataSet.openDatasetItem(reference);
     },
     selectRecords: (ids: string[]) => {
       dataSet.setSelectedRecordIds(ids);
@@ -580,9 +608,9 @@ export const initFullFileExplorerProps = (
         (item) => item.attributeName == "relativelocation"
       );
       // The tree may have been loaded after these properties were created.
-      const rootFolder = (
-        controlCache[folderStructureKey] as IFolderTreeCache | undefined
-      )?.folder;
+      const cachedTree = controlCache[folderStructureKey];
+      const rootFolder =
+        typeof cachedTree === "object" ? cachedTree.folder : undefined;
       if (path == "" || (rootFolder && rootFolder.path == path)) {
         if (locationConditionId > -1) {
           dataFilter.conditions.splice(locationConditionId, 1);

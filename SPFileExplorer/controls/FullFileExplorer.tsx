@@ -41,6 +41,7 @@ import { IFullFileExplorerProps, ViewType } from "./IFullFileExplorerProps";
 import { IFileSystemItem } from "./IFileSystemItem";
 import { IFolder } from "./IFolder";
 import { IFileViewColumn } from "./IFileViewColumn";
+import { findFolder, getParentPaths } from "./folderUtils";
 import { DEFAULT_STRINGS, formatString } from "./Strings";
 
 interface IFullFileExplorerState {
@@ -60,7 +61,7 @@ interface IFullFileExplorerState {
   uploadCompleted?: boolean;
 }
 
-const VIEW_TYPE_STORAGE_KEY = "SPFileExplorer.viewType";
+const VIEW_TYPE_STORAGE_KEY = "BAMUSolutions.SharePointFileExplorer.viewType";
 
 const getStoredViewType = (): ViewType | undefined => {
   try {
@@ -80,19 +81,6 @@ const storeViewType = (viewType: ViewType) => {
   } catch {
     // Storage can be unavailable (e.g. blocked by browser settings).
   }
-};
-
-const findFolder = (folder: IFolder, path: string): IFolder | undefined => {
-  if (folder.path === path) {
-    return folder;
-  }
-  for (const child of folder.children ?? []) {
-    const found = findFolder(child, path);
-    if (found) {
-      return found;
-    }
-  }
-  return undefined;
 };
 
 /**
@@ -121,22 +109,6 @@ const getDroppedItems = (
     files.push(...Array.from(dataTransfer.files ?? []));
   }
   return { files, folders };
-};
-
-/**
- * Returns the paths of the folders from the root folder to the folder with the specified path.
- */
-const getParentPaths = (folder: IFolder, path: string): string[] => {
-  if (!path || folder.path === path) {
-    return [folder.path];
-  }
-  for (const child of folder.children ?? []) {
-    const childPaths = getParentPaths(child, path);
-    if (childPaths[childPaths.length - 1] === path) {
-      return [folder.path, ...childPaths];
-    }
-  }
-  return [folder.path];
 };
 
 const FullFileExplorer = (props: IFullFileExplorerProps) => {
