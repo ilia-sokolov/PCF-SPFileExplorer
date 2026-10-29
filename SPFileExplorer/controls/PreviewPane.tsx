@@ -69,7 +69,7 @@ export const PreviewPane = (props: IPreviewPaneProps) => {
                 className="previewFrame"
                 src={props.fullPreviewUrl}
                 title={item.fullname}
-                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms allow-downloads"
               />
             ) : (
               <div className="previewImage">

@@ -333,9 +333,9 @@ const searchDocuments = async (
     ...dataSet.columns.map((c) => c.name).filter((name) => /^\w+$/.test(name)),
   ]);
   // Without a location condition, only the documents of the record's first location are returned.
-  const fetchXml = `<fetch mapping="logical" count="${ALL_ITEMS_PAGE_SIZE}">
+  const getFetchXml = (names: string[]) => `<fetch mapping="logical" count="${ALL_ITEMS_PAGE_SIZE}">
       <entity name="${entityType}">
-        ${[...attributes].map((a) => `<attribute name="${a}"/>`).join("")}
+        ${names.map((a) => `<attribute name="${a}"/>`).join("")}
         <order attribute="relativelocation" descending="false"/>
         <filter type="and">
           <condition attribute="isrecursivefetch" operator="eq" value="1"/>
@@ -348,10 +348,21 @@ const searchDocuments = async (
         </link-entity>
       </entity>
     </fetch>`;
-  const result = await context.webAPI.retrieveMultipleRecords(
-    entityType,
-    "?fetchXml=" + encodeURIComponent(fetchXml)
-  );
+  const retrieve = (names: string[]) =>
+    context.webAPI.retrieveMultipleRecords(
+      entityType,
+      "?fetchXml=" + encodeURIComponent(getFetchXml(names))
+    );
+  let result: ComponentFramework.WebApi.RetrieveMultipleResponse;
+  try {
+    result = await retrieve([...attributes]);
+  } catch (e) {
+    // Some columns of a view (for example createdby) make the recursive fetch fail.
+    if (attributes.size === SEARCH_ATTRIBUTES.length) {
+      throw e;
+    }
+    result = await retrieve(SEARCH_ATTRIBUTES);
+  }
   const searchText = text.trim().toLowerCase();
   return (result?.entities ?? [])
     .filter(
@@ -552,9 +563,18 @@ export const initFullFileExplorerProps = (
     if (!tree || !tree.locationId) {
       return Promise.resolve(null);
     }
-    tree.urls ??= retrieveLocationUrls(context, tree.locationId, tree.folder.path).catch(
-      () => null
-    );
+    if (!tree.urls) {
+      const urls = retrieveLocationUrls(context, tree.locationId, tree.folder.path).catch(
+        () => null
+      );
+      tree.urls = urls;
+      // A failed request is sent again the next time the URLs are needed.
+      void urls.then((result) => {
+        if (!result && tree.urls === urls) {
+          tree.urls = undefined;
+        }
+      });
+    }
     return tree.urls;
   };
 

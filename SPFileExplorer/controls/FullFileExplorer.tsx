@@ -603,6 +603,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         title: strings.PreviewTitle,
         iconOnly: true,
         iconProps: { iconName: "Preview" },
+        toggle: true,
         checked: controlState.previewOpen,
         ariaLabel: strings.PreviewTitle,
         onClick: togglePreview,
@@ -1085,6 +1086,7 @@ const FullFileExplorer = (props: IFullFileExplorerProps) => {
         iconOnly: true,
         iconProps: { iconName: "FabricFolder" },
         ariaLabel: strings.Folders,
+        toggle: true,
         checked: controlState.foldersPanelOpen,
         onClick: () =>
           setControlState((prevState) => ({
