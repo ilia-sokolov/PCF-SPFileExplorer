@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* The host is a flex row that does not stretch the control. */
+  width: 100%;
 }
 
 .spFileExplorer {
@@ -14,11 +16,13 @@
 
 .folderNavPanel {
   width: 280px;
+  flex-shrink: 0;
   border-right: 1px solid #f3f2f1;
 }
 
 .filesViewPanel {
   flex: 1;
+  min-width: 0;
 }
 
 .uploadMessages {
@@ -236,4 +240,158 @@ a.folderLink {
   margin: 0 7px;
   padding: 7px 0;
   font-size: 20px;
+}
+
+.searchCommand {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px;
+}
+
+.filesSearchBox {
+  width: 220px;
+}
+
+.searchAllFolders {
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.searchCommand.compact .filesSearchBox {
+  width: 150px;
+}
+
+.searchAllFoldersButton.is-checked {
+  background-color: #edebe9;
+}
+
+.breadcrumbRow {
+  display: flex;
+  align-items: center;
+}
+
+.refreshingIndicator {
+  margin: 11px 0 0 8px;
+}
+
+.searchResultsTitle {
+  text-align: left;
+  padding: 15px 7px 8px;
+  font-size: 18px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileThumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.previewPanel {
+  position: relative;
+  width: 320px;
+  flex-shrink: 0;
+  border-left: 1px solid #f3f2f1;
+}
+
+.previewOverlay,
+.foldersOverlay {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  bottom: 0;
+  background-color: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.previewOverlay {
+  left: 0;
+  right: 0;
+}
+
+.foldersOverlay {
+  top: 45px;
+  left: 0;
+  width: 85%;
+  max-width: 320px;
+}
+
+.foldersOverlay .folderNavPanel {
+  width: 100%;
+  height: 100%;
+  border-right: none;
+}
+
+.previewPane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-align: left;
+}
+
+.previewHeader {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  flex-shrink: 0;
+  padding-left: 12px;
+  border-bottom: 1px solid #f3f2f1;
+}
+
+.previewTitle {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.previewHint {
+  padding: 15px 12px;
+  color: #605e5c;
+}
+
+/* The preview fills the height of the pane; the actions are shown in a command bar below it. */
+.previewContent {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 8px;
+}
+
+.previewCommands {
+  flex-shrink: 0;
+  border-top: 1px solid #f3f2f1;
+}
+
+.previewImage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #faf9f8;
+}
+
+.previewImage .itemThumbnail img {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.itemThumbnail img {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+}
+
+.previewFrame {
+  flex: 1;
+  width: 100%;
+  border: 1px solid #f3f2f1;
 }

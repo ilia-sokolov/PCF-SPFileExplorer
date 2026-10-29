@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.4" display-name-key="SPFileExplorer_Name" description-key="SPFileExplorer_Description" control-type="virtual">
+  <control namespace="SPFileExplorer" constructor="SPFileExplorer" version="0.0.5" display-name-key="SPFileExplorer_Name" description-key="SPFileExplorer_Description" control-type="virtual">
     <!--external-service-usage
     node declares whether this 3rd party PCF control is using external
     service or not, if yes, this control will be considered as premium and please also add the
@@ -37,6 +37,7 @@
       <value name="Tiles" display-name-key="TileView">2</value>
     </property>
     <property name="enableUpload" display-name-key="EnableUpload_Name" description-key="EnableUpload_Description" of-type="TwoOptions" usage="input" required="false" default-value="false"/>
+    <property name="showThumbnails" display-name-key="ShowThumbnails_Name" description-key="ShowThumbnails_Description" of-type="TwoOptions" usage="input" required="false" default-value="false"/>
     <property name="rememberViewType" display-name-key="RememberViewType_Name" description-key="RememberViewType_Description" of-type="TwoOptions" usage="input" required="false" default-value="true"/>
 
     <resources>
@@ -44,8 +45,20 @@
       <platform-library name="React" version="16.14.0" />
       <platform-library name="Fluent" version="8.121.1" />
       <css path="css/SPFileExplorer.css" order="1" />
-      <resx path="strings/SPFileExplorer.1033.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1029.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1030.resx" version="1.0.0" />
       <resx path="strings/SPFileExplorer.1031.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1035.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1036.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1040.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1043.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1044.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1045.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1046.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1053.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1058.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.3082.resx" version="1.0.0" />
+      <resx path="strings/SPFileExplorer.1033.resx" version="1.0.0" />
     </resources>
     <!-- UNCOMMENT TO ENABLE THE SPECIFIED API-->
     <feature-usage>

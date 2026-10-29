@@ -157,4 +157,91 @@
   <data name="Close" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Show thumbnails</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Define if preview images are shown on the tiles instead of file icons (by default they are not shown).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Search files</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>All folders</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Search in all folders</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Search results for "{0}"</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>No files match your search.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Searching...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>The search failed: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Tile size</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Small tiles</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Large tiles</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Folders</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Show or hide the preview pane</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Select a file to see its preview.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Open in browser</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Open in desktop app</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Copy link</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>The link has been copied.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Open in SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Open containing folder</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>More actions</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Refreshing...</value>
+  </data>
 </root>

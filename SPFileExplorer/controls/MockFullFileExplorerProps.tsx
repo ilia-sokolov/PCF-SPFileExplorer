@@ -7,6 +7,8 @@ import { IFullFileExplorerProps, IUploadError } from "./IFullFileExplorerProps";
 import { IStrings } from "./Strings";
 
 const MOCK_SHAREPOINT_URL = "https://mock.sharepoint.com/documents";
+// Delay of the mock dataset when a folder is opened (shows the cached folder content).
+const MOCK_LOADING_DELAY_MS = 600;
 
 const mockFileStructure: any = {
   name: "Documents on SharePoint Site",
@@ -435,6 +437,10 @@ const findFolderRecursively: (mockItem: any, path: string) => any = (
 let refreshMockComponent: () => void;
 let sortColumn: string | null = null;
 let isSorAscending: boolean | null = null;
+let loadingTimer: number | undefined;
+
+const getFileType = (name: string): string =>
+  name.indexOf(".") < 0 ? "folder" : name.split(".").pop() ?? "";
 
 const getFolderContent: (path: string) => IFileSystemItem[] = (
   path: string
@@ -453,8 +459,7 @@ const getFolderContent: (path: string) => IFileSystemItem[] = (
             path: m.path,
             sharepointmodifiedby: m.sharepointmodifiedby,
             relativelocation: m.path.replace(`${MOCK_SHAREPOINT_URL}/`, ""),
-            filetype:
-              m.name.indexOf(".") < 0 ? "folder" : m.name.split(".").pop(),
+            filetype: getFileType(m.name),
             reference: m.key,
           };
         })
@@ -482,16 +487,57 @@ const mockFullFileExplorerProps: IFullFileExplorerProps = {
   selectedRecordsKeys: [],
   currentFolderContent: getFolderContent(mockFileStructure.path),
   getFolderStructure: function (): Promise<IFolder> {
-    return new Promise<IFolder>((resolve) => {
-      resolve(getFolderFromMock(mockFileStructure));
+    return Promise.resolve(getFolderFromMock(mockFileStructure));
+  },
+  getLocationUrls: function () {
+    return Promise.resolve({
+      locationUrl: mockFileStructure.path,
+      siteUrl: "https://mock.sharepoint.com",
+      rootPath: mockFileStructure.path,
     });
   },
   setCurrentFolder: function (path: string): void {
+    // Like the dataset, the content of the folder arrives after a delay.
+    window.clearTimeout(loadingTimer);
     mockFullFileExplorerProps.currentFolderPath = path;
-    mockFullFileExplorerProps.currentFolderContent = getFolderContent(path);
-    if (refreshMockComponent) {
-      refreshMockComponent();
-    }
+    mockFullFileExplorerProps.isLoading = true;
+    refreshMockComponent?.();
+    loadingTimer = window.setTimeout(() => {
+      mockFullFileExplorerProps.currentFolderContent = getFolderContent(path);
+      mockFullFileExplorerProps.isLoading = false;
+      refreshMockComponent?.();
+    }, MOCK_LOADING_DELAY_MS);
+  },
+  searchAllFolders: function (text: string): Promise<IFileSystemItem[]> {
+    const searchText = text.trim().toLowerCase();
+    const results: IFileSystemItem[] = [];
+    const searchFolder = (folder: any) => {
+      folder.children?.forEach((m: any) => {
+        const fileType = getFileType(m.name);
+        if (fileType === "folder") {
+          searchFolder(m);
+        } else if (m.name.toLowerCase().indexOf(searchText) >= 0) {
+          results.push({
+            id: m.key,
+            key: `search-${m.key}`,
+            fullname: m.name,
+            modified: m.modified,
+            sharepointmodifiedby: m.sharepointmodifiedby,
+            locationname: mockFileStructure.name,
+            servicetype: "SharePoint",
+            relativelocation: folder.path.replace(`${MOCK_SHAREPOINT_URL}/`, ""),
+            filetype: fileType,
+            path: m.path,
+            absoluteurl: m.path,
+            folderPath: folder.path,
+            isSearchResult: true,
+            reference: m.key,
+          });
+        }
+      });
+    };
+    searchFolder(mockFileStructure);
+    return new Promise((resolve) => setTimeout(() => resolve(results), 300));
   },
   selectRecords: function (ids: string[]): void {
     mockFullFileExplorerProps.selectedRecordsKeys = ids;
@@ -569,6 +615,7 @@ const mockUploadFiles = async (
 export const MockFullFileExplorer = (props: {
   strings?: IStrings;
   enableUpload?: boolean;
+  showThumbnails?: boolean;
 }) => {
   const [, setVersion] = React.useState(0);
   const explorerProperties = initMockFullFileExplorerProps(() =>
@@ -578,6 +625,7 @@ export const MockFullFileExplorer = (props: {
     <FullFileExplorer
       {...explorerProperties}
       uploadFiles={props.enableUpload ? mockUploadFiles : undefined}
+      showThumbnails={props.showThumbnails}
       strings={props.strings}
     />
   );

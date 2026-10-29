@@ -31,4 +31,16 @@ export interface IFileSystemItem {
    * Refrence of the file item.
    */
   reference: any;
+  /**
+   * Absolute URL of the item, if Dataverse returns it.
+   */
+  absoluteurl?: string;
+  /**
+   * Path of the folder that contains the item (search results across folders).
+   */
+  folderPath?: string;
+  /**
+   * Indicates that the item is a search result across folders (not a record of the dataset).
+   */
+  isSearchResult?: boolean;
 }

@@ -10,8 +10,14 @@ The control ensures that users have access to all the features available in the 
 - Folder tree view with folder search by name.
 - Comprehensive access to all features available in standard views, including sorting, keyword filtering, seamless integration with the standard command bar, and more.
 - Three view types: tile view, list view, and compact list view. The default view can be configured, and the view selected by a user is remembered in the browser.
+- Search for files in the current folder or in all folders of the record.
+- Fast folder navigation: folders opened before are shown immediately and refreshed in the background.
+- File actions (open in the browser or in the desktop app, download, copy link, open in SharePoint) from the context menu, the command bar and the preview pane.
+- Preview pane with a full-height preview of the selected file (Office documents with Office for the web, other files as a preview image) and its actions, and optional thumbnails in the tile view.
+- Sort menu and small or large tiles in the tile view.
+- Layout for phones and narrow forms.
 - Upload of files to the current folder by drag and drop (experimental, has to be enabled).
-- English and German user interface.
+- User interface in 14 languages.
 
 ## Prerequisites
 
@@ -38,10 +44,26 @@ The following properties can be set when the control is added to a view or to a 
 | **Default view** | `Tile view` | View type (tile, list or compact list) that is shown when the control is opened. |
 | **Remember selected view** | `Yes` | Remembers the view type selected by a user in the browser and reuses it for other records. Set it to `No` to always open the **Default view**. |
 | **Enable drag and drop upload (experimental)** | `No` | Allows users to upload files to the current folder by dragging them onto the control. Works on the documents of a record (documents subgrid or related **Documents** tab). See [Drag and drop upload](#drag-and-drop-upload). |
+| **Show thumbnails** | `No` | Shows preview images of images, PDF and Office files on the tiles instead of file icons. See [Thumbnails and previews](#thumbnails-and-previews). |
 
-**Default view** and **Remember selected view** are available from control version 0.0.3, **Enable drag and drop upload** from 0.0.4 (see the [changelog](/CHANGELOG.md)).
+**Default view** and **Remember selected view** are available from control version 0.0.3, **Enable drag and drop upload** from 0.0.4, **Show thumbnails** from 0.0.5 (see the [changelog](/CHANGELOG.md)).
 
 The control reuses the columns, sorting and filters of the view it is applied to.
+
+## Working with files
+
+- **Search**: the search box above the files filters the current folder by name. Select **All folders** to search the file names in all folders of the record's documents; the results show the folder of each file, and **Open containing folder** opens it. Searching all folders is available for the documents of a record (documents subgrid or related **Documents** tab).
+- **File actions**: right-click a file or folder, use **More actions** (…) in the command bar when one item is selected, or use the command bar at the bottom of the preview pane: **Open**, **Open in browser**, **Open in desktop app** (Word, Excel, PowerPoint, Visio and Project files), **Download**, **Copy link** and, for folders, **Open in SharePoint**. **Open in SharePoint** in the command bar opens the current folder.
+- **Preview pane**: the **Preview** button on the right side of the command bar shows a preview of the selected file over the full height of the pane, with its actions in a command bar below. Word, Excel, PowerPoint and Visio files are shown as documents, other files as a preview image. The pane stays open for other records until it is closed.
+- **Sort and tile size**: the **Sort** menu sorts by the columns of the view in all view types, including the tile view. The view menu switches between small and large tiles.
+- **Phones and narrow forms**: when the control is narrower than 640 pixels, the folder tree opens from the **Folders** button and the preview pane covers the files.
+- **Folder navigation**: the content of folders opened before is shown immediately while it is loaded again; a small spinner next to the breadcrumb shows that the content is being refreshed.
+
+### Thumbnails and previews
+
+The preview images are rendered by SharePoint for images, PDF and Office files (`_layouts/15/getpreview.ashx`). When a Word, Excel, PowerPoint or Visio file is selected, the preview pane shows it with Office for the web (`_layouts/15/WopiFrame.aspx`, embedded view); it can take a few seconds to appear. Both are loaded by the browser directly from SharePoint, with the user's SharePoint session, and the user only sees files they have access to in SharePoint. If the browser blocks third-party cookies, or if the user has not signed in to SharePoint yet, the file icon is shown instead and the full preview stays empty.
+
+If [content security policy](https://learn.microsoft.com/en-us/power-platform/admin/content-security-policy) is enforced for model-driven apps in your environment, allow the SharePoint domain of your organization (for example `https://contoso.sharepoint.com`) in `img-src` and `frame-src`.
 
 ### Drag and drop upload
 
@@ -51,7 +73,7 @@ The upload uses the `UploadDocument` action of Dataverse, which the standard **D
 
 ### Languages
 
-The user interface and the property names are available in English and German; other languages fall back to English. To add a language, copy `SPFileExplorer/strings/SPFileExplorer.1033.resx` to `SPFileExplorer.<LCID>.resx`, translate the values and add the file to the `resources` element of `SPFileExplorer/ControlManifest.Input.xml`.
+The user interface and the property names are available in English, Czech, Danish, Dutch, Finnish, French, German, Italian, Norwegian (Bokmål), Polish, Portuguese (Brazil), Spanish, Swedish and Ukrainian; other languages fall back to English. Corrections from native speakers are welcome. To add a language, copy `SPFileExplorer/strings/SPFileExplorer.1033.resx` to `SPFileExplorer.<LCID>.resx`, translate the values and add the file to the `resources` element of `SPFileExplorer/ControlManifest.Input.xml`.
 
 ## Troubleshooting
 
@@ -67,6 +89,9 @@ Increase the **Minimum Height** property of the control.
 **"There are no documents to show" is displayed.**
 No active SharePoint document location was found for the record. Check that document management is enabled for the table and open the standard **Documents** tab once, so that the document location and the SharePoint folder are created.
 
+**Thumbnails, preview images or the full preview are not shown.**
+They need the user's SharePoint session and third-party cookies (see [Thumbnails and previews](#thumbnails-and-previews)). Open SharePoint once in the same browser and check that the browser does not block third-party cookies for the SharePoint domain. Thumbnails are available for images, PDF and Office files, the full preview for Word, Excel, PowerPoint and Visio files.
+
 **Files cannot be dropped onto the control.**
 Check that **Enable drag and drop upload (experimental)** is set and that the control shows the documents of a record; in a table view of all documents there is no record to upload the files to.
 
@@ -75,6 +100,8 @@ Check that **Enable drag and drop upload (experimental)** is set and that the co
 - The folder tree is built for the document location of the shown documents. When a record has several document locations and the selected location contains no documents, the tree of the oldest location is shown.
 - The control loads up to 5,000 documents of the current folder. The folder tree is requested with one query per folder when it is loaded and refreshed at most once per minute, so very large folder hierarchies take longer to load.
 - Drag and drop upload is experimental (see [Drag and drop upload](#drag-and-drop-upload)) and does not upload folders.
+- **All folders** search compares file names only (not the content), loads up to 5,000 documents of the record and shows up to 500 results.
+- Folders opened before are shown from the browser memory until their content is reloaded, which usually takes less than a second.
 
 ## Build from source
 
@@ -89,6 +116,8 @@ npm start          # build and run the control with mock data in the local test 
 # build the managed solution into Solution/SPFileExplorerSolution/bin/Release
 dotnet build Solution/SPFileExplorerSolution --configuration Release
 ```
+
+The local test harness has no SharePoint, so it shows file icons instead of thumbnails, and the full preview cannot load.
 
 ## Release process
 

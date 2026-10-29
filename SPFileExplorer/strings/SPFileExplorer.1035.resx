@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Ohjausobjektin avulla voit selata SharePoint-tiedostoja samaan tapaan kuin Windowsin Resurssienhallinnassa. Käyttöliittymä näyttää koko kansiorakenteen, ja kansion voi löytää nopeasti nimen perusteella, joten tarvittavat tiedostot ovat heti käytettävissä.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Tiedostojen tietojoukko</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Vähimmäiskorkeus</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Ohjausobjektin vähimmäiskorkeus kuvapisteinä</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Piilota kansiopuu</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Määrittää, piilotetaanko kansioiden siirtymisruutu (oletusarvoisesti se näytetään)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Oletusnäkymä</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Näkymä, joka näytetään, kun ohjausobjekti avataan (oletusarvoisesti ruutunäkymä)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Muista valittu näkymä</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Määrittää, tallennetaanko käyttäjän valitsema näkymä selaimeen ja käytetäänkö sitä muille tietueille (oletusarvoisesti tallennetaan)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Luettelonäkymä</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Tiivis näkymä</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Ruutunäkymä</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Näytä kohteet ja tiedot luettelossa</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Näytä kohteet ja tiedot tiiviissä luettelossa</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Näytä kohteet ruutuina</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Avaa näkymäasetusten valikko</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Näkymäasetukset. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Näkymäasetukset. {0} valittu.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Lajittele A–Ö</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Lajittele Ö–A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Lajiteltu A–Ö</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Lajiteltu Ö–A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Ladataan...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Tiedostotoiminnot</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Tämä kansio on tyhjä</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Näytettäviä tiedostoja ei ole. Tarkista, että tiedostojen hallinta on otettu käyttöön tälle taululle ja että tälle tietueelle on olemassa tiedostosijainti.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Valitse kansio, jonka sisällön haluat nähdä.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Suodata kansioita nimen mukaan</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Haku ei tuottanut tuloksia.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Näytettäviä kansioita ei ole.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Kuitattu ulos</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Jaettu</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Ota käyttöön lataaminen vetämällä ja pudottamalla (kokeellinen)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Määrittää, voiko tiedostoja ladata nykyiseen kansioon vetämällä ne ohjausobjektiin (oletusarvoisesti pois käytöstä). Käyttää vakiotiedostoruudukon UploadDocument-toimintoa, jota ei ole dokumentoitu julkisesti.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Pudota tiedostot tähän ladataksesi ne kansioon {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Ladataan {0}/{1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Lataus on valmis.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Tiedostoa {0} ei voitu ladata: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Kansioita ei voi ladata: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Sulje</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Näytä pikkukuvat</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Määrittää, näytetäänkö ruuduissa esikatselukuvat tiedostokuvakkeiden sijaan (oletusarvoisesti ei).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Hae tiedostoja</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Kaikki kansiot</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Hae kaikista kansioista</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Hakutulokset haulle ”{0}”</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Hakua vastaavia tiedostoja ei löytynyt.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Haetaan...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>Haku epäonnistui: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Lajittele</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Nouseva</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Laskeva</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Ruudun koko</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Pienet ruudut</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Suuret ruudut</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Kansiot</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Esikatselu</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Näytä tai piilota esikatseluruutu</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Valitse tiedosto, jonka haluat esikatsella.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Avaa</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Avaa selaimessa</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Avaa työpöytäsovelluksessa</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Lataa</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Kopioi linkki</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Linkki on kopioitu.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Avaa SharePointissa</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Avaa sisältävä kansio</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Lisää toimintoja</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Päivitetään...</value>
+  </data>
+</root>

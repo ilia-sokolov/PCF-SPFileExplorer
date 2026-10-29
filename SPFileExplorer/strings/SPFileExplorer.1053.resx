@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Kontrollen gör det möjligt att bläddra bland SharePoint-dokument på samma sätt som i Utforskaren i Windows. Gränssnittet visar hela mapphierarkin och gör det möjligt att snabbt hitta en mapp efter namn, så att du snabbt kommer åt de filer du behöver.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Datauppsättning med dokument</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Minsta höjd</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Kontrollens minsta höjd i pixlar</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Dölj mappträdet</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Anger om navigeringsfönstret för mappar ska döljas (som standard visas det)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Standardvy</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Vy som visas när kontrollen öppnas (panelvy som standard)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Kom ihåg vald vy</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Anger om den vy som en användare väljer ska sparas i webbläsaren och användas för andra poster (som standard sparas den)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Listvy</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Kompakt vy</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Panelvy</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Visa objekt och information i en lista</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Visa objekt och information i en kompakt lista</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Visa objekt som paneler</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Öppna menyn med visningsalternativ</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Visningsalternativ. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Visningsalternativ. {0} har valts.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Sortera från A till Ö</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Sortera från Ö till A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Sorterat från A till Ö</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Sorterat från Ö till A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Läser in...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Filåtgärder</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Den här mappen är tom</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Det finns inga dokument att visa. Kontrollera att dokumenthantering är aktiverad för den här tabellen och att det finns en dokumentplats för den här posten.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Välj en mapp för att visa dess innehåll.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Filtrera mappar efter namn</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Sökningen gav inga resultat.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Det finns inga mappar att visa.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Utcheckad</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Delad</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Aktivera uppladdning med dra och släpp (experimentell)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Anger om filer kan laddas upp till den aktuella mappen genom att dra dem till kontrollen (inaktiverat som standard). Använder åtgärden UploadDocument i standarddokumentrutnätet, som inte är offentligt dokumenterad.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Släpp filer här för att ladda upp dem till {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Laddar upp {0} av {1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Uppladdningen är klar.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>{0} kunde inte laddas upp: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Mappar kan inte laddas upp: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Stäng</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Visa miniatyrer</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Anger om förhandsgranskningsbilder visas på panelerna i stället för filikoner (som standard visas de inte).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Sök efter filer</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Alla mappar</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Sök i alla mappar</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Sökresultat för ”{0}”</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Inga filer matchar sökningen.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Söker...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>Sökningen misslyckades: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sortera</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Stigande</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Fallande</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Panelstorlek</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Små paneler</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Stora paneler</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Mappar</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Förhandsgranskning</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Visa eller dölj förhandsgranskningsfönstret</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Välj en fil för att förhandsgranska den.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Öppna</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Öppna i webbläsaren</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Öppna i skrivbordsappen</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Ladda ned</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Kopiera länk</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Länken har kopierats.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Öppna i SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Öppna överordnad mapp</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Fler åtgärder</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Uppdaterar...</value>
+  </data>
+</root>

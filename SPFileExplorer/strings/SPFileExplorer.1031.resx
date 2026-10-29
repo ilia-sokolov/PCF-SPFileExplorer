@@ -157,4 +157,91 @@
   <data name="Close" xml:space="preserve">
     <value>Schließen</value>
   </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Miniaturansichten anzeigen</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Legt fest, ob auf den Kacheln Vorschaubilder statt Dateisymbolen angezeigt werden (standardmäßig nicht).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Dateien durchsuchen</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Alle Ordner</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>In allen Ordnern suchen</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Suchergebnisse für „{0}“</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Keine Dateien entsprechen Ihrer Suche.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Suche läuft...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>Die Suche ist fehlgeschlagen: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sortieren</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Aufsteigend</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Absteigend</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Kachelgröße</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Kleine Kacheln</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Große Kacheln</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Ordner</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Vorschaubereich ein- oder ausblenden</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Wählen Sie eine Datei aus, um ihre Vorschau anzuzeigen.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Öffnen</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Im Browser öffnen</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>In Desktop-App öffnen</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Herunterladen</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Link kopieren</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Der Link wurde kopiert.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>In SharePoint öffnen</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Übergeordneten Ordner öffnen</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Weitere Aktionen</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Wird aktualisiert...</value>
+  </data>
 </root>

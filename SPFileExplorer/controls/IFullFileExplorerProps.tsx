@@ -2,6 +2,7 @@ import { IFileSystemItem } from "./IFileSystemItem";
 import { IFileViewColumn } from "./IFileViewColumn";
 import { IFolder } from "./IFolder";
 import { IStrings } from "./Strings";
+import { ILocationUrls } from "./FileLinks";
 
 /**
  * Type of view to be presented to user.
@@ -92,6 +93,22 @@ export interface IFullFileExplorerProps {
    * @param onProgress Called with the number of processed files after each file.
    * @returns Files that could not be uploaded.
    */
+  /**
+   * Indicates that the dataset is loading new content (e.g. after a folder was opened).
+   */
+  isLoading?: boolean;
+  /**
+   * Returns the SharePoint URLs of the document location (null if not available).
+   */
+  getLocationUrls?: () => Promise<ILocationUrls | null>;
+  /**
+   * Indicates if thumbnails are shown in the tile view.
+   */
+  showThumbnails?: boolean;
+  /**
+   * Searches files by name in all folders. Not specified if it is not possible (e.g. no record).
+   */
+  searchAllFolders?: (text: string) => Promise<IFileSystemItem[]>;
   uploadFiles?: (
     files: File[],
     folderPath: string,

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>O controle permite navegar pelos documentos do SharePoint de forma semelhante ao Windows Explorer. A interface mostra toda a hierarquia de pastas e permite localizar rapidamente uma pasta pelo nome, para acessar logo os arquivos necessários.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Conjunto de dados de documentos</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Altura mínima</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Altura mínima do controle em pixels</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Ocultar árvore de pastas</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Define se o painel de navegação de pastas fica oculto (por padrão ele é exibido)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Modo de exibição padrão</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Modo de exibição mostrado quando o controle é aberto (blocos por padrão)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Lembrar o modo de exibição selecionado</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Define se o modo de exibição escolhido por um usuário é salvo no navegador e reutilizado em outros registros (por padrão ele é salvo)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Lista</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Lista compacta</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Blocos</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Exibir os itens e seus detalhes em uma lista</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Exibir os itens e seus detalhes em uma lista compacta</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Exibir os itens como blocos</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Abrir o menu de opções de exibição</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Opções de exibição. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Opções de exibição. {0} selecionado.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Classificar de A a Z</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Classificar de Z a A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Classificado de A a Z</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Classificado de Z a A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Carregando...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Ações de arquivo</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Esta pasta está vazia</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Não há documentos para mostrar. Verifique se o gerenciamento de documentos está habilitado para esta tabela e se existe um local de documentos para este registro.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Selecione uma pasta para ver seu conteúdo.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Filtrar pastas por nome</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Sua pesquisa não retornou resultados.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Não há pastas para mostrar.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Com check-out</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Compartilhado</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Habilitar carregamento por arrastar e soltar (experimental)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Define se arquivos podem ser carregados na pasta atual arrastando-os sobre o controle (desabilitado por padrão). Usa a ação UploadDocument da grade de documentos padrão, que não é documentada publicamente.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Solte os arquivos aqui para carregá-los em {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Carregando {0} de {1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Carregamento concluído.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Não foi possível carregar {0}: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Pastas não podem ser carregadas: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Mostrar miniaturas</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Define se imagens de visualização são mostradas nos blocos em vez dos ícones de arquivo (por padrão não são).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Pesquisar arquivos</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Todas as pastas</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Pesquisar em todas as pastas</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Resultados da pesquisa por "{0}"</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Nenhum arquivo corresponde à sua pesquisa.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Pesquisando...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>A pesquisa falhou: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Classificar</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Crescente</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Decrescente</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Tamanho dos blocos</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Blocos pequenos</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Blocos grandes</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Pastas</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Visualização</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Mostrar ou ocultar o painel de visualização</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Selecione um arquivo para ver a visualização.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Abrir</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Abrir no navegador</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Abrir no aplicativo da área de trabalho</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Baixar</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Copiar link</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>O link foi copiado.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Abrir no SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Abrir pasta do arquivo</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Mais ações</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Atualizando...</value>
+  </data>
+</root>

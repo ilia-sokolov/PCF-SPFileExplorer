@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Il controllo consente di esplorare i documenti di SharePoint in modo simile a Esplora risorse di Windows. L'interfaccia mostra l'intera gerarchia delle cartelle e permette di trovare rapidamente una cartella per nome, per accedere subito ai file necessari.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Set di dati dei documenti</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Altezza minima</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Altezza minima del controllo in pixel</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Nascondi albero delle cartelle</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Definisce se il riquadro di navigazione delle cartelle è nascosto (per impostazione predefinita è visibile)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Visualizzazione predefinita</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Visualizzazione mostrata all'apertura del controllo (per impostazione predefinita a riquadri)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Ricorda la visualizzazione selezionata</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Definisce se la visualizzazione scelta da un utente viene salvata nel browser e riutilizzata per altri record (per impostazione predefinita viene salvata)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Elenco</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Elenco compatto</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Riquadri</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Visualizza gli elementi e i dettagli in un elenco</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Visualizza gli elementi e i dettagli in un elenco compatto</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Visualizza gli elementi come riquadri</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Apri il menu delle opzioni di visualizzazione</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Opzioni di visualizzazione. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Opzioni di visualizzazione. {0} selezionato.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Ordina dalla A alla Z</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Ordina dalla Z alla A</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Ordinato dalla A alla Z</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Ordinato dalla Z alla A</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Caricamento...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Azioni sui file</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Questa cartella è vuota</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Non ci sono documenti da visualizzare. Verificare che la gestione dei documenti sia abilitata per questa tabella e che esista un percorso documenti per questo record.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Selezionare una cartella per visualizzarne il contenuto.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Filtra le cartelle per nome</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>La ricerca non ha restituito risultati.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Non ci sono cartelle da visualizzare.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Estratto</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Condiviso</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Abilita il caricamento tramite trascinamento (sperimentale)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Definisce se è possibile caricare file nella cartella corrente trascinandoli sul controllo (per impostazione predefinita è disabilitato). Usa l'azione UploadDocument della griglia documenti standard, che non è documentata pubblicamente.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Rilascia qui i file per caricarli in {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Caricamento di {0} di {1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Caricamento completato.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Impossibile caricare {0}: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Le cartelle non possono essere caricate: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Mostra anteprime</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Definisce se sui riquadri vengono mostrate immagini di anteprima invece delle icone dei file (per impostazione predefinita no).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Cerca file</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Tutte le cartelle</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Cerca in tutte le cartelle</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Risultati della ricerca per "{0}"</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Nessun file corrisponde alla ricerca.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Ricerca in corso...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>La ricerca non è riuscita: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Ordina</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>Crescente</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>Decrescente</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Dimensione riquadri</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Riquadri piccoli</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Riquadri grandi</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Cartelle</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Anteprima</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Mostra o nascondi il riquadro di anteprima</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Selezionare un file per visualizzarne l'anteprima.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Apri</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Apri nel browser</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Apri nell'app desktop</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Scarica</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Copia collegamento</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Il collegamento è stato copiato.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Apri in SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Apri la cartella che lo contiene</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Altre azioni</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Aggiornamento...</value>
+  </data>
+</root>

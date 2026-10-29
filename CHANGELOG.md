@@ -1,15 +1,30 @@
 # Changelog
 
-## Unreleased
+## 0.0.5
+
+### Added
+
+- **Search**: filter the current folder by name, or search the file names in all folders of the record (**All folders**). Search results show the folder of each file and can open it.
+- **Fast folder navigation**: folders opened before are shown immediately and refreshed in the background.
+- **File actions**: open in the browser or in the desktop app, download, copy link and open in SharePoint, from the context menu (right-click), the command bar (**More actions**) and the preview pane. **Open in SharePoint** in the command bar opens the current folder.
+- **Preview pane** with a full-height preview of the selected file and its actions in a command bar below. Word, Excel, PowerPoint and Visio files are shown with Office for the web as soon as they are selected, other files as a preview image.
+- **Show thumbnails** property: preview images rendered by SharePoint on the tiles.
+- **Sort** menu for all view types, including the tile view, and small or large tiles.
+- Layout for phones and narrow forms: the folder tree opens from the **Folders** button.
+- Czech, Danish, Dutch, Finnish, French, Italian, Norwegian, Polish, Portuguese (Brazil), Spanish, Swedish and Ukrainian user interface.
+
+### Fixed
+
+- Drag and drop upload failed in Dataverse with "Feature 'Utility.getEntityMetadata' is required"; the primary key of the record is now read with the Web API.
+- Drag and drop upload to a subfolder of a subfolder failed with "Folder … has been renamed or deleted".
+- The control uses the full width of the form section.
 
 ### Security
 
 - Build tooling dependencies updated to versions without known vulnerabilities: `npm audit fix` (cross-spawn, flatted, js-yaml, lodash, minimatch, picomatch, semver, brace-expansion), `@typescript-eslint/*` 5 → 8 with ESLint 8.57, `ajv` 7 → 8, and `@opentelemetry/core` / `@opentelemetry/sdk-trace-base` 2.x for the telemetry of `pcf-scripts` (npm `overrides`). The control itself and its bundle are unchanged.
 - The `pcf-start` test harness is no longer a dev dependency: `npm start` builds the control and downloads the harness with `npx`. Its file server (`browser-sync`) depends on `braces`, for which no fixed version is published yet, so it is no longer installed with the project; it is only downloaded when the local test harness is started.
 
-## 0.0.4 (unreleased)
-
-The packaged solution (`Solution/SPFullFileExplorer.zip`) is updated by the build workflow after these changes are merged into `master`.
+## 0.0.4
 
 ### Added
 

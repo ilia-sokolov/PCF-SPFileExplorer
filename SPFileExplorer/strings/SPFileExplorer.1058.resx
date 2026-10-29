@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SPFileExplorer_Name" xml:space="preserve">
+    <value>SharePoint Full File Explorer</value>
+  </data>
+  <data name="SPFileExplorer_Description" xml:space="preserve">
+    <value>Елемент керування дає змогу переглядати документи SharePoint так само, як у Провіднику Windows. Інтерфейс показує всю ієрархію папок і дає змогу швидко знайти папку за назвою, щоб одразу перейти до потрібних файлів.</value>
+  </data>
+  <data name="DocumentsDataSet_Name" xml:space="preserve">
+    <value>Набір даних документів</value>
+  </data>
+  <data name="MinHeight_Name" xml:space="preserve">
+    <value>Мінімальна висота</value>
+  </data>
+  <data name="MinHeight_Description" xml:space="preserve">
+    <value>Мінімальна висота елемента керування в пікселях</value>
+  </data>
+  <data name="HideFoldersPane_Name" xml:space="preserve">
+    <value>Приховати дерево папок</value>
+  </data>
+  <data name="HideFoldersPane_Description" xml:space="preserve">
+    <value>Визначає, чи приховано область навігації папками (за замовчуванням вона відображається)</value>
+  </data>
+  <data name="DefaultViewType_Name" xml:space="preserve">
+    <value>Подання за замовчуванням</value>
+  </data>
+  <data name="DefaultViewType_Description" xml:space="preserve">
+    <value>Подання, яке відображається під час відкриття елемента керування (за замовчуванням плитки)</value>
+  </data>
+  <data name="RememberViewType_Name" xml:space="preserve">
+    <value>Запам'ятовувати вибране подання</value>
+  </data>
+  <data name="RememberViewType_Description" xml:space="preserve">
+    <value>Визначає, чи зберігається вибране користувачем подання в браузері та чи використовується для інших записів (за замовчуванням зберігається)</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Список</value>
+  </data>
+  <data name="CompactView" xml:space="preserve">
+    <value>Компактний список</value>
+  </data>
+  <data name="TileView" xml:space="preserve">
+    <value>Плитки</value>
+  </data>
+  <data name="ListViewTitle" xml:space="preserve">
+    <value>Показати елементи та відомості у вигляді списку</value>
+  </data>
+  <data name="CompactViewTitle" xml:space="preserve">
+    <value>Показати елементи та відомості у вигляді компактного списку</value>
+  </data>
+  <data name="TileViewTitle" xml:space="preserve">
+    <value>Показати елементи у вигляді плиток</value>
+  </data>
+  <data name="ViewOptionsTitle" xml:space="preserve">
+    <value>Відкрити меню параметрів подання</value>
+  </data>
+  <data name="ViewOptionAriaLabel" xml:space="preserve">
+    <value>Параметри подання. {0}.</value>
+  </data>
+  <data name="ViewOptionSelectedAriaLabel" xml:space="preserve">
+    <value>Параметри подання. Вибрано: {0}.</value>
+  </data>
+  <data name="SortAscending" xml:space="preserve">
+    <value>Сортувати від А до Я</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>Сортувати від Я до А</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>Відсортовано від А до Я</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>Відсортовано від Я до А</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Завантаження...</value>
+  </data>
+  <data name="FileActions" xml:space="preserve">
+    <value>Дії з файлами</value>
+  </data>
+  <data name="FolderEmpty" xml:space="preserve">
+    <value>Ця папка порожня</value>
+  </data>
+  <data name="NoDocumentLocation" xml:space="preserve">
+    <value>Немає документів для відображення. Переконайтеся, що для цієї таблиці ввімкнуто керування документами і для цього запису існує розташування документів.</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Виберіть папку, щоб переглянути її вміст.</value>
+  </data>
+  <data name="FilterFolders" xml:space="preserve">
+    <value>Фільтрувати папки за назвою</value>
+  </data>
+  <data name="FolderSearchNoResults" xml:space="preserve">
+    <value>Пошук не дав результатів.</value>
+  </data>
+  <data name="NoFolders" xml:space="preserve">
+    <value>Немає папок для відображення.</value>
+  </data>
+  <data name="CheckedOut" xml:space="preserve">
+    <value>Вилучено</value>
+  </data>
+  <data name="Shared" xml:space="preserve">
+    <value>Спільний доступ</value>
+  </data>
+  <data name="EnableUpload_Name" xml:space="preserve">
+    <value>Увімкнути передавання перетягуванням (експериментально)</value>
+  </data>
+  <data name="EnableUpload_Description" xml:space="preserve">
+    <value>Визначає, чи можна передавати файли в поточну папку, перетягуючи їх на елемент керування (за замовчуванням вимкнуто). Використовує дію UploadDocument стандартної сітки документів, яка не задокументована публічно.</value>
+  </data>
+  <data name="DropFilesHere" xml:space="preserve">
+    <value>Перетягніть файли сюди, щоб передати їх до {0}</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Передавання {0} з {1}...</value>
+  </data>
+  <data name="UploadCompleted" xml:space="preserve">
+    <value>Передавання завершено.</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Не вдалося передати {0}: {1}</value>
+  </data>
+  <data name="FoldersNotUploaded" xml:space="preserve">
+    <value>Папки не можна передавати: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрити</value>
+  </data>
+  <data name="ShowThumbnails_Name" xml:space="preserve">
+    <value>Показувати ескізи</value>
+  </data>
+  <data name="ShowThumbnails_Description" xml:space="preserve">
+    <value>Визначає, чи відображаються на плитках зображення попереднього перегляду замість піктограм файлів (за замовчуванням ні).</value>
+  </data>
+  <data name="SearchFiles" xml:space="preserve">
+    <value>Пошук файлів</value>
+  </data>
+  <data name="SearchAllFolders" xml:space="preserve">
+    <value>Усі папки</value>
+  </data>
+  <data name="SearchAllFoldersTitle" xml:space="preserve">
+    <value>Шукати в усіх папках</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Результати пошуку за запитом «{0}»</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>Немає файлів, що відповідають запиту.</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Пошук...</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>Помилка пошуку: {0}</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Сортувати</value>
+  </data>
+  <data name="Ascending" xml:space="preserve">
+    <value>За зростанням</value>
+  </data>
+  <data name="Descending" xml:space="preserve">
+    <value>За спаданням</value>
+  </data>
+  <data name="TileSize" xml:space="preserve">
+    <value>Розмір плиток</value>
+  </data>
+  <data name="SmallTiles" xml:space="preserve">
+    <value>Малі плитки</value>
+  </data>
+  <data name="LargeTiles" xml:space="preserve">
+    <value>Великі плитки</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Папки</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Попередній перегляд</value>
+  </data>
+  <data name="PreviewTitle" xml:space="preserve">
+    <value>Показати або приховати область попереднього перегляду</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Виберіть файл, щоб переглянути його.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Відкрити</value>
+  </data>
+  <data name="OpenInBrowser" xml:space="preserve">
+    <value>Відкрити в браузері</value>
+  </data>
+  <data name="OpenInApp" xml:space="preserve">
+    <value>Відкрити в класичній програмі</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Завантажити</value>
+  </data>
+  <data name="CopyLink" xml:space="preserve">
+    <value>Копіювати посилання</value>
+  </data>
+  <data name="LinkCopied" xml:space="preserve">
+    <value>Посилання скопійовано.</value>
+  </data>
+  <data name="OpenInSharePoint" xml:space="preserve">
+    <value>Відкрити в SharePoint</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Відкрити папку з файлом</value>
+  </data>
+  <data name="MoreActions" xml:space="preserve">
+    <value>Інші дії</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Оновлення...</value>
+  </data>
+</root>
