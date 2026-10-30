@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.5
+## 0.0.5 (2026-10-29)
 
 ### Added
 
@@ -24,7 +24,7 @@
 - Build tooling dependencies updated to versions without known vulnerabilities: `npm audit fix` (cross-spawn, flatted, js-yaml, lodash, minimatch, picomatch, semver, brace-expansion), `@typescript-eslint/*` 5 → 8 with ESLint 8.57, `ajv` 7 → 8, and `@opentelemetry/core` / `@opentelemetry/sdk-trace-base` 2.x for the telemetry of `pcf-scripts` (npm `overrides`). The control itself and its bundle are unchanged.
 - The `pcf-start` test harness is no longer a dev dependency: `npm start` builds the control and downloads the harness with `npx`. Its file server (`browser-sync`) depends on `braces`, for which no fixed version is published yet, so it is no longer installed with the project; it is only downloaded when the local test harness is started.
 
-## 0.0.4
+## 0.0.4 (2026-10-22)
 
 ### Added
 
@@ -43,15 +43,13 @@
 - Document locations created for a subfolder of another location show their folders: the path is built from the parent locations ([#5](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/5)).
 - After the folder tree is reloaded, the folder the grid is filtered by stays selected.
 
-## 0.0.3
+## 0.0.3 (2026-10-22)
 
 ### Added
 
 - **Default view** property to choose the view type (tile, list or compact list) that is shown when the control is opened ([#11](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/11)).
 - **Remember selected view** property: the view type selected by a user is remembered in the browser and reused for other records ([#11](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/11)).
 - A message is shown when no SharePoint document location is found, instead of an endless loading spinner.
-
-- Solution project (`Solution/SPFileExplorerSolution`) and a GitHub Actions workflow that lints and builds every push, builds the managed solution and updates `Solution/SPFullFileExplorer.zip` when the control version is increased.
 
 ### Fixed
 
@@ -68,9 +66,15 @@
 ### Changed
 
 - Removed the unused `office-ui-fabric-react` dependency, which made `npm ci` fail with a peer dependency conflict, and brought `package-lock.json` in sync with `package.json`.
+- Solution project (`Solution/SPFileExplorerSolution`) and a GitHub Actions workflow that lints and builds every push, builds the managed solution and updates `Solution/SPFullFileExplorer.zip` when the control version is increased.
 
-## 0.0.2
+## 0.0.2 (2023-10-12)
+
+### Added
+
+- **Minimum Height** and **Hide folder tree** properties.
+
+### Fixed
 
 - Escaping of special characters in the relative location of subfolders ([#4](https://github.com/ilia-sokolov/PCF-SPFileExplorer/issues/4)).
-- **Minimum Height** and **Hide folder tree** properties.
 - Newly added folders appear in the folder tree.
