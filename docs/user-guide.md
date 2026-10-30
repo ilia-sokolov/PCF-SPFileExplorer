@@ -14,7 +14,9 @@ Folders you opened before appear immediately. A small spinner next to the path s
 
 1. Type a part of the file name in **Search files**. The current folder is filtered as you type.
 2. To search the whole record, select **All folders** and type at least two characters. **All folders** is available for the documents of a record.
-3. The results show the folder of each file. To go there, right-click a result and select **Open containing folder**.
+3. To go to the folder of a result, right-click it and select **Open containing folder**. In the list views, the **Path** column shows the folder, if the view has this column.
+
+![Results of a search in all folders, with the actions of a file](/Media/user-guide-search.png)
 
 The search compares file names, not the content of the files.
 

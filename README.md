@@ -2,7 +2,7 @@
 
 A control for model-driven apps that shows SharePoint documents the way Windows Explorer shows files: the folder tree on the left and the files on the right, with search, previews and file actions.
 
-![SharePoint Full File Explorer interface](Media/screenshot1.png)
+![SharePoint Full File Explorer with the folder tree, tiles with thumbnails, and a Word document in the preview pane](Media/screenshot1.png)
 
 | I want to… | Go to |
 | --- | --- |
@@ -84,7 +84,7 @@ The upload uses the `UploadDocument` action of Dataverse, which the standard **D
 ## Troubleshooting
 
 **The standard grid is still shown instead of the control.**
-Check that the control is selected for all client types (Web, Phone and Tablet) in the **Custom Controls** dialog and that the view or the form was published. On a form, add the control to the documents subgrid itself (see the [installation guide](/installation-guide.md#2-add-the-control-to-a-form)).
+Check that the control is listed under **Components** of the view or the subgrid for all client types (Web, Mobile and Tablet) and that the view or the form was published. On a form, add the control to the documents subgrid itself (see the [installation guide](/installation-guide.md#2-add-the-control-to-a-form)).
 
 **"There are no documents to show" is displayed.**
 No active SharePoint document location was found for the record. Check that document management is enabled for the table and open the standard **Documents** tab once, so that the document location and the SharePoint folder are created.

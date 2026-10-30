@@ -40,22 +40,16 @@ Use this to set the control on a view of the **SharePoint Document** table. The 
 - **Document Associated Grid** is the view of the related **Documents** tab, so the control is shown on that tab for all tables.
 - Other views show the control wherever they are used. A table view of all documents has no record, so upload and **All folders** search are not available there.
 
-These steps use the classic view editor. The modern designer has a **Components** command as well, but it has not been tested with this control.
-
 1. Open the **Default Solution** and go to the **SharePoint Document** table.
 2. Go to **Views**, select the view and click **Edit**.
-3. Click **Switch to classic**.
-   ![Switch to classic in the view designer](Media/installation-step-5.png)
-4. In the **Common Tasks** section, click **Custom Controls**.
-   ![Custom Controls in the Common Tasks section](Media/installation-step-6.png)
-5. In the popup, click **Add Control**.
-   ![Add Control in the popup](Media/installation-step-7.png)
-6. From the list, select the **SharePoint Full File Explorer** control and click **Add**.
-   ![SharePoint Full File Explorer in the list of controls](Media/installation-step-8.png)
-7. Choose **Web**, **Phone** and **Tablet** to use this control as the default for all client types. Optionally, configure the [properties of the control](/README.md#configuration) and click **OK**.
-   ![Web, Phone and Tablet options of the control](Media/installation-step-9.png)
-8. Click **Save and Close**.
-9. Go back to the view and click **Save and Publish**.
+3. In the command bar, click **Components**, then **Add a component**.
+4. Click **Get more components**, select **SharePoint Full File Explorer** and click **Add**. The next time, the control is already in the list.
+5. Select **SharePoint Full File Explorer** in the list.
+6. Configure the [properties of the control](/README.md#configuration) and click **Done**. The control is used for **Mobile**, **Tablet** and **Web**.
+   ![SharePoint Full File Explorer in the Components panel of the view](Media/installation-view-components.png)
+7. Click **Save**, then **Save and publish**.
+
+The classic view editor works as well: **Switch to classic**, then **Custom Controls** in the **Common Tasks** section.
 
 ## 4. Check that it works
 
@@ -75,6 +69,6 @@ Properties added by the new version start with their default values. Check the [
 To show the standard grid again:
 
 - **On a form:** select the subgrid, delete the control in the **Components** section of its properties, and click **Save and Publish**.
-- **On a view:** open **Custom Controls** in the classic view editor as described above, delete the control, and click **Save and Publish**.
+- **On a view:** click **Components**, click **...** next to the control and select **Delete**. Click **Save**, then **Save and publish**.
 
 To remove the control from the environment, first switch back on all forms and views, then delete the solution.
